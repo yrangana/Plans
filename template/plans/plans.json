@@ -1,0 +1,22 @@
+[
+  {
+    "file": "EXAMPLE_PLAN.md",
+    "title": "Example Feature",
+    "status": "active",
+    "priority": "P1",
+    "owner": "you",
+    "type": "feature",
+    "depends_on": [],
+    "blocks": [],
+    "last_updated": "2026-01-01",
+    "start_date": "2026-01-01",
+    "overall": "In progress (Phase 1 of 2)",
+    "eta": "2026-01-08",
+    "in_flight": true,
+    "next_action": "Replace this example with your real first plan.",
+    "phase_summary": [
+      { "phase": 0, "name": "Design",  "status": "shipped",     "date": "2026-01-01" },
+      { "phase": 1, "name": "Build",   "status": "in_progress", "eta":  "2026-01-08" }
+    ]
+  }
+]

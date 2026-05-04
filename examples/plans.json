@@ -1,0 +1,83 @@
+[
+  {
+    "file": "DARK_MODE.md",
+    "title": "Dark Mode",
+    "status": "active",
+    "priority": "P1",
+    "owner": "alex",
+    "type": "feature",
+    "depends_on": [],
+    "blocks": ["THEME_PICKER"],
+    "last_updated": "2026-01-15",
+    "start_date": "2026-01-12",
+    "overall": "In progress (Phase 2 of 3)",
+    "eta": "2026-01-22",
+    "in_flight": true,
+    "next_action": "Wire up the theme toggle to the settings panel.",
+    "phase_summary": [
+      { "phase": 0, "name": "Color tokens",    "status": "shipped",     "date": "2026-01-13" },
+      { "phase": 1, "name": "Component pass",  "status": "shipped",     "date": "2026-01-15" },
+      { "phase": 2, "name": "Settings UI",     "status": "in_progress", "eta":  "2026-01-22" }
+    ]
+  },
+  {
+    "file": "THEME_PICKER.md",
+    "title": "Theme Picker",
+    "status": "active",
+    "priority": "P2",
+    "owner": "alex",
+    "type": "feature",
+    "depends_on": ["DARK_MODE"],
+    "blocks": [],
+    "last_updated": "2026-01-15",
+    "start_date": "2026-01-22",
+    "overall": "Not started, queued behind Dark Mode",
+    "eta": "2026-01-29",
+    "in_flight": false,
+    "next_action": "Wait for Dark Mode Phase 2 to ship, then start design.",
+    "phase_summary": [
+      { "phase": 0, "name": "Design",   "status": "not_started", "eta": "2026-01-23" },
+      { "phase": 1, "name": "Build",    "status": "not_started", "eta": "2026-01-26" },
+      { "phase": 2, "name": "Tests",    "status": "not_started", "eta": "2026-01-29" }
+    ]
+  },
+  {
+    "file": "SEARCH_INDEX.md",
+    "title": "Full-text search index",
+    "status": "active",
+    "priority": "P0",
+    "owner": "sam",
+    "type": "feature",
+    "depends_on": [],
+    "blocks": [],
+    "last_updated": "2026-01-15",
+    "start_date": "2026-01-08",
+    "overall": "In progress (Phase 1 of 2)",
+    "eta": "2026-01-20",
+    "in_flight": true,
+    "next_action": "Index existing documents and wire up the search bar.",
+    "phase_summary": [
+      { "phase": 0, "name": "Schema",   "status": "shipped",     "date": "2026-01-10" },
+      { "phase": 1, "name": "Indexing", "status": "in_progress", "eta":  "2026-01-20" }
+    ]
+  },
+  {
+    "file": "ONBOARDING.md",
+    "title": "First-run onboarding",
+    "status": "shipped",
+    "priority": "P1",
+    "owner": "alex",
+    "type": "feature",
+    "depends_on": [],
+    "blocks": [],
+    "last_updated": "2026-01-09",
+    "start_date": "2026-01-04",
+    "overall": "Shipped 2026-01-09",
+    "eta": "2026-01-09",
+    "in_flight": false,
+    "next_action": null,
+    "phase_summary": [
+      { "phase": 0, "name": "Welcome flow", "status": "shipped", "date": "2026-01-09" }
+    ]
+  }
+]

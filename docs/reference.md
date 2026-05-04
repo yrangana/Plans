@@ -1,0 +1,414 @@
+# Spec-Driven Planning: Technical Reference
+
+A structured planning convention for software projects built with AI assistance.
+The system gives developers a single source of truth for project intent: what's planned, what's in progress, what's shipped, in a format that is both human-readable and machine-readable.
+
+---
+
+## Scope and Boundaries
+
+### What it is
+
+- An intent/spec layer separate from git history
+- Markdown + JSON files in a git-excluded `plans/` directory
+- A way to keep persistent context across plans, for yourself, over time
+- A weekly reconciliation pattern (manual now, automated via `/status-sync`)
+
+### What it is not
+
+- Not a project management tool (no replacement for Linear / Jira / Asana)
+- Not a task tracker (operates at plan/phase level, not individual TODOs)
+- Not a team collaboration system (single-author, local-only)
+- Not a documentation system (design docs, RFCs, ADRs still belong in `docs/`)
+- Not git-tracked or auditable (decisions must live in commits/PRs if traceability matters)
+- Not required by any AI assistant (it's optional context, not infrastructure)
+
+### What you get
+
+- A single source of truth for "what's in flight, what's next, what just shipped"
+- Persistent context for AI assistants across sessions
+- A shareable visual roadmap (roadmap.html) for non-technical stakeholders
+- Automated drift detection between plans and git log (via `/status-sync`)
+- Forced clarity: writing the spec surfaces muddy thinking before the code does
+- Reduced context-switching cost when resuming work after a break
+
+### When to adopt
+
+| Adopt when | Don't adopt when |
+|---|---|
+| 1 to 3 person team | 5+ person team (use a real PM tool) |
+| 3+ committed features in flight | Single-feature scope |
+| AI-assisted development | Minimal AI assistance |
+| Regular re-explaining of project context | Project state stays in your head |
+| Plans accumulating at repo root | No spec writing happens |
+| Multi-week or multi-month projects | One-off scripts, prototypes |
+
+### Audience
+
+| Primary | Secondary | Not the audience |
+|---|---|---|
+| Solo devs, indie hackers | Small startup teams (≤3) | Larger engineering orgs |
+| Users of Claude Code / Antigravity / Cursor | Engineers prototyping rapidly | Open source maintainers (use Issues) |
+| | | Regulated environments (need audit trail) |
+
+---
+
+## Directory Structure
+
+```
+plans/
+├── README.md              # System overview for anyone new to the repo
+├── STATUS.md              # Front door, daily check-in file
+├── plans.json             # Machine-readable snapshot (auto-generated, never hand-edit)
+├── roadmap.html           # Visual dashboard, reads plans.json directly
+├── active/                # In-progress and committed-but-not-started plans
+│   └── FEATURE_NAME.md
+└── shipped/               # Completed plans (archived, not deleted)
+    └── FEATURE_NAME.md
+```
+
+**Git exclusion.** `plans/` is local-only, never committed:
+
+```bash
+echo "plans/" >> .git/info/exclude
+```
+
+Use plain `mv` for all file moves, not `git mv`.
+
+---
+
+## Plan File Spec
+
+### Location
+
+- Active / queued: `plans/active/FEATURE_NAME.md`
+- Completed: `plans/shipped/FEATURE_NAME.md`
+- Naming: `SCREAMING_SNAKE_CASE.md`, descriptive, no version suffixes
+
+### File structure
+
+```markdown
+---
+{frontmatter}
+---
+
+# Plan: {Title}
+
+## Status
+
+{status banner}
+
+---
+
+{body: context, goals, non-goals, phases, implementation notes}
+```
+
+### Frontmatter spec
+
+All 7 fields are required.
+
+| Field | Type | Values | Description |
+|---|---|---|---|
+| `status` | enum | `active` `shipped` `superseded` `paused` `blocked` | Current state |
+| `priority` | enum | `P0` `P1` `P2` `P3` | P0 = critical, P3 = nice-to-have |
+| `owner` | string | username | Who is responsible |
+| `type` | enum | `plan` `feature` `bug` `research` `spike` | Work category |
+| `depends_on` | list | filenames without `.md` | Plans this is waiting on |
+| `blocks` | list | filenames without `.md` | Plans waiting on this |
+| `last_updated` | date | `YYYY-MM-DD` | Last meaningful update |
+
+Example:
+
+```yaml
+---
+status: active
+priority: P1
+owner: yash
+type: feature
+depends_on: [AUTH_PLAN]
+blocks: [DASHBOARD_PLAN, WIDGET_PLAN]
+last_updated: 2026-05-04
+---
+```
+
+### Status banner spec
+
+The second heading in every plan. Must agree with frontmatter `status`.
+
+**Status indicators:**
+
+| Indicator | Meaning |
+|---|---|
+| Done | Shipped |
+| In progress | Active work |
+| Not started | Queued |
+| Paused | On hold |
+| Blocked | Waiting on something external |
+
+**Required fields in the banner:**
+
+- `**Overall:**` — one-line summary with phase progress
+- One line per phase with status + name + date or ETA
+- `**Next action:**` — the single next concrete step
+- `**Last updated:**` — must match frontmatter date
+
+Template:
+
+```markdown
+## Status
+
+- **Overall:** In progress, Phase 2 of 3
+- **Phase 0 (Design):** Done (2026-04-28)
+- **Phase 1 (Backend):** Done (2026-05-01)
+- **Phase 2 (Frontend):** In progress
+- **Phase 3 (Tests):** Not started
+
+**Next action:** Wire up the state to the API client.
+**Last updated:** 2026-05-04
+```
+
+### Two-source rule
+
+Frontmatter `status` and banner must always agree. If they conflict, **frontmatter wins**. Update both together.
+
+---
+
+## plans.json Spec
+
+Auto-generated by `/status-sync`. Never hand-edit. Consumed by `roadmap.html` and any future tooling.
+
+### Schema
+
+```json
+[
+  {
+    "file": "FEATURE_NAME.md",
+    "title": "Human-readable plan title",
+    "status": "active",
+    "priority": "P1",
+    "owner": "yash",
+    "type": "feature",
+    "depends_on": [],
+    "blocks": ["OTHER_PLAN"],
+    "last_updated": "2026-05-04",
+    "start_date": "2026-05-01",
+    "overall": "In progress (Phase 2 of 3)",
+    "eta": "2026-05-11",
+    "in_flight": true,
+    "next_action": "Wire up the state to the API client.",
+    "phase_summary": [
+      { "phase": 0, "name": "Design",   "status": "shipped",     "date": "2026-04-28" },
+      { "phase": 1, "name": "Backend",  "status": "shipped",     "date": "2026-05-01" },
+      { "phase": 2, "name": "Frontend", "status": "in_progress", "eta": "2026-05-11"  },
+      { "phase": 3, "name": "Tests",    "status": "not_started", "eta": null           }
+    ]
+  }
+]
+```
+
+### Field reference
+
+| Field | Source | Description |
+|---|---|---|
+| `file` | filename | Plan filename including `.md` |
+| `title` | H1 heading | Human-readable title |
+| `status` | frontmatter | Current state |
+| `priority` | frontmatter | P0 to P3 |
+| `owner` | frontmatter | Responsible person |
+| `type` | frontmatter | Work category |
+| `depends_on` | frontmatter | Blocking dependencies |
+| `blocks` | frontmatter | Downstream dependents |
+| `last_updated` | frontmatter | Last update date |
+| `start_date` | explicit field | Gantt chart anchor date |
+| `overall` | status banner | One-line summary string |
+| `eta` | banner or explicit | Target completion date |
+| `in_flight` | explicit field | `true` = actively being worked now |
+| `next_action` | status banner | Next concrete step |
+| `phase_summary` | status banner | Per-phase breakdown array |
+
+---
+
+## STATUS.md Spec
+
+The daily check-in file. One file answers: what's in flight, what's next, what just shipped, what's the backlog.
+
+### Structure
+
+```markdown
+# {Project}: Project Status
+*Last updated: YYYY-MM-DD*
+
+> {One-paragraph mission or project description}
+
+---
+
+<!-- AUTO-GENERATED from plans/plans.json -->
+
+## Roadmap at a glance
+{mermaid gantt}
+
+## In flight: what we're working on now
+{table}
+
+## Up next: committed for next 30 days
+{table}
+
+## Cross-plan dependencies
+{mermaid flowchart}
+
+<!-- END AUTO-GENERATED -->
+
+---
+
+## Recently shipped: last 30 days
+{table}
+
+## Monthly log: append-only history
+{append-only log entries}
+
+---
+
+## Backlog / ideas: captured, not committed
+{bullet list}
+
+## Blocked / risks
+{table}
+```
+
+### Auto-generated vs hand-maintained
+
+| Section | Source |
+|---|---|
+| Gantt chart | Auto, from `plans.json` |
+| In flight table | Auto, from `plans.json` where `in_flight: true` |
+| Up next table | Auto, from `plans.json` where `status: active, in_flight: false` |
+| Dependencies flowchart | Auto, from `plans.json` `depends_on`/`blocks` |
+| Recently shipped | Auto, from git log since last update |
+| Monthly log | Hand-maintained, append-only |
+| Backlog | Hand-maintained, ideas not yet committed |
+| Blocked / risks | Hand-maintained |
+
+---
+
+## Idea Lifecycle
+
+```
+New idea
+  -> Add bullet to STATUS.md backlog
+  -> No plan file yet
+
+Committed (work starting soon)
+  -> Create plans/active/FEATURE.md with frontmatter + banner
+  -> Add row to STATUS.md "Up next" table
+  -> Add entry to plans.json
+
+Work starts
+  -> Set in_flight: true in frontmatter and plans.json
+  -> Move STATUS.md row to "In flight" table
+
+Phase ships
+  -> Mark phase done in banner
+  -> Update STATUS.md tables
+  -> Bump last_updated in frontmatter and banner
+
+Plan fully ships
+  -> mv plans/active/FEATURE.md plans/shipped/FEATURE.md
+  -> Update status: shipped in frontmatter
+  -> Move to STATUS.md "Recently shipped"
+  -> Update plans.json entry
+```
+
+---
+
+## AI Assistant Integration
+
+Add this section to your instruction file (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`, etc.):
+
+```markdown
+## Project Status & Plan Management
+
+`plans/STATUS.md` is the front door. Read it before suggesting work.
+Active plans live in `plans/active/`, completed in `plans/shipped/`.
+
+Every plan has two layers:
+1. YAML frontmatter (machine-readable) — 7 required fields
+2. `## Status` banner (human-readable) — must agree with frontmatter
+
+When a phase ships or a PR maps to a plan:
+1. Mark the phase done in the plan's `## Status` banner
+2. Update `plans/STATUS.md`, move rows between tables as appropriate
+3. Bump `last_updated` in frontmatter and banner on both files
+4. If fully complete: mv plans/active/X.md plans/shipped/X.md
+
+Idea lifecycle:
+- New idea -> add bullet to STATUS.md backlog only
+- Only create a plan file when work is committed and starting
+- Every STATUS.md "In flight" / "Up next" row MUST have a plan file
+- Never create plan files at the repo root
+```
+
+---
+
+## /status-sync Skill Spec
+
+A slash command (Claude Code) or equivalent skill (Antigravity, Cursor) that automates the weekly audit.
+
+### What it reads
+
+| Source | Purpose |
+|---|---|
+| `plans/active/*.md` frontmatter | Canonical machine-readable state |
+| `plans/active/*.md` `## Status` banners | Cross-check for two-source disagreement |
+| `plans/STATUS.md` tables | Verify rows match plan files |
+| `git log --since="{last STATUS.md update}"` | Commits since last sync |
+
+### Drift detection rules
+
+| Rule | Detection | Resolution |
+|---|---|---|
+| Stale active plan | `status: active` + no commits in 14d touching its domain | Flag: paused or abandoned? |
+| Unrecorded shipped phase | Commits indicate shipped feature; plan still Not started | Propose marking Done |
+| Plan not in STATUS.md | File in `plans/active/` missing from In flight or Up next | Propose adding row |
+| Stale `last_updated` | Frontmatter date >7d on active plan with recent commits | Propose bumping date |
+| Orphaned STATUS.md row | Row in tables but no file in `plans/active/` | Flag: create plan or demote to backlog |
+| Dependency cycle | `depends_on` graph has a cycle | Flag, cannot auto-resolve |
+| Orphaned edge | Plan A `depends_on: [B]` but B doesn't list `blocks: [A]` | Propose adding reverse edge |
+| Two-source disagreement | Frontmatter `status` vs banner conflict | Frontmatter wins; propose fixing banner |
+| Missing frontmatter field | Any of 7 required fields absent | Flag with expected value |
+
+### Output pipeline
+
+```
+plans/active/*.md  +  plans/shipped/*.md
+        |
+        |  extract frontmatter
+        v
+plans/plans.json   (regenerated)
+        |
+        +-> plans/STATUS.md   (auto-generated sections regenerated)
+
+plans/roadmap.html reads plans.json directly, no regeneration needed
+```
+
+### Behaviour contract
+
+- Proposal-only: never writes without explicit confirmation
+- Prints changes as a diff-style list
+- Asks for confirmation per file or all-at-once
+- Applies only confirmed changes
+
+---
+
+## Platform Portability
+
+`plans/` is platform-agnostic, pure markdown and JSON. Only the delivery mechanism differs per platform.
+
+| Component | Claude Code | Antigravity | Cursor |
+|---|---|---|---|
+| Instruction file | `CLAUDE.md` | `AGENTS.md` | `.cursorrules` |
+| Skill location | `.claude/skills/` | `.agents/skills/*/SKILL.md` | Custom commands |
+| `plans/` directory | Identical | Identical | Identical |
+| `plans.json` | Identical | Identical | Identical |
+| `roadmap.html` | Identical | Identical | Identical |
+
+To port `/status-sync` to Antigravity: create `.agents/skills/status-sync/SKILL.md` with the same instructions. The logic is unchanged.

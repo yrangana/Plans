@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nahra — Roadmap</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.css">
+  <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8f9fb;
+      color: #1a1a2e;
+    }
+
+    header {
+      background: #1a1a2e;
+      color: white;
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+    header .meta { font-size: 13px; color: #8892b0; }
+
+    main { max-width: 1200px; margin: 0 auto; padding: 32px 40px; }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px 24px;
+      border: 1px solid #e8ecf0;
+    }
+
+    .stat-card .label { font-size: 12px; color: #8892b0; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .stat-card .value { font-size: 32px; font-weight: 700; }
+    .stat-card .value.green  { color: #22c55e; }
+    .stat-card .value.yellow { color: #f59e0b; }
+    .stat-card .value.blue   { color: #6366f1; }
+    .stat-card .value.gray   { color: #94a3b8; }
+
+    /* Sections */
+    .section {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid #e8ecf0;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid #e8ecf0;
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-body { padding: 24px; }
+
+    /* Gantt */
+    #gantt-container { overflow-x: auto; }
+    .gantt .bar-label { fill: #1a1a2e !important; }
+    .gantt .bar { fill: #6366f1 !important; }
+    .gantt .bar.bar-invalid { fill: #e2e8f0 !important; }
+    .gantt .bar-shipped .bar { fill: #22c55e !important; opacity: 0.7; }
+    .gantt .bar-shipped .bar-label { fill: #166534 !important; }
+
+    /* Dependency graph */
+    #dep-graph { height: 280px; border-radius: 6px; background: #f8f9fb; }
+
+    .graph-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .graph-controls button {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e8ecf0;
+      border-radius: 6px;
+      background: white;
+      font-size: 16px;
+      cursor: pointer;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .graph-controls button:hover { background: #f1f5f9; }
+
+    /* Plans list */
+    .plan-card {
+      border: 1px solid #e8ecf0;
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+    }
+
+    .plan-card:last-child { margin-bottom: 0; }
+
+    .plan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .plan-title { font-size: 15px; font-weight: 600; }
+    .plan-meta { font-size: 12px; color: #8892b0; margin-top: 2px; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .badge-active    { background: #fef3c7; color: #92400e; }
+    .badge-shipped   { background: #dcfce7; color: #166534; }
+    .badge-blocked   { background: #fee2e2; color: #991b1b; }
+    .badge-paused    { background: #f1f5f9; color: #475569; }
+
+    .phase-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+    .phase-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .phase-chip.shipped    { background: #dcfce7; color: #166534; }
+    .phase-chip.in_progress { background: #fef9c3; color: #854d0e; }
+    .phase-chip.not_started { background: #f1f5f9; color: #94a3b8; }
+
+    .progress-bar-wrap {
+      background: #f1f5f9;
+      border-radius: 4px;
+      height: 6px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: #6366f1;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .filter-btn {
+      padding: 3px 12px;
+      border: 1px solid #e8ecf0;
+      border-radius: 20px;
+      background: white;
+      font-size: 12px;
+      cursor: pointer;
+      color: #475569;
+      transition: background 0.15s, color 0.15s;
+    }
+    .filter-btn.active {
+      background: #6366f1;
+      color: white;
+      border-color: #6366f1;
+    }
+    .next-action {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #475569;
+      background: #f8f9fb;
+      border-left: 3px solid #6366f1;
+      padding: 8px 12px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* Error state */
+    #error-state {
+      display: none;
+      text-align: center;
+      padding: 80px 40px;
+    }
+
+    #error-state h2 { margin-bottom: 12px; color: #ef4444; }
+    #error-state code {
+      display: inline-block;
+      background: #1a1a2e;
+      color: #a8ff78;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin: 16px 0;
+    }
+    #error-state p { color: #64748b; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Nahra — Roadmap</h1>
+    <div class="meta" id="header-meta">Loading...</div>
+  </div>
+  <div class="meta" id="header-updated"></div>
+</header>
+
+<main>
+
+  <div id="error-state">
+    <h2>Cannot load plans.json</h2>
+    <p>This page requires a local server. Run this from the <code>plans/</code> directory:</p>
+    <code>python -m http.server 8080</code>
+    <p>Then open <strong>http://localhost:8080/roadmap.html</strong></p>
+  </div>
+
+  <div id="app" style="display:none">
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="label">In Flight</div>
+        <div class="value yellow" id="stat-inflight">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Up Next</div>
+        <div class="value blue" id="stat-upnext">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Phases Shipped</div>
+        <div class="value green" id="stat-phases">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Total Plans</div>
+        <div class="value gray" id="stat-total">—</div>
+      </div>
+    </div>
+
+    <!-- Gantt -->
+    <div class="section">
+      <div class="section-header">
+        📅 Initiative Timeline
+        <button onclick="ganttJumpToToday()" title="Jump to today" style="margin-left:auto;padding:4px 12px;border:1px solid #e8ecf0;border-radius:6px;background:white;font-size:12px;cursor:pointer;color:#475569;">Today</button>
+      </div>
+      <div class="section-body">
+        <div id="gantt-container">
+          <svg id="gantt"></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dependencies -->
+    <div class="section">
+      <div class="section-header">🔗 Dependencies</div>
+      <div class="section-body">
+        <div class="graph-controls">
+          <button onclick="depNetwork && depNetwork.fit()" title="Reset view">⊙</button>
+          <button onclick="depNetwork && depNetwork.moveTo({ scale: depNetwork.getScale() * 1.3 })" title="Zoom in">＋</button>
+          <button onclick="depNetwork && depNetwork.moveTo({ scale: depNetwork.getScale() * 0.7 })" title="Zoom out">－</button>
+        </div>
+        <div id="dep-graph"></div>
+      </div>
+    </div>
+
+    <!-- Plans -->
+    <div class="section">
+      <div class="section-header">
+        📋 All Plans
+        <div id="plan-filters" style="display:flex;gap:6px;margin-left:auto">
+          <button class="filter-btn active" data-filter="all"    onclick="setFilter('all')">All</button>
+          <button class="filter-btn"        data-filter="active" onclick="setFilter('active')">Active</button>
+          <button class="filter-btn"        data-filter="shipped" onclick="setFilter('shipped')">Shipped</button>
+        </div>
+      </div>
+      <div class="section-body" id="plans-list"></div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  let depNetwork = null;
+  let ganttTasks = [];
+  let ganttInstance = null;
+
+  function scrollGanttToToday() {
+    const todayEl = document.querySelector('.today-highlight');
+    if (todayEl) todayEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
+  function ganttJumpToToday() {
+    if (ganttInstance) ganttInstance.change_view_mode('Week');
+  }
+
+  const STATUS_EMOJI = {
+    shipped: '✅',
+    in_progress: '🟡',
+    not_started: '🔴',
+    paused: '⏸️',
+    blocked: '⚠️'
+  };
+
+  function calcProgress(phases) {
+    if (!phases || phases.length === 0) return 0;
+    const shipped = phases.filter(p => p.status === 'shipped').length;
+    return Math.round((shipped / phases.length) * 100);
+  }
+
+  function getGanttEnd(plan) {
+    if (plan.eta) return plan.eta;
+    const d = new Date(plan.start_date || plan.last_updated);
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().split('T')[0];
+  }
+
+  function getGanttStart(plan) {
+    return plan.start_date || plan.last_updated;
+  }
+
+  function badgeClass(status) {
+    const map = { active: 'badge-active', shipped: 'badge-shipped', blocked: 'badge-blocked', paused: 'badge-paused' };
+    return map[status] || 'badge-active';
+  }
+
+  function renderStats(plans) {
+    const inFlight = plans.filter(p => p.in_flight).length;
+    const upNext   = plans.filter(p => !p.in_flight).length;
+    const phases   = plans.flatMap(p => p.phase_summary || []).filter(p => p.status === 'shipped').length;
+    document.getElementById('stat-inflight').textContent = inFlight;
+    document.getElementById('stat-upnext').textContent   = upNext;
+    document.getElementById('stat-phases').textContent   = phases;
+    document.getElementById('stat-total').textContent    = plans.length;
+  }
+
+  function renderGantt(plans) {
+    const byDate = [...plans].sort((a, b) =>
+      (a.start_date || a.last_updated).localeCompare(b.start_date || b.last_updated)
+    );
+    const tasks = byDate.map(p => ({
+      id: p.file.replace('.md', ''),
+      name: p.title,
+      start: getGanttStart(p),
+      end: getGanttEnd(p),
+      progress: p.status === 'shipped' ? 100 : calcProgress(p.phase_summary),
+      dependencies: (p.depends_on || []).map(d => d.replace('.md', '')).join(','),
+      custom_class: p.status === 'shipped' ? 'bar-shipped' : ''
+    }));
+
+    ganttTasks = tasks;
+    ganttInstance = new Gantt('#gantt', tasks, {
+      view_mode: 'Week',
+      date_format: 'YYYY-MM-DD',
+      bar_height: 28,
+      padding: 14,
+      on_date_change: () => {},
+      on_view_change: () => setTimeout(scrollGanttToToday, 50),
+      custom_popup_html: task => `
+        <div style="padding:10px 14px;font-size:13px">
+          <strong>${task.name}</strong><br>
+          <span style="color:#8892b0">${task.start} → ${task.end}</span><br>
+          Progress: ${task.progress}%
+        </div>`
+    });
+  }
+
+  function renderDepGraph(plans) {
+    const nodes = plans.map(p => ({
+      id: p.file.replace('.md', ''),
+      label: p.title.length > 28 ? p.title.substring(0, 26) + '…' : p.title,
+      color: p.in_flight
+        ? { background: '#fef9c3', border: '#f59e0b' }
+        : { background: '#ede9fe', border: '#6366f1' },
+      font: { size: 13 }
+    }));
+
+    const edges = [];
+    plans.forEach(p => {
+      (p.blocks || []).forEach(b => {
+        edges.push({
+          from: p.file.replace('.md', ''),
+          to: b.replace('.md', ''),
+          arrows: 'to',
+          color: { color: '#94a3b8' },
+          width: 1.5
+        });
+      });
+    });
+
+    const container = document.getElementById('dep-graph');
+
+    if (edges.length === 0) {
+      container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:14px">No dependencies yet</div>';
+      return;
+    }
+
+    depNetwork = new vis.Network(container,
+      { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) },
+      {
+        physics: { enabled: true, stabilization: { iterations: 100 } },
+        layout: { hierarchical: { direction: 'LR', sortMethod: 'directed', levelSeparation: 220 } },
+        interaction: { hover: true, zoomView: true }
+      }
+    );
+  }
+
+  let allPlans = [];
+  let activeFilter = 'all';
+
+  function setFilter(f) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+    const filtered = f === 'all' ? allPlans : allPlans.filter(p => p.status === f);
+    renderPlans(filtered);
+  }
+
+  function renderPlans(plans) {
+    const container = document.getElementById('plans-list');
+    container.innerHTML = plans.map(p => {
+      const progress = calcProgress(p.phase_summary);
+      const phases = (p.phase_summary || []).map(ph =>
+        `<span class="phase-chip ${ph.status}">${STATUS_EMOJI[ph.status] || ''} Phase ${ph.phase} — ${ph.name}</span>`
+      ).join('');
+
+      return `
+        <div class="plan-card">
+          <div class="plan-header">
+            <div>
+              <div class="plan-title">${p.title}</div>
+              <div class="plan-meta">
+                ${p.file} &nbsp;·&nbsp; ${p.priority || '—'} &nbsp;·&nbsp; ${p.type} &nbsp;·&nbsp; Updated ${p.last_updated}
+              </div>
+            </div>
+            <span class="badge ${badgeClass(p.status)}">${p.overall || p.status}</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" style="width:${progress}%"></div>
+          </div>
+          <div class="phase-list">${phases}</div>
+          ${p.next_action ? `<div class="next-action">Next: ${p.next_action}</div>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  function sortPlans(plans) {
+    const statusOrder = { active: 0, paused: 1, blocked: 2, shipped: 3, superseded: 4 };
+    return [...plans].sort((a, b) => {
+      // in-flight before up-next within active
+      if (a.in_flight !== b.in_flight) return a.in_flight ? -1 : 1;
+      // then by status
+      const so = (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9);
+      if (so !== 0) return so;
+      // then by ETA soonest first (null ETAs go last)
+      if (a.eta && b.eta) return a.eta.localeCompare(b.eta);
+      if (a.eta) return -1;
+      if (b.eta) return 1;
+      return 0;
+    });
+  }
+
+  function render(plans) {
+    const sorted = sortPlans(plans);
+    const active = sorted.filter(p => p.status === 'active');
+    const latest = plans.reduce((a, b) => a.last_updated > b.last_updated ? a : b);
+    document.getElementById('header-meta').textContent = `${active.length} active plan${active.length !== 1 ? 's' : ''}`;
+    document.getElementById('header-updated').textContent = `Last updated: ${latest.last_updated}`;
+
+    allPlans = sorted;
+    renderStats(sorted);
+    renderGantt(sorted);
+    setTimeout(scrollGanttToToday, 100);
+    renderDepGraph(active);
+    renderPlans(sorted);
+
+    document.getElementById('app').style.display = 'block';
+  }
+
+  if (location.protocol === 'file:') {
+    document.getElementById('error-state').style.display = 'block';
+  } else {
+    fetch('./plans.json')
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+      .then(render)
+      .catch(() => { document.getElementById('error-state').style.display = 'block'; });
+  }
+</script>
+</body>
+</html>
