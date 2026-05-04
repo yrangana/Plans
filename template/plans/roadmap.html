@@ -86,6 +86,10 @@
     .gantt .bar-cluster-5 .bar { fill: #0ea5e9 !important; }  /* sky */
     .gantt .bar-shipped .bar { fill: #22c55e !important; opacity: 0.7; }
     .gantt .bar-shipped .bar-label { fill: #166534 !important; }
+    /* Disable drag-to-edit visual cues (data is read-only) */
+    .gantt .handle, .gantt .handle-group { display: none !important; }
+    .gantt .bar-wrapper { cursor: default !important; }
+    .gantt .bar-wrapper .bar-progress { cursor: default !important; }
 
     /* Dependency graph */
     #dep-graph { height: 280px; border-radius: 6px; background: #f8f9fb; }
@@ -422,12 +426,22 @@
     });
 
     ganttTasks = tasks;
+    // Disable drag-to-edit by capturing mousedown before Frappe's handler binds
+    setTimeout(() => {
+      document.querySelectorAll('.gantt .bar-wrapper').forEach(el => {
+        el.addEventListener('mousedown', e => e.stopPropagation(), true);
+      });
+    }, 100);
     ganttInstance = new Gantt('#gantt', tasks, {
       view_mode: 'Week',
       date_format: 'YYYY-MM-DD',
       bar_height: 28,
       padding: 14,
+      readonly: true,
+      readonly_dates: true,
+      readonly_progress: true,
       on_date_change: () => {},
+      on_progress_change: () => {},
       on_view_change: () => setTimeout(scrollGanttToToday, 50),
       custom_popup_html: task => `
         <div style="padding:10px 14px;font-size:13px">
