@@ -232,7 +232,7 @@
 
 <header>
   <div>
-    <h1>Project Roadmap</h1>
+    <h1 id="header-title">Project Roadmap</h1>
     <div class="meta" id="header-meta">Loading...</div>
   </div>
   <div class="meta" id="header-updated"></div>
@@ -556,16 +556,36 @@
     allPlans = sorted;
     renderStats(sorted);
     renderGantt(sorted);
-    setTimeout(scrollGanttToToday, 100);
+    // Use same path as Today button for reliability (initial scrollIntoView is unreliable before layout settles)
+    setTimeout(() => { if (ganttInstance) ganttInstance.change_view_mode('Week'); }, 150);
     renderDepGraph(active);
     renderPlans(sorted);
 
     document.getElementById('app').style.display = 'block';
   }
 
+  // Derive page title from STATUS.md H1 if present, e.g. "# Nahra - Project Status" yields "Nahra - Roadmap".
+  // Falls back to "Project Roadmap" if STATUS.md isn't available (e.g. demo dirs).
+  function setTitleFromStatus() {
+    return fetch('./STATUS.md')
+      .then(r => r.ok ? r.text() : null)
+      .then(text => {
+        if (!text) return;
+        const match = text.match(/^#\s+(.+?)\s*[—\-]\s*Project Status/m);
+        if (match && match[1]) {
+          const project = match[1].trim();
+          const title = `${project} — Roadmap`;
+          document.title = title;
+          document.getElementById('header-title').textContent = title;
+        }
+      })
+      .catch(() => {});
+  }
+
   if (location.protocol === 'file:') {
     document.getElementById('error-state').style.display = 'block';
   } else {
+    setTitleFromStatus();
     fetch('./plans.json')
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(render)
