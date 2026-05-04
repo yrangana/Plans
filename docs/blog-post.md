@@ -99,13 +99,26 @@ When Antigravity launched (Google's AI coding assistant), I checked their skills
 
 The plans themselves don't change at all.
 
-## Five Steps to Adopt It
+## How to Adopt It
 
-1. `mkdir -p plans/active plans/shipped && echo "plans/" >> .git/info/exclude`
-2. Create your first plan file in `plans/active/` with the 7-field frontmatter template
-3. Create `STATUS.md` with the In flight / Up next / Backlog structure
-4. Add two lines to your `CLAUDE.md` (or equivalent) pointing to STATUS.md
-5. Open `roadmap.html` in a browser
+Two commands and a quick prompt.
+
+```bash
+curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+plans-init /path/to/your/project
+```
+
+The first command installs the system once on your machine. The second bootstraps `plans/` in your project, adds it to `.git/info/exclude`, and detects your AI instruction file (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.windsurfrules`). It asks before appending the planning section, so nothing happens to your file without consent.
+
+After that:
+
+1. Replace `plans/active/EXAMPLE_PLAN.md` with your real first plan
+2. Add a row to `plans/STATUS.md`
+3. Open `roadmap.html` in a browser (`python -m http.server 8080`)
+
+When the system itself improves (new dashboard features, fixed bugs), run `plans-update` to pull updates in. It only touches system files like `roadmap.html`, never your `STATUS.md`, plans.json, or plan files. Backups go to `.bak` before any overwrite.
+
+If you'd rather see what's happening underneath: it's just `mkdir`, a copy of the template directory, an entry in `.git/info/exclude`, and an append to your AI instruction file. Nothing magical.
 
 The full templates, reference spec, and the roadmap dashboard are in the repo. The `/status-sync` skill is in progress.
 

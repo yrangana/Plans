@@ -412,3 +412,79 @@ plans/roadmap.html reads plans.json directly, no regeneration needed
 | `roadmap.html` | Identical | Identical | Identical |
 
 To port `/status-sync` to Antigravity: create `.agents/skills/status-sync/SKILL.md` with the same instructions. The logic is unchanged.
+
+---
+
+## Installation and Updates
+
+The plans system ships as a small set of bash scripts. Install once on your machine, then bootstrap and update individual projects.
+
+### One-liner installer
+
+```bash
+curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+```
+
+What it does:
+
+1. Clones the plans repo to `~/.local/share/plans` (override with `PLANS_DIR=...`).
+2. Symlinks `plans-init` and `plans-update` into `~/.local/bin/` (override with `PLANS_BIN=...`).
+3. Prints a PATH reminder if `~/.local/bin` is not on your `PATH`.
+
+Re-run any time to update the plans system itself. If `~/.local/share/plans` already exists, the installer pulls latest instead of re-cloning.
+
+Custom repo URL: `PLANS_REPO=https://github.com/your-fork/plans.git curl -sSL ... | bash`.
+
+### plans-init: bootstrap a project
+
+```bash
+plans-init                    # set up plans/ in the current directory
+plans-init /path/to/project   # set up plans/ in the given directory
+plans-init --no-snippet       # skip auto-append to AI instruction file
+plans-init -h                 # show usage
+```
+
+What it does:
+
+1. Copies `template/plans/` into the target directory.
+2. Adds `plans/` to `.git/info/exclude` (local git ignore, never committed).
+3. Detects AI instruction files in this order: `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.windsurfrules`. For each detected file, prompts before appending the planning section from `template/CLAUDE.md.snippet`.
+4. Idempotent: if a detected file already contains the snippet's marker heading (`## Project Status & Plan Management`), it skips that file.
+5. Aborts if `plans/` already exists in the target. Use `plans-update` to refresh existing installations.
+
+### plans-update: refresh system files in an existing project
+
+```bash
+plans-update                          # update plans/ in the current directory
+plans-update /path/to/project         # update plans/ in the given directory
+plans-update --no-pull                # skip the auto-pull (offline or local edits)
+plans-update -h                       # show usage
+```
+
+What it does:
+
+1. By default, runs `git pull` on the plans repo at `~/.local/share/plans` to fetch the latest system files.
+2. Diffs system files against the project's copies. Shows previews of changes.
+3. Prompts before applying. Backs up each modified file as `<file>.bak` before overwriting.
+4. Exits cleanly if nothing changed.
+
+### System files vs user data
+
+`plans-update` enforces a clear boundary so user data is never lost.
+
+| Category | Files | Behavior |
+|---|---|---|
+| System files | `plans/roadmap.html` | Replaced on update. Backup written to `.bak`. |
+| User data | `plans/STATUS.md`, `plans.json`, `active/`, `shipped/`, `README.md`, anything else | Never touched by `plans-update`. |
+
+If you customize a system file (e.g., your own colour scheme in `roadmap.html`), expect updates to overwrite it. Restore from `<file>.bak` if needed, or run with `--no-pull` to inspect changes before they're fetched.
+
+### Versioning
+
+The plans repo loosely follows [semantic versioning](https://semver.org/). See [CHANGELOG.md](../CHANGELOG.md) for what's changed between versions.
+
+- **Major:** breaking changes to the plan file format, frontmatter spec, or directory layout (adopters must migrate).
+- **Minor:** new features in `roadmap.html`, scripts, or docs (adopters can update or skip).
+- **Patch:** bug fixes and clarifications.
+
+Until v1.0, the format is considered fluid and breaking changes may occur.

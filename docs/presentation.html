@@ -601,22 +601,22 @@ last_updated: 2026-05-04
     <!-- 14. Quick Start -->
     <section class="deck">
       <span class="eyebrow">Quick start</span>
-      <h2>One command, then your first plan.</h2>
-      <pre style="margin-top:14px"><code>git clone https://github.com/yrangana/Plans.git ~/.local/share/plans
-~/.local/share/plans/scripts/init.sh /path/to/your/project</code></pre>
+      <h2>Two commands. The rest is your first plan.</h2>
+      <pre style="margin-top:14px"><code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+plans-init /path/to/your/project</code></pre>
       <div style="margin-top:14px">
         <div class="step-row">
           <div class="step-num">1</div>
           <div class="step-body">
-            <div class="step-title">Bootstrap</div>
-            <div class="step-note">The init script copies <code>plans/</code> into your project and adds it to <code>.git/info/exclude</code>.</div>
+            <div class="step-title">Install</div>
+            <div class="step-note">Clones to <code>~/.local/share/plans</code> and symlinks <code>plans-init</code> and <code>plans-update</code> to <code>~/.local/bin/</code>. Re-run any time to upgrade.</div>
           </div>
         </div>
         <div class="step-row">
           <div class="step-num">2</div>
           <div class="step-body">
-            <div class="step-title">Tell your AI assistant</div>
-            <div class="step-note">Append <code>template/CLAUDE.md.snippet</code> to your <code>CLAUDE.md</code> (or <code>AGENTS.md</code>, <code>.cursorrules</code>).</div>
+            <div class="step-title">Bootstrap your project</div>
+            <div class="step-note"><code>plans-init</code> copies the template into <code>plans/</code>, adds it to <code>.git/info/exclude</code>, and offers to append the planning section to your AI instruction file (<code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>.cursorrules</code>, <code>.windsurfrules</code>).</div>
           </div>
         </div>
         <div class="step-row">
@@ -630,7 +630,14 @@ last_updated: 2026-05-04
           <div class="step-num">4</div>
           <div class="step-body">
             <div class="step-title">Open the dashboard</div>
-            <div class="step-note"><code>python -m http.server 8080</code> then visit <code>http://localhost:8080/plans/roadmap.html</code>.</div>
+            <div class="step-note"><code>python -m http.server 8080</code>, then visit <code>http://localhost:8080/plans/roadmap.html</code>.</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Stay current</div>
+            <div class="step-note"><code>plans-update</code> pulls dashboard improvements without touching your data. Backups go to <code>.bak</code>.</div>
           </div>
         </div>
       </div>
