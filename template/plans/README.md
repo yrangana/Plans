@@ -1,6 +1,8 @@
-# Nahra Planning System
+# Planning System
 
-A lightweight, Claude-native way to track what we're building, why, and where things stand — without a project management tool.
+A lightweight, AI-native way to track what we're building, why, and where things stand. No project management tool required.
+
+> This is the onboarding doc inside your project's `plans/` directory. For the full guide and templates, see the [plans repo](https://github.com/yrangana/plans).
 
 ---
 
