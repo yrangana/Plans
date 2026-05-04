@@ -1,4 +1,4 @@
-# plans
+# Plans
 
 > A lightweight intent layer for AI-assisted projects. Markdown + JSON, works with Claude Code, Antigravity, Cursor, or any AI coding assistant.
 
