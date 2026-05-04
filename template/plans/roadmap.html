@@ -253,19 +253,19 @@
     <div class="stats">
       <div class="stat-card">
         <div class="label">In Flight</div>
-        <div class="value yellow" id="stat-inflight">—</div>
+        <div class="value yellow" id="stat-inflight">...</div>
       </div>
       <div class="stat-card">
         <div class="label">Up Next</div>
-        <div class="value blue" id="stat-upnext">—</div>
+        <div class="value blue" id="stat-upnext">...</div>
       </div>
       <div class="stat-card">
         <div class="label">Phases Shipped</div>
-        <div class="value green" id="stat-phases">—</div>
+        <div class="value green" id="stat-phases">...</div>
       </div>
       <div class="stat-card">
         <div class="label">Total Plans</div>
-        <div class="value gray" id="stat-total">—</div>
+        <div class="value gray" id="stat-total">...</div>
       </div>
     </div>
 
@@ -507,7 +507,7 @@
     container.innerHTML = plans.map(p => {
       const progress = calcProgress(p.phase_summary);
       const phases = (p.phase_summary || []).map(ph =>
-        `<span class="phase-chip ${ph.status}">${STATUS_EMOJI[ph.status] || ''} Phase ${ph.phase} — ${ph.name}</span>`
+        `<span class="phase-chip ${ph.status}">${STATUS_EMOJI[ph.status] || ''} Phase ${ph.phase}: ${ph.name}</span>`
       ).join('');
 
       return `
@@ -516,7 +516,7 @@
             <div>
               <div class="plan-title">${p.title}</div>
               <div class="plan-meta">
-                ${p.file} &nbsp;·&nbsp; ${p.priority || '—'} &nbsp;·&nbsp; ${p.type} &nbsp;·&nbsp; Updated ${p.last_updated}
+                ${p.file} &nbsp;·&nbsp; ${p.priority || '?'} &nbsp;·&nbsp; ${p.type} &nbsp;·&nbsp; Updated ${p.last_updated}
               </div>
             </div>
             <span class="badge ${badgeClass(p.status)}">${p.overall || p.status}</span>
@@ -574,7 +574,7 @@
         const match = text.match(/^#\s+(.+?)\s*[—\-]\s*Project Status/m);
         if (match && match[1]) {
           const project = match[1].trim();
-          const title = `${project} — Roadmap`;
+          const title = `${project} - Roadmap`;
           document.title = title;
           document.getElementById('header-title').textContent = title;
         }

@@ -2,12 +2,27 @@
 # init.sh - bootstrap the plans/ directory in a target project
 #
 # Usage:
-#   ./init.sh                    # set up plans/ in the current directory
-#   ./init.sh /path/to/project   # set up plans/ in the given directory
+#   plans-init                           # set up plans/ in the current directory
+#   plans-init /path/to/project          # set up plans/ in the given directory
+#   plans-init --no-snippet              # skip auto-append to AI instruction file
 
 set -e
 
-TARGET_DIR="${1:-$(pwd)}"
+# Parse args
+NO_SNIPPET=0
+TARGET_DIR=""
+for arg in "$@"; do
+  case "$arg" in
+    --no-snippet) NO_SNIPPET=1 ;;
+    -h|--help)
+      sed -n '2,7p' "$0" | sed 's/^# \{0,1\}//'
+      exit 0
+      ;;
+    *) TARGET_DIR="$arg" ;;
+  esac
+done
+TARGET_DIR="${TARGET_DIR:-$(pwd)}"
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 if [ ! -d "$SCRIPT_DIR/../template/plans" ]; then
@@ -33,13 +48,58 @@ if [ -d "$TARGET_DIR/.git" ]; then
   echo "OK: plans/ added to .git/info/exclude"
 fi
 
-echo ""
 echo "OK: scaffolded $TARGET_DIR/plans/"
+echo ""
+
+# Detect AI instruction files and offer to append the snippet
+SNIPPET_MARKER="## Project Status & Plan Management"
+SNIPPET_FILE="$SOURCE/CLAUDE.md.snippet"
+AI_CANDIDATES=("CLAUDE.md" "AGENTS.md" ".cursorrules" ".windsurfrules")
+
+append_snippet_to() {
+  local target="$1"
+  # Strip the leading HTML comment from the snippet, append from the first ## heading onward
+  echo "" >> "$target"
+  awk 'found || /^## /{found=1; print}' "$SNIPPET_FILE" >> "$target"
+  echo "OK: appended plans section to $target"
+}
+
+if [ "$NO_SNIPPET" = "1" ]; then
+  echo "Skipping AI instruction file detection (--no-snippet)."
+else
+  FOUND_FILES=()
+  for f in "${AI_CANDIDATES[@]}"; do
+    if [ -f "$TARGET_DIR/$f" ]; then
+      FOUND_FILES+=("$f")
+    fi
+  done
+
+  if [ ${#FOUND_FILES[@]} -eq 0 ]; then
+    echo "No AI instruction file detected ($(IFS=', '; echo "${AI_CANDIDATES[*]}"))."
+    echo "When you create one, manually append the snippet:"
+    echo "  cat $SNIPPET_FILE >> $TARGET_DIR/CLAUDE.md"
+  else
+    for f in "${FOUND_FILES[@]}"; do
+      target="$TARGET_DIR/$f"
+      if grep -q "$SNIPPET_MARKER" "$target" 2>/dev/null; then
+        echo "OK: $f already has the plans section, skipping."
+        continue
+      fi
+      echo "Detected $f."
+      read -p "Append plans section to $f? (y/n) " confirm
+      if [ "$confirm" = "y" ]; then
+        append_snippet_to "$target"
+      else
+        echo "Skipped $f."
+      fi
+    done
+  fi
+fi
+
 echo ""
 echo "Next steps:"
 echo "  1. Read $TARGET_DIR/plans/README.md"
-echo "  2. Append $SOURCE/CLAUDE.md.snippet to your CLAUDE.md (or AGENTS.md / .cursorrules)"
-echo "  3. Replace plans/active/EXAMPLE_PLAN.md with your real first plan"
-echo "  4. Open the dashboard:"
+echo "  2. Replace plans/active/EXAMPLE_PLAN.md with your real first plan"
+echo "  3. Open the dashboard:"
 echo "     cd $TARGET_DIR && python -m http.server 8080"
 echo "     # then visit http://localhost:8080/plans/roadmap.html"

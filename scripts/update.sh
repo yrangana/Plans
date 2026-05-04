@@ -2,31 +2,51 @@
 # update.sh - update system files in an existing plans/ installation
 #
 # Usage:
-#   ./update.sh                    # update plans/ in current directory
-#   ./update.sh /path/to/project   # update plans/ in given directory
+#   plans-update                           # update plans/ in current directory
+#   plans-update /path/to/project          # update plans/ in given directory
+#   plans-update --no-pull /path/to/proj   # skip git pull (use local source as-is)
 #
 # What it updates (system files, overwrite-safe):
-#   plans/roadmap.html             # the interactive dashboard
+#   plans/roadmap.html
 #
 # What it preserves (user-owned, never touched):
-#   plans/STATUS.md
-#   plans/plans.json
-#   plans/active/
-#   plans/shipped/
-#   plans/README.md                # may contain user customizations
-#   anything else you've added
-#
-# Tip: run `git pull` in the plans repo first to get the latest source.
+#   plans/STATUS.md, plans.json, active/, shipped/, README.md, anything else
 
 set -e
 
-TARGET_DIR="${1:-$(pwd)}"
+# Parse args
+PULL=1
+TARGET_DIR=""
+for arg in "$@"; do
+  case "$arg" in
+    --no-pull) PULL=0 ;;
+    -h|--help)
+      sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'
+      exit 0
+      ;;
+    *) TARGET_DIR="$arg" ;;
+  esac
+done
+TARGET_DIR="${TARGET_DIR:-$(pwd)}"
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SOURCE="$(cd "$SCRIPT_DIR/../template" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+SOURCE="$REPO_DIR/template"
+
+# Auto-pull from origin if this is a git clone (and not --no-pull)
+if [ "$PULL" = "1" ] && [ -d "$REPO_DIR/.git" ]; then
+  echo "Pulling latest from plans repo..."
+  if (cd "$REPO_DIR" && git pull --quiet 2>/dev/null); then
+    echo "OK: plans repo is up to date."
+  else
+    echo "Warning: git pull failed (offline, dirty tree, or no remote). Using local source."
+  fi
+  echo ""
+fi
 
 if [ ! -d "$TARGET_DIR/plans" ]; then
   echo "Error: $TARGET_DIR/plans does not exist."
-  echo "Run init.sh first to set up plans/ in this project."
+  echo "Run plans-init first to set up plans/ in this project."
   exit 1
 fi
 
@@ -64,7 +84,7 @@ for f in "${UPDATE_FILES[@]}"; do
     echo "= $f (already up to date)"
   else
     echo "~ $f (changes available, preview:)"
-    diff -u "$dest_file" "$src_file" | head -40 | sed 's/^/    /'
+    diff -u "$dest_file" "$src_file" | head -40 | sed 's/^/    /' || true
     echo ""
     HAS_CHANGES=1
   fi
@@ -77,7 +97,7 @@ if [ "$HAS_CHANGES" = "0" ]; then
 fi
 
 echo ""
-echo "Note: if you customized roadmap.html (e.g., page title, colors), those changes will be lost."
+echo "Note: if you customized roadmap.html (e.g., colors), those changes will be lost."
 echo "      A backup will be saved as <filename>.bak so you can restore."
 echo ""
 read -p "Apply updates? (y/n) " confirm

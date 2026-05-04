@@ -35,20 +35,29 @@ Full scope and audience details in [docs/reference.md](docs/reference.md).
 
 ## Quick Start
 
-### 1. Drop the template into your project
+### 1. Install the plans CLI
+
+One-liner (clones the repo to `~/.local/share/plans` and symlinks `plans-init` and `plans-update` to `~/.local/bin`):
 
 ```bash
-git clone https://github.com/yrangana/Plans.git ~/.local/share/plans
-~/.local/share/plans/scripts/init.sh /path/to/your/project
+curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
 ```
 
-Or copy the `template/plans/` directory manually.
+Re-run any time to update the plans system itself.
 
-### 2. Tell your AI assistant about it
+### 2. Bootstrap plans in your project
+
+```bash
+plans-init /path/to/your/project
+```
+
+Or copy the `template/plans/` directory manually if you prefer.
+
+### 3. Tell your AI assistant about it
 
 Append the contents of [`template/CLAUDE.md.snippet`](template/CLAUDE.md.snippet) to your project's `CLAUDE.md` (or `AGENTS.md`, `.cursorrules`, etc.).
 
-### 3. Open the dashboard
+### 4. Open the dashboard
 
 ```bash
 cd /path/to/your/project
@@ -56,9 +65,35 @@ python -m http.server 8080
 # open http://localhost:8080/plans/roadmap.html
 ```
 
-### 4. Edit your first plan
+### 5. Edit your first plan
 
 Open `plans/active/EXAMPLE_PLAN.md`, replace it with your real first plan, and add a row to `plans/STATUS.md`.
+
+---
+
+## Updating
+
+The plans CLI updates itself and your project's system files separately.
+
+### Update the plans CLI
+
+Either re-run the installer, or pull the repo manually:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+```
+
+### Update an existing project's plans/
+
+```bash
+plans-update /path/to/your/project
+```
+
+This pulls the latest plans repo, shows a diff of system files, and asks before overwriting. User data (`STATUS.md`, `plans.json`, `active/`, `shipped/`) is never touched. Backups go to `<file>.bak`.
+
+To skip the auto-pull (offline or when you have local edits in the plans repo): `plans-update --no-pull /path/to/your/project`.
+
+See [CHANGELOG.md](CHANGELOG.md) for what's changed between versions.
 
 ---
 
