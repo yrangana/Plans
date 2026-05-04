@@ -1,0 +1,55 @@
+name: Test init.sh
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run init.sh against a fresh repo
+        run: |
+          set -e
+          TARGET=$(mktemp -d)
+          cd "$TARGET"
+          git init -q
+          bash "$GITHUB_WORKSPACE/scripts/init.sh"
+
+          echo "--- verifying scaffold contents ---"
+          test -f plans/README.md
+          test -f plans/STATUS.md
+          test -f plans/plans.json
+          test -f plans/roadmap.html
+          test -d plans/active
+          test -d plans/shipped
+          test -f plans/active/EXAMPLE_PLAN.md
+          echo "OK: all expected files present"
+
+          echo "--- verifying git exclude entry ---"
+          grep -q "^plans/$" .git/info/exclude
+          echo "OK: plans/ excluded from git"
+
+          echo "--- verifying plans.json is valid JSON ---"
+          python3 -m json.tool plans/plans.json > /dev/null
+          echo "OK: plans.json is valid"
+
+      - name: Refuse to overwrite existing plans/
+        run: |
+          set -e
+          TARGET=$(mktemp -d)
+          cd "$TARGET"
+          git init -q
+          bash "$GITHUB_WORKSPACE/scripts/init.sh"
+
+          # second run should fail with a non-zero exit
+          if bash "$GITHUB_WORKSPACE/scripts/init.sh" 2>/dev/null; then
+            echo "FAIL: init.sh should have aborted on existing plans/ dir"
+            exit 1
+          fi
+          echo "OK: init.sh aborts when plans/ already exists"
