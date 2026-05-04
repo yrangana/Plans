@@ -4,95 +4,232 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spec-Driven Planning for AI-Assisted Development</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
+      --bg: #f8f9fb;
+      --bg-card: #ffffff;
+      --ink: #1a1a2e;
+      --ink-soft: #475569;
+      --ink-mute: #8892b0;
+      --line: #e2e8f0;
+      --line-soft: #f1f5f9;
       --indigo: #6366f1;
-      --indigo-light: #ede9fe;
+      --indigo-soft: #eef2ff;
+      --indigo-deep: #4338ca;
       --green: #22c55e;
-      --green-light: #dcfce7;
+      --green-soft: #dcfce7;
+      --green-deep: #166534;
       --amber: #f59e0b;
-      --slate: #475569;
-      --slate-light: #f8fafc;
+      --amber-soft: #fef3c7;
+      --amber-deep: #92400e;
       --red: #ef4444;
+      --red-soft: #fee2e2;
+      --red-deep: #991b1b;
     }
 
-    .reveal { font-family: 'Inter', -apple-system, sans-serif; }
-    .reveal h1, .reveal h2, .reveal h3 { color: #1a1a2e; font-weight: 700; }
-    .reveal h1 { font-size: 2em; }
-    .reveal h2 { font-size: 1.4em; color: var(--indigo); border-bottom: 2px solid var(--indigo-light); padding-bottom: 8px; }
-    .reveal pre { box-shadow: none; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.65em; }
-    .reveal section { text-align: left; }
-    .reveal p { font-size: 0.85em; }
+    html, body { background: var(--bg); }
+    .reveal {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 28px;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+    }
+    .reveal .slides { text-align: left; }
+    .reveal .slides > section, .reveal .slides > section > section { padding: 0; }
 
-    .title-slide { text-align: center !important; }
-    .title-slide h1 { color: var(--indigo); font-size: 2em; line-height: 1.2; }
-    .title-slide .subtitle { color: var(--slate); font-size: 0.85em; margin-top: 8px; }
-
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
-    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-
-    .card {
-      background: var(--slate-light);
-      border: 1px solid #e2e8f0;
+    .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+      color: var(--ink);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin: 0 0 18px;
+      text-transform: none;
+    }
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.4em; }
+    .reveal h3 { font-size: 1.0em; color: var(--indigo); }
+    .reveal p, .reveal li { font-size: 0.66em; line-height: 1.55; color: var(--ink-soft); }
+    .reveal strong { color: var(--ink); font-weight: 700; }
+    .reveal code, .reveal pre {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.8em;
+    }
+    .reveal :not(pre) > code {
+      background: var(--line-soft);
+      color: var(--ink);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .reveal pre {
+      background: var(--ink);
+      color: #e0e6f5;
+      box-shadow: none;
+      border: none;
       border-radius: 10px;
-      padding: 14px 18px;
-      font-size: 0.65em;
+      padding: 18px 22px;
+      margin: 10px 0;
+      width: 100%;
+      box-sizing: border-box;
     }
-    .card h4 { margin: 0 0 8px; color: var(--indigo); font-size: 1.15em; }
-    .card p, .card li { color: var(--slate); margin: 4px 0; line-height: 1.5; }
-
-    .card-green { border-color: #86efac; background: var(--green-light); }
-    .card-green h4 { color: #15803d; }
-
-    .highlight {
-      background: var(--indigo-light);
-      border-left: 4px solid var(--indigo);
-      border-radius: 0 8px 8px 0;
-      padding: 12px 18px;
-      font-size: 0.75em;
-      color: #3730a3;
-      margin: 12px 0;
+    .reveal pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      font-size: 0.62em;
       line-height: 1.6;
+      display: block;
+      white-space: pre;
     }
 
+    .reveal a { color: var(--indigo); text-decoration: none; border-bottom: 1px solid var(--indigo-soft); }
+    .reveal a:hover { color: var(--indigo-deep); border-bottom-color: var(--indigo); }
+
+    /* Slide layout primitives */
+    .deck { padding: 12px 4px 4px; }
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.5em;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--indigo-soft);
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+    .lede { font-size: 0.78em; color: var(--ink-soft); max-width: 28em; margin-bottom: 14px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; align-items: stretch; }
+
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .panel h3, .panel h4 { margin-top: 0; }
+    .panel.solid-ink { background: var(--ink); color: #e0e6f5; border-color: var(--ink); }
+    .panel.solid-ink h3, .panel.solid-ink h4, .panel.solid-ink p, .panel.solid-ink li, .panel.solid-ink strong { color: #e0e6f5; }
+    .panel.tinted-indigo { background: var(--indigo-soft); border-color: #c7d2fe; }
+    .panel.tinted-green  { background: var(--green-soft);  border-color: #86efac; }
+    .panel.tinted-amber  { background: var(--amber-soft);  border-color: #fcd34d; }
+
+    .label-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
     .pill {
       display: inline-block;
-      padding: 4px 14px;
-      border-radius: 20px;
-      font-size: 0.6em;
-      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.5em;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      border: 1px solid transparent;
     }
-    .pill-indigo { background: var(--indigo-light); color: var(--indigo); }
-    .pill-green  { background: var(--green-light); color: #15803d; }
-    .pill-amber  { background: #fef3c7; color: #92400e; }
+    .pill.indigo { background: var(--indigo-soft); color: var(--indigo-deep); border-color: #c7d2fe; }
+    .pill.green  { background: var(--green-soft);  color: var(--green-deep);  border-color: #86efac; }
+    .pill.amber  { background: var(--amber-soft);  color: var(--amber-deep);  border-color: #fcd34d; }
+    .pill.red    { background: var(--red-soft);    color: var(--red-deep);    border-color: #fca5a5; }
+    .pill.outline { background: white; color: var(--ink-soft); border-color: var(--line); }
 
-    .flow-step {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 8px 0;
+    .reveal table { font-size: 0.62em; border-collapse: collapse; width: 100%; margin-top: 10px; }
+    .reveal th { background: var(--line-soft); color: var(--ink); font-weight: 700; text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--line); }
+    .reveal td { padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--ink-soft); }
+    .reveal tr:last-child td { border-bottom: none; }
+
+    .clean-list { list-style: none; padding: 0; margin: 6px 0 0; }
+    .clean-list li {
+      position: relative;
+      padding: 8px 0 8px 26px;
+      border-bottom: 1px solid var(--line-soft);
+      font-size: 0.66em;
+    }
+    .clean-list li:last-child { border-bottom: none; }
+    .clean-list li::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 16px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--indigo);
+    }
+    .clean-list.muted li::before { background: var(--ink-mute); }
+    .clean-list.green li::before { background: var(--green); }
+    .clean-list.red li::before { background: var(--red); }
+
+    .step-row { display: flex; gap: 14px; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+    .step-row:last-child { border-bottom: none; }
+    .step-num {
+      width: 28px; height: 28px; flex: 0 0 28px;
+      border-radius: 8px;
+      background: var(--indigo);
+      color: white;
+      font-weight: 700;
       font-size: 0.7em;
-      border-bottom: 1px dashed #e2e8f0;
+      display: flex; align-items: center; justify-content: center;
+      letter-spacing: 0;
     }
-    .flow-step:last-child { border-bottom: none; }
-    .flow-icon { font-size: 1.3em; flex-shrink: 0; width: 24px; text-align: center; }
-    .flow-label { color: #1a1a2e; }
-    .flow-note { color: var(--slate); font-size: 0.9em; }
+    .step-body { flex: 1; }
+    .step-title { font-weight: 700; color: var(--ink); font-size: 0.72em; margin-bottom: 2px; }
+    .step-note  { font-size: 0.62em; color: var(--ink-soft); line-height: 1.5; }
 
-    table { font-size: 0.62em; width: 100%; border-collapse: collapse; }
-    th { background: var(--indigo); color: white; padding: 8px 12px; text-align: left; font-weight: 600; }
-    td { padding: 7px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
-    tr:nth-child(even) td { background: var(--slate-light); }
+    .quote {
+      font-size: 0.95em;
+      font-weight: 600;
+      color: var(--ink);
+      border-left: 4px solid var(--indigo);
+      background: var(--indigo-soft);
+      padding: 18px 22px;
+      border-radius: 0 12px 12px 0;
+      line-height: 1.45;
+    }
+    .quote.compact { font-size: 0.78em; padding: 14px 18px; }
 
-    .emoji-list { list-style: none; padding: 0; margin: 0; font-size: 0.72em; }
-    .emoji-list li { padding: 5px 0; line-height: 1.5; }
+    /* Title slide */
+    .title-slide { text-align: center !important; padding: 40px 0 !important; }
+    .title-slide .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      margin-bottom: 28px;
+      font-size: 0.55em;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--indigo);
+    }
+    .title-slide .brand-mark .dot {
+      width: 10px; height: 10px; border-radius: 999px; background: var(--indigo);
+      box-shadow: 0 0 0 4px var(--indigo-soft);
+    }
+    .title-slide h1 { font-size: 2.2em; line-height: 1.05; margin-bottom: 18px; max-width: 14em; margin-left: auto; margin-right: auto; }
+    .title-slide .subtitle { font-size: 0.78em; color: var(--ink-soft); max-width: 26em; margin: 0 auto; }
+    .title-slide .platforms { margin-top: 36px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
-    .check { color: var(--green); font-weight: 700; }
-    .cross { color: var(--red); font-weight: 700; }
+    .closing-grid { margin: 28px auto 0; max-width: 640px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
+    .closing-grid .panel { padding: 14px 16px; }
+    .closing-grid .panel h4 { font-size: 0.72em; margin-bottom: 4px; }
+    .closing-grid .panel p { font-size: 0.55em; margin: 0; color: var(--ink-mute); }
 
-    code { font-size: 0.85em !important; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; }
+    .footnote { font-size: 0.55em; color: var(--ink-mute); margin-top: 14px; }
+
+    /* Reveal control overrides */
+    .reveal .controls { color: var(--indigo); }
+    .reveal .progress { color: var(--indigo); height: 4px; }
+    .reveal .slide-number { background: rgba(99, 102, 241, 0.1); color: var(--indigo-deep); padding: 4px 10px; border-radius: 999px; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -100,165 +237,157 @@
   <div class="slides">
 
     <!-- 1. Title -->
-    <section class="title-slide">
-      <div style="font-size:3em;margin-bottom:16px">📋</div>
-      <h1>Spec-Driven Planning<br>for AI-Assisted Development</h1>
-      <p class="subtitle">A lightweight system to keep your project's intent visible  -  to you, your team, and your AI assistant.</p>
-      <div style="margin-top:28px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <span class="pill pill-indigo">Claude Code</span>
-        <span class="pill pill-amber">Antigravity</span>
-        <span class="pill pill-green">Any AI Assistant</span>
+    <section class="title-slide deck">
+      <div class="brand-mark"><span class="dot"></span> Plans</div>
+      <h1>Spec-driven planning for AI-assisted development</h1>
+      <p class="subtitle">A lightweight intent layer that keeps your project visible to you, your team, and your AI assistant. Markdown and JSON, no PM tool required.</p>
+      <div class="platforms">
+        <span class="pill indigo">Claude Code</span>
+        <span class="pill amber">Antigravity</span>
+        <span class="pill outline">Cursor</span>
+        <span class="pill green">Any AI assistant</span>
       </div>
     </section>
 
-    <!-- 2. The Problem -->
-    <section>
-      <h2>The Problem</h2>
-      <div class="two-col">
+    <!-- 2. Problem -->
+    <section class="deck">
+      <span class="eyebrow">Problem</span>
+      <h2>You ship fast. You lose track faster.</h2>
+      <div class="grid-2" style="margin-top:18px">
         <div>
-          <p style="color:var(--slate);font-size:0.75em;margin-bottom:12px">You're building fast with AI. A few weeks in:</p>
-          <ul class="emoji-list">
-            <li>😩 Dozens of <code>*_PLAN.md</code> files at the root. Active? Stale? Shipped?</li>
-            <li>❓ No single place to answer "what's in flight?"</li>
-            <li>⚡ Plans that contradict each other</li>
-            <li>🔄 Re-explaining context at the start of every session</li>
-            <li>⏱️ 15 minutes of context-setting before real work</li>
+          <p class="lede">A few weeks of AI-assisted velocity and the project becomes opaque to its own author.</p>
+          <ul class="clean-list red">
+            <li>Dozens of <code>*_PLAN.md</code> files at the repo root. Active, stale, shipped, all mixed.</li>
+            <li>No single answer to "what's in flight right now?"</li>
+            <li>Plans that quietly contradict each other.</li>
+            <li>Every new session starts with 15 minutes of re-explaining.</li>
           </ul>
         </div>
-        <div>
-          <div class="card">
-            <h4>Typical repo root</h4>
-            <p>📄 FEATURE_A_PLAN.md</p>
-            <p>📄 FEATURE_B_PLAN.md <em style="color:#94a3b8">(stale?)</em></p>
-            <p>📄 FEATURE_C_PLAN.md <em style="color:#94a3b8">(shipped?)</em></p>
-            <p>📄 OLD_IDEA_PLAN.md <em style="color:#94a3b8">(abandoned?)</em></p>
-            <p>📄 NEW_PLAN.md <em style="color:#94a3b8">(conflicts?)</em></p>
-            <p style="margin-top:10px;color:var(--red);font-weight:600">Nobody knows.</p>
-          </div>
+        <div class="panel">
+          <div class="label-row"><span class="pill outline">repo root</span></div>
+          <p style="font-family:'JetBrains Mono', monospace; font-size:0.6em; line-height:1.9; color:var(--ink-soft); margin:0">
+            FEATURE_A_PLAN.md<br>
+            FEATURE_B_PLAN.md  <span style="color:var(--ink-mute)">(stale?)</span><br>
+            FEATURE_C_PLAN.md  <span style="color:var(--ink-mute)">(shipped?)</span><br>
+            OLD_IDEA_PLAN.md   <span style="color:var(--ink-mute)">(abandoned?)</span><br>
+            NEW_PLAN.md        <span style="color:var(--ink-mute)">(conflicts?)</span>
+          </p>
+          <p style="margin-top:14px; color:var(--red); font-weight:700; font-size:0.65em">Nobody knows.</p>
         </div>
       </div>
     </section>
 
-    <!-- 3. The Insight -->
-    <section>
-      <h2>The Insight</h2>
-      <div class="highlight">
-        The problem isn't the AI. The problem is that <strong>project intent has no structure</strong>.<br>
-        Without structure, nothing (human or AI) can reason about where things stand.
+    <!-- 3. Insight -->
+    <section class="deck">
+      <span class="eyebrow">Insight</span>
+      <h2>The problem isn't the AI. It's that intent has no structure.</h2>
+      <div class="quote" style="margin-top:18px">
+        Without structure, no one can reason about where a project stands. Not you, not your team, and not your AI assistant.
       </div>
-      <div class="three-col" style="margin-top:20px">
-        <div class="card">
-          <h4>📋 Plans</h4>
-          <p>Intent layer: what we're building, why, and what phase it's in</p>
+      <div class="grid-3" style="margin-top:22px">
+        <div class="panel">
+          <h4>Plans</h4>
+          <p>Intent layer. What you're building, why, and what phase it's in.</p>
         </div>
-        <div class="card">
-          <h4>🔀 Git log</h4>
-          <p>Ground truth: what actually shipped and when</p>
+        <div class="panel">
+          <h4>Git log</h4>
+          <p>Ground truth. What actually shipped, and when.</p>
         </div>
-        <div class="card card-green">
-          <h4>⚡ /status-sync</h4>
-          <p>Reconciles the two weekly, catches drift automatically</p>
+        <div class="panel tinted-green">
+          <h4>/status-sync</h4>
+          <p>Reconciles plans against git log on a schedule. Catches drift.</p>
         </div>
       </div>
-      <div class="highlight" style="margin-top:16px">
-        Primary audience: <strong>you</strong>. You open STATUS.md and know where you stand. Your AI assistant benefits too. Structured files beat scattered docs every time.
-      </div>
+      <p class="footnote">Primary audience: you. Your AI assistant benefits as a side effect of structured input.</p>
     </section>
 
     <!-- 4. Scope -->
-    <section>
-      <h2>What This Is, What It Isn't</h2>
-      <div class="two-col" style="margin-top:12px">
-        <div>
-          <p style="font-size:0.7em;font-weight:700;color:#15803d;margin-bottom:8px">✅ What this is</p>
-          <ul class="emoji-list" style="font-size:0.65em">
-            <li>Intent layer for projects with multiple features in flight</li>
-            <li>Plain markdown + JSON in your repo (git-excluded)</li>
-            <li>Persistent context across plans, for yourself, over time</li>
-            <li>Reading order: STATUS.md first, then plan files</li>
+    <section class="deck">
+      <span class="eyebrow">Scope</span>
+      <h2>What this is, and what it isn't.</h2>
+      <div class="grid-2" style="margin-top:18px">
+        <div class="panel tinted-green">
+          <div class="label-row"><span class="pill green">What it is</span></div>
+          <ul class="clean-list green">
+            <li>An intent layer for projects with multiple features in flight.</li>
+            <li>Plain markdown and JSON in your repo, git-excluded by default.</li>
+            <li>Persistent context across plans, for yourself, over time.</li>
+            <li>Reading order: STATUS.md first, then plan files.</li>
           </ul>
         </div>
-        <div>
-          <p style="font-size:0.7em;font-weight:700;color:var(--red);margin-bottom:8px">❌ What it is not</p>
-          <ul class="emoji-list" style="font-size:0.65em">
-            <li>Not a PM tool (not Linear, Jira, Asana)</li>
-            <li>Not a task tracker (no individual TODOs)</li>
-            <li>Not a team collaboration system</li>
-            <li>Not a replacement for design docs / RFCs</li>
-            <li>Not git-tracked or auditable</li>
+        <div class="panel">
+          <div class="label-row"><span class="pill red">What it isn't</span></div>
+          <ul class="clean-list red">
+            <li>Not a PM tool. (Linear, Jira, Asana stay where they are.)</li>
+            <li>Not a task tracker. Operates at plan and phase level.</li>
+            <li>Not a team collaboration system.</li>
+            <li>Not a replacement for design docs, RFCs, or ADRs.</li>
+            <li>Not git-tracked or auditable.</li>
           </ul>
         </div>
-      </div>
-      <div style="margin-top:18px">
-        <p style="font-size:0.7em;font-weight:700;color:var(--indigo);margin-bottom:8px">🎁 What you get</p>
-        <ul class="emoji-list" style="font-size:0.65em;display:grid;grid-template-columns:1fr 1fr;gap:0 24px">
-          <li>Single source of truth for "what's in flight"</li>
-          <li>Persistent context for AI sessions</li>
-          <li>Shareable visual roadmap for stakeholders</li>
-          <li>Drift detection between plans and git log</li>
-          <li>Forced clarity, surfaces muddy thinking early</li>
-          <li>Lower cost when resuming after a break</li>
-        </ul>
       </div>
     </section>
 
     <!-- 5. Adopt vs Skip -->
-    <section>
-      <h2>Is This For You?</h2>
-      <div class="two-col" style="margin-top:16px">
-        <div>
-          <p style="font-size:0.7em;font-weight:700;color:var(--indigo);margin-bottom:8px">👤 Adopt when</p>
-          <ul class="emoji-list" style="font-size:0.7em">
-            <li>Solo dev or small team (1 to 3 people)</li>
-            <li>3+ features committed in parallel</li>
-            <li>AI-assisted development</li>
-            <li>Plans accumulating at repo root</li>
-            <li>You're losing track of what's in flight vs shipped</li>
+    <section class="deck">
+      <span class="eyebrow">Audience</span>
+      <h2>Is this for you?</h2>
+      <div class="grid-2" style="margin-top:18px">
+        <div class="panel tinted-indigo">
+          <h3>Adopt when</h3>
+          <ul class="clean-list">
+            <li>Solo or small team (1 to 3 people).</li>
+            <li>3+ committed features in parallel.</li>
+            <li>You're losing track of in-flight vs shipped.</li>
+            <li>Plans are accumulating at the repo root.</li>
+            <li>You re-explain context every AI session.</li>
           </ul>
         </div>
-        <div>
-          <p style="font-size:0.7em;font-weight:700;color:var(--slate);margin-bottom:8px">🚫 Skip when</p>
-          <ul class="emoji-list" style="font-size:0.7em">
-            <li>Single-feature scope</li>
-            <li>Team of 5+ (use real PM tool)</li>
-            <li>Regulated environments (need audit trail)</li>
-            <li>Open source projects (use Issues)</li>
-            <li>One-off scripts and prototypes</li>
+        <div class="panel">
+          <h3 style="color:var(--ink-soft)">Skip when</h3>
+          <ul class="clean-list muted">
+            <li>Single-feature scope.</li>
+            <li>Team of 5+. Use a real PM tool.</li>
+            <li>Regulated environments. You need an audit trail.</li>
+            <li>Open-source projects. Use Issues.</li>
+            <li>One-off scripts and prototypes.</li>
           </ul>
         </div>
       </div>
     </section>
 
     <!-- 6. Structure -->
-    <section>
-      <h2>The Structure</h2>
-      <pre><code>plans/
-├── STATUS.md          ← Your daily check-in. Open this, not a PM tool.
-├── plans.json         ← Machine-readable snapshot (auto-generated)
-├── roadmap.html       ← Shareable visual dashboard
-├── active/            ← In-progress and committed plans
-│   └── MY_FEATURE.md
-└── shipped/           ← Completed plans (kept for history)</code></pre>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px">
-        <div class="card">
+    <section class="deck">
+      <span class="eyebrow">Structure</span>
+      <h2>One directory. Five files. Two folders.</h2>
+      <pre style="margin-top:14px"><code>plans/
+  README.md           Onboarding for anyone new to the repo
+  STATUS.md           Daily check-in: in flight, up next, shipped, backlog
+  plans.json          Machine-readable snapshot, auto-generated
+  roadmap.html        Interactive dashboard, reads plans.json directly
+  active/             In-progress and committed plans
+  shipped/            Completed plans, kept for history</code></pre>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="panel">
           <h4>Git-excluded</h4>
-          <p>Lives in the repo, never committed. Local to your machine.</p>
-          <p><code>echo "plans/" >> .git/info/exclude</code></p>
+          <p>Lives in your repo, never committed. Local to your machine.</p>
+          <p><code>echo "plans/" &gt;&gt; .git/info/exclude</code></p>
         </div>
-        <div class="card">
+        <div class="panel">
           <h4>Plain files</h4>
-          <p>Markdown + JSON. No database, no account, no external tool.</p>
+          <p>Markdown and JSON only. No database, no account, no external service to depend on.</p>
         </div>
       </div>
     </section>
 
-    <!-- 5. Plan File -->
-    <section>
-      <h2>Plan File Anatomy</h2>
-      <p style="font-size:0.7em;color:var(--slate)">Two layers, both required, both must agree.</p>
-      <div class="two-col" style="margin-top:12px">
+    <!-- 7. Plan File Anatomy -->
+    <section class="deck">
+      <span class="eyebrow">Anatomy</span>
+      <h2>Every plan has two layers.</h2>
+      <p class="lede">Frontmatter is for tooling. The status banner is for humans. They must agree.</p>
+      <div class="grid-2" style="margin-top:14px">
         <div>
-          <p style="font-size:0.65em;font-weight:700;color:var(--slate);margin-bottom:6px">Frontmatter (for tooling)</p>
+          <div class="label-row"><span class="pill indigo">Frontmatter</span><span style="font-size:0.5em;color:var(--ink-mute)">YAML, 7 required fields</span></div>
           <pre><code>---
 status: active
 priority: P1
@@ -270,190 +399,172 @@ last_updated: 2026-05-04
 ---</code></pre>
         </div>
         <div>
-          <p style="font-size:0.65em;font-weight:700;color:var(--slate);margin-bottom:6px">Status banner (for humans)</p>
+          <div class="label-row"><span class="pill outline">Status banner</span><span style="font-size:0.5em;color:var(--ink-mute)">markdown, second heading</span></div>
           <pre><code>## Status
 
-- **Overall:** 🟡 Phase 2 of 3
-- **Phase 0 (Design):** ✅ Done
-- **Phase 1 (Backend):** ✅ Done
-- **Phase 2 (Frontend):** 🟡 Active
-- **Phase 3 (Tests):** 🔴 Not started
+- **Overall:** In progress, Phase 2 of 3
+- **Phase 0 (Design):** Done (2026-04-28)
+- **Phase 1 (Backend):** Done (2026-05-01)
+- **Phase 2 (Frontend):** In progress
+- **Phase 3 (Tests):** Not started
 
-**Next action:** Wire up API client.
+**Next action:** Wire up the API client.
 **Last updated:** 2026-05-04</code></pre>
         </div>
       </div>
-      <p style="font-size:0.65em;color:var(--slate);margin-top:10px">
-        ⚖️ <strong>Two-source rule:</strong> frontmatter and banner must agree. If they conflict, frontmatter wins.
-      </p>
-    </section>
-
-    <!-- 6. Lifecycle -->
-    <section>
-      <h2>Idea Lifecycle: One Capture Point</h2>
-      <p style="font-size:0.7em;color:var(--slate)">The rule that prevents scattered docs: <strong>everything starts as a backlog bullet</strong>.</p>
-      <div style="margin-top:16px">
-        <div class="flow-step">
-          <div class="flow-icon">💡</div>
-          <div><div class="flow-label"><strong>New idea</strong></div><div class="flow-note">Bullet in STATUS.md backlog. Nothing else, not committed yet.</div></div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-icon">📄</div>
-          <div><div class="flow-label"><strong>Committed</strong></div><div class="flow-note">Create <code>plans/active/FEATURE.md</code> + STATUS.md "Up next" row</div></div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-icon">🟡</div>
-          <div><div class="flow-label"><strong>Work starts</strong></div><div class="flow-note">Set <code>in_flight: true</code> → move to STATUS.md "In flight"</div></div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-icon">✅</div>
-          <div><div class="flow-label"><strong>Phase ships</strong></div><div class="flow-note">Mark ✅ in banner → update STATUS.md → bump last_updated</div></div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-icon">📦</div>
-          <div><div class="flow-label"><strong>Fully done</strong></div><div class="flow-note"><code>mv plans/active/ plans/shipped/</code> → STATUS.md "Recently shipped"</div></div>
-        </div>
+      <div class="quote compact" style="margin-top:14px">
+        Two-source rule: if frontmatter and banner disagree, frontmatter wins. Update both together.
       </div>
     </section>
 
-    <!-- 7. STATUS.md -->
-    <section>
-      <h2>STATUS.md: Your Daily Check-in</h2>
-      <p style="font-size:0.72em;color:var(--slate)">One file replaces the question "where are we?" Open this instead of searching through docs.</p>
-      <div class="three-col" style="margin-top:16px">
-        <div class="card">
-          <h4>⚡ In flight</h4>
-          <p>What's being worked on now</p>
-          <p style="color:var(--indigo);font-size:0.9em">Auto-generated</p>
+    <!-- 8. Lifecycle -->
+    <section class="deck">
+      <span class="eyebrow">Lifecycle</span>
+      <h2>One capture point. One home per stage.</h2>
+      <p class="lede">The rule that prevents scattered docs: every idea starts as a backlog bullet, and only graduates when work is committed.</p>
+      <div style="margin-top:18px">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">New idea</div>
+            <div class="step-note">Bullet in <code>STATUS.md</code> backlog. No plan file yet, work isn't committed.</div>
+          </div>
         </div>
-        <div class="card">
-          <h4>📅 Up next</h4>
-          <p>Committed for next 30 days</p>
-          <p style="color:var(--indigo);font-size:0.9em">Auto-generated</p>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Committed</div>
+            <div class="step-note">Create <code>plans/active/FEATURE.md</code>. Add a row to STATUS.md "Up next".</div>
+          </div>
         </div>
-        <div class="card card-green">
-          <h4>✅ Recently shipped</h4>
-          <p>Last 30 days from git log</p>
-          <p style="color:#15803d;font-size:0.9em">Auto-generated</p>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Work starts</div>
+            <div class="step-note">Set <code>in_flight: true</code>. Move STATUS.md row to "In flight".</div>
+          </div>
         </div>
-      </div>
-      <div class="three-col" style="margin-top:12px">
-        <div class="card">
-          <h4>💡 Backlog</h4>
-          <p>Ideas not yet committed</p>
-          <p style="color:var(--slate);font-size:0.9em">Hand-maintained</p>
+        <div class="step-row">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Phase ships</div>
+            <div class="step-note">Mark phase Done in the banner. Update STATUS.md. Bump <code>last_updated</code>.</div>
+          </div>
         </div>
-        <div class="card">
-          <h4>📖 Monthly log</h4>
-          <p>Append-only history</p>
-          <p style="color:var(--slate);font-size:0.9em">Hand-maintained</p>
-        </div>
-        <div class="card">
-          <h4>⚠️ Blocked</h4>
-          <p>Risks and blockers</p>
-          <p style="color:var(--slate);font-size:0.9em">Hand-maintained</p>
+        <div class="step-row">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Fully done</div>
+            <div class="step-note"><code>mv plans/active/FEATURE.md plans/shipped/</code>. Move STATUS.md row to "Recently shipped".</div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 8. roadmap.html -->
-    <section>
-      <h2>roadmap.html: The Visual Layer</h2>
-      <p style="font-size:0.72em;color:var(--slate)">Reads <code>plans.json</code> directly. No server needed, just <code>python -m http.server 8080</code>. Share with anyone.</p>
-      <div class="three-col" style="margin-top:16px">
-        <div class="card">
-          <h4>📅 Gantt Chart</h4>
-          <p>Interactive timeline with progress</p>
-          <p>Shipped items in green</p>
-          <p>Today button + auto-scroll</p>
+    <!-- 9. STATUS.md sections -->
+    <section class="deck">
+      <span class="eyebrow">STATUS.md</span>
+      <h2>Your daily check-in. One file replaces the question.</h2>
+      <p class="lede">Six sections, three auto-generated, three hand-maintained. Open this instead of searching through docs.</p>
+      <div class="grid-3" style="margin-top:16px">
+        <div class="panel"><h4>In flight</h4><p>Active work right now.</p><p style="color:var(--indigo); font-weight:600">Auto-generated</p></div>
+        <div class="panel"><h4>Up next</h4><p>Committed for the next 30 days.</p><p style="color:var(--indigo); font-weight:600">Auto-generated</p></div>
+        <div class="panel tinted-green"><h4>Recently shipped</h4><p>Last 30 days, cross-checked against git log.</p><p style="color:var(--green-deep); font-weight:600">Auto-generated</p></div>
+      </div>
+      <div class="grid-3" style="margin-top:12px">
+        <div class="panel"><h4>Backlog</h4><p>Captured ideas, not yet committed.</p><p style="color:var(--ink-mute); font-weight:600">Hand-maintained</p></div>
+        <div class="panel"><h4>Monthly log</h4><p>Append-only history.</p><p style="color:var(--ink-mute); font-weight:600">Hand-maintained</p></div>
+        <div class="panel"><h4>Blocked</h4><p>Risks and external blockers.</p><p style="color:var(--ink-mute); font-weight:600">Hand-maintained</p></div>
+      </div>
+    </section>
+
+    <!-- 10. roadmap.html -->
+    <section class="deck">
+      <span class="eyebrow">Visual layer</span>
+      <h2>roadmap.html: the dashboard you can share.</h2>
+      <p class="lede">A single static HTML file that reads <code>plans.json</code> directly. No server needed beyond <code>python -m http.server</code>.</p>
+      <div class="grid-3" style="margin-top:18px">
+        <div class="panel">
+          <h4>Gantt chart</h4>
+          <p>Interactive timeline with progress bars. Shipped items in green. Today button auto-scrolls.</p>
         </div>
-        <div class="card">
-          <h4>🔗 Dependency Graph</h4>
-          <p>Which plans block which</p>
-          <p>Zoom / reset controls</p>
-          <p>Active plans only</p>
+        <div class="panel">
+          <h4>Dependency graph</h4>
+          <p>Which plans block which. Zoom, pan, reset. Active plans only by default.</p>
         </div>
-        <div class="card">
-          <h4>📋 Plan Cards</h4>
-          <p>Filter by status</p>
-          <p>Phase breakdown per plan</p>
-          <p>Next action shown</p>
+        <div class="panel">
+          <h4>Plan cards</h4>
+          <p>Filter by status. Phase breakdown per plan. Next action shown inline.</p>
         </div>
       </div>
-      <div class="highlight" style="margin-top:16px">
+      <div class="quote compact" style="margin-top:18px">
         Stakeholder-friendly: shareable, visual, no markdown knowledge required.
       </div>
     </section>
 
-    <!-- 9. Git is ground truth -->
-    <section>
-      <h2>Git Is the Ground Truth</h2>
-      <div class="two-col">
+    <!-- 11. Drift detection -->
+    <section class="deck">
+      <span class="eyebrow">Reconciliation</span>
+      <h2>Plans drift from reality. That's why /status-sync exists.</h2>
+      <div class="grid-2" style="margin-top:18px">
         <div>
-          <p style="font-size:0.75em;color:var(--slate)">Plans describe <strong>intent</strong>. Git log is what <strong>actually happened</strong>. They drift.</p>
-          <ul class="emoji-list" style="margin-top:12px">
-            <li>⚠️ Shipped code, plan still 🔴</li>
-            <li>⚠️ Active plan, no commits in 14 days</li>
-            <li>⚠️ Plan in STATUS.md, no file exists</li>
-            <li>⚠️ Frontmatter vs banner disagree</li>
-            <li>⚠️ Orphaned dependency edges</li>
+          <p class="lede">Plans describe intent. Git log records reality. Without reconciliation, your planning system becomes misleading rather than helpful.</p>
+          <ul class="clean-list red">
+            <li>Shipped code, plan still "Not started".</li>
+            <li>Active plan, no commits in 14 days.</li>
+            <li>STATUS.md row with no underlying file.</li>
+            <li>Frontmatter and banner disagree.</li>
+            <li>Dependency edges that don't reciprocate.</li>
           </ul>
-          <div class="highlight" style="margin-top:14px">
-            Left undetected, drift makes your planning system <strong>misleading</strong> rather than helpful.
-          </div>
         </div>
-        <div>
-          <p style="font-size:0.72em;font-weight:700;margin-bottom:8px">Coming: /status-sync skill</p>
-          <ul class="emoji-list">
-            <li>📖 Reads all plan frontmatter</li>
-            <li>🔀 Runs git log since last sync</li>
-            <li>🔍 Detects drift automatically</li>
-            <li>🔄 Regenerates plans.json + STATUS.md</li>
-            <li>📋 Shows diff, asks before writing</li>
+        <div class="panel solid-ink">
+          <div class="label-row"><span class="pill green">Coming</span></div>
+          <h3 style="color:white">/status-sync</h3>
+          <ul class="clean-list">
+            <li style="color:#e0e6f5">Reads all plan frontmatter.</li>
+            <li style="color:#e0e6f5">Runs <code style="background:rgba(255,255,255,0.1); color:#e0e6f5">git log</code> since last sync.</li>
+            <li style="color:#e0e6f5">Detects drift automatically.</li>
+            <li style="color:#e0e6f5">Regenerates plans.json and STATUS.md.</li>
+            <li style="color:#e0e6f5">Shows a diff. Asks before writing.</li>
           </ul>
-          <p style="font-size:0.65em;color:var(--slate);margin-top:10px">
-            15-min manual weekly audit → 2-min review-and-confirm
-          </p>
+          <p class="footnote" style="color:#94a3b8; margin-top:12px">15-minute manual audit becomes 2-minute review-and-confirm.</p>
         </div>
       </div>
     </section>
 
-    <!-- 10. AI Assistant benefit -->
-    <section>
-      <h2>The AI Benefit: A Side Effect</h2>
-      <div class="highlight">
-        The primary audience is <strong>you</strong>. But because the system uses structured files, your AI assistant benefits too.
-      </div>
-      <div class="two-col" style="margin-top:16px">
-        <div>
-          <p style="font-size:0.7em;font-weight:700;margin-bottom:8px">Without this system</p>
-          <ul class="emoji-list">
-            <li>🔄 Re-explain context every session</li>
-            <li>❓ AI suggests things already decided against</li>
-            <li>🔁 Work gets duplicated</li>
-            <li>⏱️ 15 min context-setting before real work</li>
+    <!-- 12. AI side effect -->
+    <section class="deck">
+      <span class="eyebrow">AI as side effect</span>
+      <h2>The system is for you. The AI just benefits from structure.</h2>
+      <div class="grid-2" style="margin-top:18px">
+        <div class="panel">
+          <h3 style="color:var(--red)">Without this system</h3>
+          <ul class="clean-list red">
+            <li>Re-explain context every session.</li>
+            <li>AI suggests things you decided against last week.</li>
+            <li>Work gets duplicated.</li>
+            <li>15 minutes of context-setting before real work.</li>
           </ul>
         </div>
-        <div>
-          <p style="font-size:0.7em;font-weight:700;margin-bottom:8px">With this system</p>
-          <ul class="emoji-list">
-            <li>✅ AI reads STATUS.md at session start</li>
-            <li>✅ "What's next?" has a deterministic answer</li>
-            <li>✅ AI knows which plan to update when you ship</li>
-            <li>✅ Structured files = better reasoning</li>
+        <div class="panel tinted-green">
+          <h3 style="color:var(--green-deep)">With this system</h3>
+          <ul class="clean-list green">
+            <li>AI reads STATUS.md at session start.</li>
+            <li>"What's next?" has a deterministic answer.</li>
+            <li>AI knows which plan to update when you ship.</li>
+            <li>Structured input means better reasoning.</li>
           </ul>
         </div>
       </div>
-      <p style="font-size:0.68em;color:var(--slate);margin-top:14px">
-        Add two lines to <code>CLAUDE.md</code> (or equivalent): point to STATUS.md, describe the lifecycle. That's the entire integration.
-      </p>
+      <p class="footnote">The integration is two lines in <code>CLAUDE.md</code> (or <code>AGENTS.md</code>, <code>.cursorrules</code>): point to STATUS.md, describe the lifecycle.</p>
     </section>
 
-    <!-- 11. Platform portability -->
-    <section>
-      <h2>Platform Portability</h2>
-      <p style="font-size:0.72em;color:var(--slate)"><code>plans/</code> is pure markdown + JSON. Works with any AI assistant.</p>
-      <table style="margin-top:16px">
+    <!-- 13. Platform Portability -->
+    <section class="deck">
+      <span class="eyebrow">Portability</span>
+      <h2>The data model is platform-neutral.</h2>
+      <p class="lede"><code>plans/</code> is pure markdown and JSON. Only the AI instruction file changes per platform.</p>
+      <table>
         <tr>
           <th>Component</th>
           <th>Claude Code</th>
@@ -474,69 +585,80 @@ last_updated: 2026-05-04
         </tr>
         <tr>
           <td><code>plans/</code> directory</td>
-          <td colspan="3" style="text-align:center;color:#15803d;font-weight:700">✅ Identical across all platforms</td>
+          <td colspan="3" style="text-align:center; color:var(--green-deep); font-weight:700">Identical across all platforms</td>
         </tr>
         <tr>
           <td><code>plans.json</code></td>
-          <td colspan="3" style="text-align:center;color:#15803d;font-weight:700">✅ Identical across all platforms</td>
+          <td colspan="3" style="text-align:center; color:var(--green-deep); font-weight:700">Identical across all platforms</td>
         </tr>
         <tr>
           <td><code>roadmap.html</code></td>
-          <td colspan="3" style="text-align:center;color:#15803d;font-weight:700">✅ Identical across all platforms</td>
+          <td colspan="3" style="text-align:center; color:var(--green-deep); font-weight:700">Identical across all platforms</td>
         </tr>
       </table>
-      <p style="font-size:0.65em;color:var(--slate);margin-top:12px">Only the instruction file and skill delivery change. The data model is fully portable.</p>
     </section>
 
-    <!-- 12. Quick Start -->
-    <section>
-      <h2>Quick Start: 5 Steps</h2>
-      <div style="font-size:0.72em">
-        <div class="flow-step">
-          <div class="flow-icon">1️⃣</div>
-          <div>
-            <div class="flow-label"><strong>Create the structure</strong></div>
-            <pre style="margin:6px 0"><code>mkdir -p plans/active plans/shipped
-echo "plans/" >> .git/info/exclude</code></pre>
+    <!-- 14. Quick Start -->
+    <section class="deck">
+      <span class="eyebrow">Quick start</span>
+      <h2>One command, then your first plan.</h2>
+      <pre style="margin-top:14px"><code>git clone https://github.com/yrangana/Plans.git ~/.local/share/plans
+~/.local/share/plans/scripts/init.sh /path/to/your/project</code></pre>
+      <div style="margin-top:14px">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Bootstrap</div>
+            <div class="step-note">The init script copies <code>plans/</code> into your project and adds it to <code>.git/info/exclude</code>.</div>
           </div>
         </div>
-        <div class="flow-step">
-          <div class="flow-icon">2️⃣</div>
-          <div><div class="flow-label"><strong>Create your first plan file</strong></div><div class="flow-note">In <code>plans/active/</code> with 7-field frontmatter + status banner</div></div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Tell your AI assistant</div>
+            <div class="step-note">Append <code>template/CLAUDE.md.snippet</code> to your <code>CLAUDE.md</code> (or <code>AGENTS.md</code>, <code>.cursorrules</code>).</div>
+          </div>
         </div>
-        <div class="flow-step">
-          <div class="flow-icon">3️⃣</div>
-          <div><div class="flow-label"><strong>Create STATUS.md</strong></div><div class="flow-note">In flight / Up next / Backlog / Monthly log / Blocked sections</div></div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Replace the example plan</div>
+            <div class="step-note">Edit <code>plans/active/EXAMPLE_PLAN.md</code> with your real first plan. Add a row to <code>STATUS.md</code>.</div>
+          </div>
         </div>
-        <div class="flow-step">
-          <div class="flow-icon">4️⃣</div>
-          <div><div class="flow-label"><strong>Add two lines to CLAUDE.md</strong></div><div class="flow-note">Point to STATUS.md as front door + describe the lifecycle</div></div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-icon">5️⃣</div>
-          <div>
-            <div class="flow-label"><strong>Open the dashboard</strong></div>
-            <pre style="margin:6px 0"><code>python -m http.server 8080
-# open http://localhost:8080/plans/roadmap.html</code></pre>
+        <div class="step-row">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Open the dashboard</div>
+            <div class="step-note"><code>python -m http.server 8080</code> then visit <code>http://localhost:8080/plans/roadmap.html</code>.</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 13. Close -->
-    <section class="title-slide">
-      <div style="font-size:2.5em;margin-bottom:16px">🚀</div>
-      <h1 style="font-size:1.8em">Structure isn't overhead.<br>It's how you stay sane.</h1>
-      <p class="subtitle" style="margin-top:16px;font-size:0.8em">
-        Plans as intent · Git as ground truth · Skills to reconcile them
-      </p>
-      <div style="margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:480px;margin-left:auto;margin-right:auto;font-size:0.65em;color:var(--slate)">
-        <div style="background:var(--slate-light);border:1px solid #e2e8f0;border-radius:8px;padding:10px">📘 README  -  setup guide</div>
-        <div style="background:var(--slate-light);border:1px solid #e2e8f0;border-radius:8px;padding:10px">✍️ Blog post  -  the story</div>
-        <div style="background:var(--slate-light);border:1px solid #e2e8f0;border-radius:8px;padding:10px">📋 Reference  -  full spec</div>
-        <div style="background:var(--slate-light);border:1px solid #e2e8f0;border-radius:8px;padding:10px">📊 This presentation</div>
+    <!-- 15. Closing -->
+    <section class="title-slide deck">
+      <div class="brand-mark"><span class="dot"></span> Plans</div>
+      <h1>Structure isn't overhead.<br>It's how you stay sane.</h1>
+      <p class="subtitle">Plans as intent. Git as ground truth. Skills to reconcile them.</p>
+      <div class="closing-grid">
+        <div class="panel">
+          <h4>Live demo</h4>
+          <p>yrangana.github.io/Plans/examples/</p>
+        </div>
+        <div class="panel">
+          <h4>Reference spec</h4>
+          <p>docs/reference.md</p>
+        </div>
+        <div class="panel">
+          <h4>Blog post</h4>
+          <p>docs/blog-post.md</p>
+        </div>
+        <div class="panel">
+          <h4>Source</h4>
+          <p>github.com/yrangana/Plans</p>
+        </div>
       </div>
-      <p style="margin-top:20px;font-size:0.6em;color:#94a3b8"><code>docs/plan-system-guide/</code></p>
     </section>
 
   </div>
@@ -550,6 +672,9 @@ echo "plans/" >> .git/info/exclude</code></pre>
     slideNumber: 'c/t',
     transition: 'slide',
     transitionSpeed: 'fast',
+    width: 1280,
+    height: 800,
+    margin: 0.06,
   });
 </script>
 </body>

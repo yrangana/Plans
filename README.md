@@ -2,7 +2,7 @@
 
 > A lightweight intent layer for AI-assisted projects. Markdown + JSON, works with Claude Code, Antigravity, Cursor, or any AI coding assistant.
 
-[Live demo](https://yrangana.github.io/Plans/examples/) · [Reference spec](docs/reference.md) · [Blog post](docs/blog-post.md) · [Slides](docs/presentation.html)
+[Live demo](https://yrangana.github.io/Plans/examples/) · [Slides](https://yrangana.github.io/Plans/docs/presentation.html) · [Blog post](docs/blog-post.md) · [Reference spec](docs/reference.md)
 
 ---
 
@@ -59,6 +59,19 @@ python -m http.server 8080
 ### 4. Edit your first plan
 
 Open `plans/active/EXAMPLE_PLAN.md`, replace it with your real first plan, and add a row to `plans/STATUS.md`.
+
+---
+
+## Docs and resources
+
+Four ways into the system, depending on what you want:
+
+| Resource | Best for | Format |
+| --- | --- | --- |
+| [**Live demo**](https://yrangana.github.io/Plans/examples/) | Seeing the dashboard with real data | Interactive web page |
+| [**Slides**](https://yrangana.github.io/Plans/docs/presentation.html) | A 5-minute overview of the whole system | Reveal.js deck |
+| [**Blog post**](docs/blog-post.md) | The story and motivation behind it | Long-form prose |
+| [**Reference spec**](docs/reference.md) | Implementation details, every field, every rule | Technical reference |
 
 ---
 
