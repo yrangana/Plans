@@ -147,10 +147,10 @@ The second heading in every plan. Must agree with frontmatter `status`.
 
 **Required fields in the banner:**
 
-- `**Overall:**` — one-line summary with phase progress
-- One line per phase with status + name + date or ETA
-- `**Next action:**` — the single next concrete step
-- `**Last updated:**` — must match frontmatter date
+- `**Overall:**` one-line summary with phase progress
+- One line per phase with status, name, and date or ETA
+- `**Next action:**` the single next concrete step
+- `**Last updated:**` must match frontmatter date
 
 Template:
 
@@ -331,8 +331,8 @@ Add this section to your instruction file (`CLAUDE.md`, `AGENTS.md`, `.cursorrul
 Active plans live in `plans/active/`, completed in `plans/shipped/`.
 
 Every plan has two layers:
-1. YAML frontmatter (machine-readable) — 7 required fields
-2. `## Status` banner (human-readable) — must agree with frontmatter
+1. YAML frontmatter (machine-readable), 7 required fields
+2. `## Status` banner (human-readable), must agree with frontmatter
 
 When a phase ships or a PR maps to a plan:
 1. Mark the phase done in the plan's `## Status` banner
