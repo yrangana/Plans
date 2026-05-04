@@ -22,7 +22,7 @@ I created a `plans/` directory with three simple components:
 ---
 status: active
 priority: P1
-owner: yash
+owner: you
 type: feature
 depends_on: []
 blocks: []

@@ -2,7 +2,7 @@
 
 A lightweight, AI-native way to track what we're building, why, and where things stand. No project management tool required.
 
-> This is the onboarding doc inside your project's `plans/` directory. For the full guide and templates, see the [plans repo](https://github.com/yrangana/plans).
+> This is the onboarding doc inside your project's `plans/` directory. For the full guide and templates, see the [plans repo](https://github.com/yrangana/Plans).
 
 ---
 
@@ -47,7 +47,7 @@ plans/roadmap.html      ← Stakeholder view — interactive timeline + dependen
    → Move row to STATUS.md "In flight" table
 
 4. Phase ships
-   → Mark phase ✅ in the plan's ## Status banner
+   → Mark phase Done in the plan's ## Status banner
    → Update STATUS.md tables
    → Bump last_updated in both files
 
@@ -68,7 +68,7 @@ Every plan has two layers:
 ---
 status: active            # active | shipped | superseded | paused | blocked
 priority: P1              # P0 (critical) → P3 (nice to have)
-owner: yash
+owner: you
 type: feature             # plan | feature | bug | research | spike
 depends_on: []            # other plan filenames this is waiting on
 blocks: []                # other plan filenames waiting on this

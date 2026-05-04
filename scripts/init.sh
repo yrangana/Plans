@@ -9,15 +9,16 @@ set -e
 
 TARGET_DIR="${1:-$(pwd)}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SOURCE="$SCRIPT_DIR/../template"
 
-if [ ! -d "$SOURCE/plans" ]; then
-  echo "✗ Cannot find template at $SOURCE/plans"
+if [ ! -d "$SCRIPT_DIR/../template/plans" ]; then
+  echo "Error: cannot find template at $SCRIPT_DIR/../template/plans"
   exit 1
 fi
 
+SOURCE="$(cd "$SCRIPT_DIR/../template" && pwd)"
+
 if [ -d "$TARGET_DIR/plans" ]; then
-  echo "✗ $TARGET_DIR/plans already exists. Aborting."
+  echo "Error: $TARGET_DIR/plans already exists. Aborting."
   exit 1
 fi
 
@@ -29,11 +30,11 @@ if [ -d "$TARGET_DIR/.git" ]; then
   if ! grep -q "^plans/$" "$TARGET_DIR/.git/info/exclude" 2>/dev/null; then
     echo "plans/" >> "$TARGET_DIR/.git/info/exclude"
   fi
-  echo "✓ plans/ added to .git/info/exclude"
+  echo "OK: plans/ added to .git/info/exclude"
 fi
 
 echo ""
-echo "✓ Scaffolded $TARGET_DIR/plans/"
+echo "OK: scaffolded $TARGET_DIR/plans/"
 echo ""
 echo "Next steps:"
 echo "  1. Read $TARGET_DIR/plans/README.md"

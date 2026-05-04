@@ -2,7 +2,7 @@
 
 > A lightweight intent layer for AI-assisted projects. Markdown + JSON, works with Claude Code, Antigravity, Cursor, or any AI coding assistant.
 
-[Live demo](https://yrangana.github.io/plans/examples/) · [Reference spec](docs/reference.md) · [Blog post](docs/blog-post.md) · [Slides](docs/presentation.html)
+[Live demo](https://yrangana.github.io/Plans/examples/) · [Reference spec](docs/reference.md) · [Blog post](docs/blog-post.md) · [Slides](docs/presentation.html)
 
 ---
 
@@ -38,7 +38,7 @@ Full scope and audience details in [docs/reference.md](docs/reference.md).
 ### 1. Drop the template into your project
 
 ```bash
-git clone https://github.com/yrangana/plans.git ~/.local/share/plans
+git clone https://github.com/yrangana/Plans.git ~/.local/share/plans
 ~/.local/share/plans/scripts/init.sh /path/to/your/project
 ```
 

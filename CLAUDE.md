@@ -1,6 +1,8 @@
-# CLAUDE.md — plans repo
+# CLAUDE.md, plans repo
 
-This file is for AI assistants (Claude Code, Antigravity, Cursor) working on the `plans` repo itself, not for projects that adopt the system.
+This file is for AI assistants (Claude Code, Antigravity, Cursor) and human contributors working on the `plans` repo itself, not for projects that adopt the system.
+
+Maintainers may keep additional personal context in a `CLAUDE.local.md` next to this file. That file is gitignored and overrides nothing here, it just adds local conveniences (paths, preferences) on top.
 
 ---
 
@@ -61,11 +63,12 @@ When you fix a bug in `roadmap.html`, copy the fix to both. Same for any visual 
 
 ## Style rules
 
-- **No em dashes anywhere.** Use colons, parentheses, commas, or new sentences. Applies to all docs and code.
 - **No project-specific content.** This repo is generic by definition. Don't add references to specific projects, codebases, or company-specific terminology in the templates or docs.
 - **Markdown lint clean.** Tables use `| --- | --- |` (with spaces). Code fences specify a language (` ```bash `, ` ```yaml `, ` ```text ` for ASCII). No bold-as-heading.
 - **Plain text in CLI output.** No emojis in script output unless explicitly requested. No colour codes.
 - **Templates start empty.** STATUS.md and plans.json in `template/` should reflect a fresh project, not the maintainer's project.
+
+The maintainer may layer additional style preferences in `CLAUDE.local.md`. Follow those when working in this repo, but don't propagate them to forks or contributor-facing docs.
 
 ---
 
@@ -73,19 +76,20 @@ When you fix a bug in `roadmap.html`, copy the fix to both. Same for any visual 
 
 Before pushing:
 
+Run these from the repo root.
+
 1. **Test the init script:**
    ```bash
    rm -rf /tmp/test-plans && mkdir /tmp/test-plans
    cd /tmp/test-plans && git init
-   bash /Users/yash/Developer/plans/scripts/init.sh
+   bash "$OLDPWD/scripts/init.sh"
    # verify plans/ exists, .git/info/exclude has plans/, roadmap.html opens
    ```
 
 2. **Test the demo locally:**
    ```bash
-   cd /Users/yash/Developer/plans/examples
-   python -m http.server 8080
-   # open http://localhost:8080/ — verify the gantt, dep graph, and plan cards render
+   (cd examples && python -m http.server 8080)
+   # open http://localhost:8080/ and verify the gantt, dep graph, and plan cards render
    ```
 
 3. **Lint check:** open the changed `.md` files in VSCode and confirm no warnings in the Problems panel.
@@ -98,10 +102,10 @@ Before pushing:
 2. Test as above
 3. Commit with a clear message (no `git mv` needed since `plans/` isn't excluded here)
 4. Push to `main`
-5. GitHub Pages auto-deploys within 1–2 minutes
-6. Verify: `https://yrangana.github.io/plans/examples/`
+5. GitHub Pages auto-deploys within 1 to 2 minutes
+6. Verify: `https://yrangana.github.io/Plans/examples/`
 
-The user (Yasiru) handles all `git commit` and `git push` operations. Don't run them from inside Claude Code.
+If working with an AI assistant: the maintainer typically handles all `git commit` and `git push` operations themselves. Don't run them from the assistant unless explicitly asked.
 
 ---
 
@@ -136,6 +140,6 @@ Either choice is valid. Decide deliberately, document the decision.
 ## What this repo is not
 
 - Not a CLI tool (init.sh is a 30-line bash script, not a Node/Python package)
-- Not a GitHub action or hook (yet — could be added if requested)
+- Not a GitHub action or hook (could be added if requested)
 - Not opinionated about your AI assistant choice (works with any)
 - Not a replacement for project management tools (see scope in `README.md`)
