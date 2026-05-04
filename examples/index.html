@@ -78,6 +78,12 @@
     .gantt .bar-label { fill: #1a1a2e !important; }
     .gantt .bar { fill: #6366f1 !important; }
     .gantt .bar.bar-invalid { fill: #e2e8f0 !important; }
+    .gantt .bar-cluster-0 .bar { fill: #6366f1 !important; }  /* indigo */
+    .gantt .bar-cluster-1 .bar { fill: #f59e0b !important; }  /* amber */
+    .gantt .bar-cluster-2 .bar { fill: #14b8a6 !important; }  /* teal */
+    .gantt .bar-cluster-3 .bar { fill: #ec4899 !important; }  /* pink */
+    .gantt .bar-cluster-4 .bar { fill: #8b5cf6 !important; }  /* violet */
+    .gantt .bar-cluster-5 .bar { fill: #0ea5e9 !important; }  /* sky */
     .gantt .bar-shipped .bar { fill: #22c55e !important; opacity: 0.7; }
     .gantt .bar-shipped .bar-label { fill: #166534 !important; }
 
@@ -243,19 +249,19 @@
     <div class="stats">
       <div class="stat-card">
         <div class="label">In Flight</div>
-        <div class="value yellow" id="stat-inflight">...</div>
+        <div class="value yellow" id="stat-inflight">—</div>
       </div>
       <div class="stat-card">
         <div class="label">Up Next</div>
-        <div class="value blue" id="stat-upnext">...</div>
+        <div class="value blue" id="stat-upnext">—</div>
       </div>
       <div class="stat-card">
         <div class="label">Phases Shipped</div>
-        <div class="value green" id="stat-phases">...</div>
+        <div class="value green" id="stat-phases">—</div>
       </div>
       <div class="stat-card">
         <div class="label">Total Plans</div>
-        <div class="value gray" id="stat-total">...</div>
+        <div class="value gray" id="stat-total">—</div>
       </div>
     </div>
 
@@ -355,19 +361,65 @@
     document.getElementById('stat-total').textContent    = plans.length;
   }
 
+  function computeClusters(plans) {
+    const idOf = f => f.replace('.md', '');
+    const clusters = {};
+    let next = 0;
+    function bfs(startId) {
+      const id = next++;
+      const queue = [startId];
+      while (queue.length) {
+        const cur = queue.shift();
+        if (clusters[cur] !== undefined) continue;
+        clusters[cur] = id;
+        const plan = plans.find(p => idOf(p.file) === cur);
+        if (!plan) continue;
+        [...(plan.depends_on || []), ...(plan.blocks || [])].forEach(n => {
+          if (clusters[n] === undefined) queue.push(n);
+        });
+      }
+    }
+    plans.forEach(p => {
+      const id = idOf(p.file);
+      if (clusters[id] === undefined) bfs(id);
+    });
+    return clusters;
+  }
+
   function renderGantt(plans) {
-    const byDate = [...plans].sort((a, b) =>
-      (a.start_date || a.last_updated).localeCompare(b.start_date || b.last_updated)
-    );
-    const tasks = byDate.map(p => ({
-      id: p.file.replace('.md', ''),
-      name: p.title,
-      start: getGanttStart(p),
-      end: getGanttEnd(p),
-      progress: p.status === 'shipped' ? 100 : calcProgress(p.phase_summary),
-      dependencies: (p.depends_on || []).map(d => d.replace('.md', '')).join(','),
-      custom_class: p.status === 'shipped' ? 'bar-shipped' : ''
-    }));
+    const clusters = computeClusters(plans);
+    const PALETTE_SIZE = 6;
+    const idOf = f => f.replace('.md', '');
+
+    // Compute earliest start_date per cluster so clusters order chronologically by their first member
+    const clusterEarliest = {};
+    plans.forEach(p => {
+      const c = clusters[idOf(p.file)];
+      const d = p.start_date || p.last_updated;
+      if (!clusterEarliest[c] || d < clusterEarliest[c]) clusterEarliest[c] = d;
+    });
+
+    // Group by cluster, chronological within
+    const grouped = [...plans].sort((a, b) => {
+      const cA = clusters[idOf(a.file)];
+      const cB = clusters[idOf(b.file)];
+      if (cA !== cB) return clusterEarliest[cA].localeCompare(clusterEarliest[cB]);
+      return (a.start_date || a.last_updated).localeCompare(b.start_date || b.last_updated);
+    });
+
+    const tasks = grouped.map(p => {
+      const id = idOf(p.file);
+      const clusterClass = `bar-cluster-${(clusters[id] ?? 0) % PALETTE_SIZE}`;
+      return {
+        id,
+        name: p.title,
+        start: getGanttStart(p),
+        end: getGanttEnd(p),
+        progress: p.status === 'shipped' ? 100 : calcProgress(p.phase_summary),
+        dependencies: (p.depends_on || []).map(d => d.replace('.md', '')).join(','),
+        custom_class: p.status === 'shipped' ? 'bar-shipped' : clusterClass
+      };
+    });
 
     ganttTasks = tasks;
     ganttInstance = new Gantt('#gantt', tasks, {
@@ -441,7 +493,7 @@
     container.innerHTML = plans.map(p => {
       const progress = calcProgress(p.phase_summary);
       const phases = (p.phase_summary || []).map(ph =>
-        `<span class="phase-chip ${ph.status}">${STATUS_EMOJI[ph.status] || ''} Phase ${ph.phase}: ${ph.name}</span>`
+        `<span class="phase-chip ${ph.status}">${STATUS_EMOJI[ph.status] || ''} Phase ${ph.phase} — ${ph.name}</span>`
       ).join('');
 
       return `
@@ -450,7 +502,7 @@
             <div>
               <div class="plan-title">${p.title}</div>
               <div class="plan-meta">
-                ${p.file} &nbsp;·&nbsp; ${p.priority || '?'} &nbsp;·&nbsp; ${p.type} &nbsp;·&nbsp; Updated ${p.last_updated}
+                ${p.file} &nbsp;·&nbsp; ${p.priority || '—'} &nbsp;·&nbsp; ${p.type} &nbsp;·&nbsp; Updated ${p.last_updated}
               </div>
             </div>
             <span class="badge ${badgeClass(p.status)}">${p.overall || p.status}</span>

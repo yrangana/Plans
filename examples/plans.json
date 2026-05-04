@@ -15,9 +15,9 @@
     "in_flight": true,
     "next_action": "Wire up the theme toggle to the settings panel.",
     "phase_summary": [
-      { "phase": 0, "name": "Color tokens",    "status": "shipped",     "date": "2026-01-13" },
-      { "phase": 1, "name": "Component pass",  "status": "shipped",     "date": "2026-01-15" },
-      { "phase": 2, "name": "Settings UI",     "status": "in_progress", "eta":  "2026-01-22" }
+      { "phase": 0, "name": "Color tokens",   "status": "shipped",     "date": "2026-01-13" },
+      { "phase": 1, "name": "Component pass", "status": "shipped",     "date": "2026-01-15" },
+      { "phase": 2, "name": "Settings UI",    "status": "in_progress", "eta":  "2026-01-22" }
     ]
   },
   {
@@ -36,9 +36,9 @@
     "in_flight": false,
     "next_action": "Wait for Dark Mode Phase 2 to ship, then start design.",
     "phase_summary": [
-      { "phase": 0, "name": "Design",   "status": "not_started", "eta": "2026-01-23" },
-      { "phase": 1, "name": "Build",    "status": "not_started", "eta": "2026-01-26" },
-      { "phase": 2, "name": "Tests",    "status": "not_started", "eta": "2026-01-29" }
+      { "phase": 0, "name": "Design", "status": "not_started", "eta": "2026-01-23" },
+      { "phase": 1, "name": "Build",  "status": "not_started", "eta": "2026-01-26" },
+      { "phase": 2, "name": "Tests",  "status": "not_started", "eta": "2026-01-29" }
     ]
   },
   {
@@ -49,7 +49,7 @@
     "owner": "sam",
     "type": "feature",
     "depends_on": [],
-    "blocks": [],
+    "blocks": ["SEARCH_AUTOCOMPLETE"],
     "last_updated": "2026-01-15",
     "start_date": "2026-01-08",
     "overall": "In progress (Phase 1 of 2)",
@@ -59,6 +59,46 @@
     "phase_summary": [
       { "phase": 0, "name": "Schema",   "status": "shipped",     "date": "2026-01-10" },
       { "phase": 1, "name": "Indexing", "status": "in_progress", "eta":  "2026-01-20" }
+    ]
+  },
+  {
+    "file": "SEARCH_AUTOCOMPLETE.md",
+    "title": "Search autocomplete",
+    "status": "active",
+    "priority": "P2",
+    "owner": "sam",
+    "type": "feature",
+    "depends_on": ["SEARCH_INDEX"],
+    "blocks": [],
+    "last_updated": "2026-01-15",
+    "start_date": "2026-01-20",
+    "overall": "Not started, queued behind search index",
+    "eta": "2026-01-27",
+    "in_flight": false,
+    "next_action": "Wait for SEARCH_INDEX Phase 1 to ship.",
+    "phase_summary": [
+      { "phase": 0, "name": "Suggestion API", "status": "not_started", "eta": "2026-01-23" },
+      { "phase": 1, "name": "UI integration", "status": "not_started", "eta": "2026-01-27" }
+    ]
+  },
+  {
+    "file": "MOBILE_RESPONSIVE.md",
+    "title": "Mobile responsive layout",
+    "status": "active",
+    "priority": "P1",
+    "owner": "alex",
+    "type": "feature",
+    "depends_on": [],
+    "blocks": [],
+    "last_updated": "2026-01-15",
+    "start_date": "2026-01-19",
+    "overall": "Not started, standalone",
+    "eta": "2026-01-26",
+    "in_flight": false,
+    "next_action": "Audit existing breakpoints and identify gaps.",
+    "phase_summary": [
+      { "phase": 0, "name": "Audit",  "status": "not_started", "eta": "2026-01-21" },
+      { "phase": 1, "name": "Build",  "status": "not_started", "eta": "2026-01-26" }
     ]
   },
   {
