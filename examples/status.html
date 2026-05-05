@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyProject: Project Status</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8f9fb;
+      color: #1a1a2e;
+      line-height: 1.65;
+    }
+
+    header {
+      background: #1a1a2e;
+      color: white;
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+    header .meta { font-size: 13px; color: #8892b0; margin-top: 4px; }
+    header .badge {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(99,102,241,0.2); color: #a5b4fc;
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px solid rgba(99,102,241,0.3);
+      white-space: nowrap; margin-top: 4px;
+    }
+
+    main { max-width: 900px; margin: 0 auto; padding: 40px 40px 80px; }
+
+    .description {
+      background: #eef2ff;
+      border-left: 4px solid #6366f1;
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      font-size: 14px;
+      color: #475569;
+      margin-bottom: 36px;
+      font-style: italic;
+    }
+
+    /* Auto-generated band */
+    .auto-band {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #6366f1;
+      background: #eef2ff; border: 1px solid #c7d2fe;
+      padding: 6px 14px; border-radius: 6px;
+      display: inline-block; margin-bottom: 24px;
+    }
+    .hand-band {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #94a3b8;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      padding: 6px 14px; border-radius: 6px;
+      display: inline-block; margin-bottom: 24px;
+    }
+
+    hr { border: none; border-top: 1px solid #e2e8f0; margin: 36px 0; }
+
+    h2 {
+      font-size: 17px; font-weight: 700; color: #1a1a2e;
+      letter-spacing: -0.02em; margin: 0 0 14px;
+    }
+    h3 {
+      font-size: 14px; font-weight: 600; color: #475569;
+      margin: 0 0 10px;
+    }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin-bottom: 8px; }
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px; background: white;
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+    th {
+      background: #f8fafc; text-align: left;
+      padding: 10px 14px; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: #94a3b8; border-bottom: 1px solid #e2e8f0;
+    }
+    td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: #475569; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbfc; }
+
+    .plan-link { color: #6366f1; text-decoration: none; font-weight: 600; }
+    .plan-link:hover { text-decoration: underline; }
+
+    .status-pill {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 4px; white-space: nowrap;
+    }
+    .pill-active    { background: #eef2ff; color: #4338ca; }
+    .pill-shipped   { background: #dcfce7; color: #166534; }
+    .pill-blocked   { background: #fee2e2; color: #991b1b; }
+    .pill-waiting   { background: #fef3c7; color: #92400e; }
+
+    .progress-text { color: #1a1a2e; font-weight: 500; }
+
+    /* Mermaid */
+    .mermaid-block {
+      background: white; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 24px;
+      margin-bottom: 24px; overflow-x: auto;
+      display: flex; justify-content: center;
+    }
+    .mermaid { max-width: 100%; }
+
+    /* Backlog */
+    .backlog-list { list-style: none; padding: 0; }
+    .backlog-item {
+      padding: 10px 0; border-bottom: 1px solid #f1f5f9;
+      font-size: 13px; color: #475569;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .backlog-item:last-child { border-bottom: none; }
+    .backlog-item::before {
+      content: "";
+      width: 6px; height: 6px; border-radius: 999px;
+      background: #cbd5e1; flex-shrink: 0; margin-top: 6px;
+    }
+    .backlog-item strong { color: #1a1a2e; }
+
+    /* Monthly log */
+    .log-month { margin-bottom: 20px; }
+    .log-entry {
+      font-size: 13px; color: #475569;
+      padding: 6px 0 6px 16px;
+      border-left: 2px solid #e2e8f0;
+      margin-bottom: 4px;
+    }
+
+    .empty-row td { color: #94a3b8; font-style: italic; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>MyProject: Project Status</h1>
+    <div class="meta" id="last-updated">Last updated: 2026-05-06</div>
+  </div>
+  <span class="badge">STATUS.md</span>
+</header>
+
+<main>
+
+  <div class="description">
+    A collaborative web app for small teams to manage shared tasks and track project milestones. Built for teams of 2 to 10 who want visibility without the overhead of a full PM tool.
+  </div>
+
+  <div class="auto-band">Auto-generated from plans/plans.json</div>
+
+  <!-- Roadmap at a glance (timeline) -->
+  <h2>Roadmap at a glance</h2>
+  <div id="gantt-wrap" style="background:white; border:1px solid #e2e8f0; border-radius:10px; padding:24px; margin-bottom:24px; overflow-x:auto;"></div>
+
+  <!-- In flight -->
+  <h2>In flight: what we're working on now</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Initiative</th>
+          <th>Status</th>
+          <th>Progress</th>
+          <th>Owner</th>
+          <th>ETA</th>
+          <th>Plan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Dark Mode</strong></td>
+          <td><span class="status-pill pill-active">In progress</span></td>
+          <td class="progress-text">Phase 2 of 3</td>
+          <td>alex</td>
+          <td>2026-05-12</td>
+          <td><a class="plan-link" href="#">DARK_MODE.md</a></td>
+        </tr>
+        <tr>
+          <td><strong>Full-text search index</strong></td>
+          <td><span class="status-pill pill-active">In progress</span></td>
+          <td class="progress-text">Phase 1 of 2</td>
+          <td>sam</td>
+          <td>2026-05-09</td>
+          <td><a class="plan-link" href="#">SEARCH_INDEX.md</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- Up next -->
+  <h2>Up next: committed for next 30 days</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Initiative</th>
+          <th>Why it matters</th>
+          <th>Effort</th>
+          <th>Depends on</th>
+          <th>Plan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Theme Picker</strong></td>
+          <td>Lets users switch between colour themes without editing config</td>
+          <td>1 week</td>
+          <td>Dark Mode</td>
+          <td><a class="plan-link" href="#">THEME_PICKER.md</a></td>
+        </tr>
+        <tr>
+          <td><strong>Search autocomplete</strong></td>
+          <td>Reduces time-to-result for returning users</td>
+          <td>1 week</td>
+          <td>Search index</td>
+          <td><a class="plan-link" href="#">SEARCH_AUTOCOMPLETE.md</a></td>
+        </tr>
+        <tr>
+          <td><strong>Mobile responsive layout</strong></td>
+          <td>50% of trial signups are on mobile, conversion is low</td>
+          <td>1 week</td>
+          <td>None</td>
+          <td><a class="plan-link" href="#">MOBILE_RESPONSIVE.md</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Cross-plan dependencies -->
+  <h2 style="margin-top:28px">Cross-plan dependencies</h2>
+  <div class="mermaid-block">
+    <div class="mermaid">
+flowchart TD
+    DARK_MODE["Dark Mode"] --> THEME_PICKER["Theme Picker"]
+    SEARCH_INDEX["Full-text search index"] --> SEARCH_AUTOCOMPLETE["Search autocomplete"]
+    </div>
+  </div>
+
+  <div style="font-size:12px; color:#94a3b8; margin-bottom:8px; text-align:right">End auto-generated</div>
+
+  <hr>
+
+  <!-- Recently shipped -->
+  <div class="hand-band">Hand-maintained</div>
+  <h2>Recently shipped: last 30 days</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>What</th>
+          <th>Shipped</th>
+          <th>Commit</th>
+          <th>Why it mattered</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>First-run onboarding</strong></td>
+          <td><span class="status-pill pill-shipped">2026-04-23</span></td>
+          <td><code>a3f92b1</code></td>
+          <td>New users now reach the first action in under 60 seconds. Drop-off at signup reduced by 30%.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- Monthly log -->
+  <h2>Monthly log: append-only history</h2>
+
+  <div class="log-month">
+    <h3>2026-05</h3>
+    <div class="log-entry">Dark Mode Phase 1 (component pass) shipped 2026-05-02. Phase 2 (settings UI) in progress, on track for 2026-05-12.</div>
+    <div class="log-entry">Search Index schema shipped 2026-04-30. Indexing phase started, ETA 2026-05-09.</div>
+  </div>
+  <div class="log-month">
+    <h3>2026-04</h3>
+    <div class="log-entry">First-run onboarding shipped 2026-04-23. Welcome flow live in production. Drop-off at signup down 30%.</div>
+    <div class="log-entry">Dark Mode Phase 0 (colour tokens) shipped 2026-04-29. Dark Mode and Search Index kicked off week of 2026-04-24.</div>
+  </div>
+
+  <hr>
+
+  <!-- Backlog -->
+  <h2>Backlog / ideas: captured, not committed</h2>
+  <ul class="backlog-list">
+    <li class="backlog-item"><span><strong>Export to CSV:</strong> stakeholders want to pull plan data into their own reporting tools</span></li>
+    <li class="backlog-item"><span><strong>Keyboard shortcut layer:</strong> power users asking for vim-style navigation</span></li>
+    <li class="backlog-item"><span><strong>Notification digest:</strong> weekly summary email for team members who don't open the app daily</span></li>
+    <li class="backlog-item"><span><strong>Offline mode:</strong> mobile users in low-connectivity environments need read access</span></li>
+  </ul>
+
+  <hr>
+
+  <!-- Blocked / risks -->
+  <h2>Blocked / risks</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Blocked on</th>
+          <th>Action needed</th>
+          <th>Since</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Theme Picker</strong></td>
+          <td>Dark Mode Phase 2 (ETA 2026-05-12)</td>
+          <td>No action yet. Monitor Dark Mode progress.</td>
+          <td>2026-04-28</td>
+        </tr>
+        <tr>
+          <td><strong>Search performance</strong></td>
+          <td>Untested on large datasets</td>
+          <td>Run indexing spike before Phase 1 ships. Sam owns.</td>
+          <td>2026-04-30</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<script>
+  mermaid.initialize({ startOnLoad: false, theme: 'neutral', flowchart: { curve: 'basis', rankSpacing: 60 } });
+  mermaid.run({ querySelector: '.mermaid' });
+
+  // CSS timeline
+  const plans = [
+    { label: 'Dark Mode',              start: '2026-04-28', end: '2026-05-12', type: 'active',  section: 'In flight' },
+    { label: 'Full-text search index', start: '2026-04-24', end: '2026-05-09', type: 'active',  section: 'In flight' },
+    { label: 'Theme Picker',           start: '2026-05-12', end: '2026-05-20', type: 'upnext',  section: 'Up next'   },
+    { label: 'Search autocomplete',    start: '2026-05-09', end: '2026-05-16', type: 'upnext',  section: 'Up next'   },
+    { label: 'Mobile responsive',      start: '2026-05-08', end: '2026-05-15', type: 'upnext',  section: 'Up next'   },
+    { label: 'First-run onboarding',   start: '2026-04-18', end: '2026-04-23', type: 'shipped', section: 'Shipped'   },
+  ];
+
+  const colors = {
+    active:  { bar: '#6366f1', bg: '#eef2ff', text: '#4338ca', label: 'In flight'  },
+    upnext:  { bar: '#f59e0b', bg: '#fef3c7', text: '#92400e', label: 'Up next'    },
+    shipped: { bar: '#22c55e', bg: '#dcfce7', text: '#166534', label: 'Shipped'    },
+  };
+
+  const allDates = plans.flatMap(p => [new Date(p.start), new Date(p.end)]);
+  const minDate  = new Date(Math.min(...allDates));
+  const maxDate  = new Date(Math.max(...allDates));
+  const span     = maxDate - minDate;
+
+  function pct(dateStr) {
+    return ((new Date(dateStr) - minDate) / span * 100).toFixed(2);
+  }
+  function width(s, e) {
+    return ((new Date(e) - new Date(s)) / span * 100).toFixed(2);
+  }
+  function fmtDate(d) {
+    return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  }
+
+  // Build x-axis labels (one per day in range, show every 3rd)
+  const days = [];
+  for (let d = new Date(minDate); d <= maxDate; d.setDate(d.getDate() + 1)) {
+    days.push(new Date(d));
+  }
+
+  let html = `
+    <div style="font-size:12px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:16px;">Initiative timeline</div>
+    <div style="display:flex; flex-direction:column; gap:0;">
+  `;
+
+  // Legend
+  html += `<div style="display:flex; gap:16px; margin-bottom:18px; flex-wrap:wrap;">`;
+  for (const [type, c] of Object.entries(colors)) {
+    html += `<div style="display:flex; align-items:center; gap:6px; font-size:12px; color:${c.text};">
+      <span style="width:12px; height:12px; border-radius:3px; background:${c.bar}; display:inline-block;"></span>${c.label}
+    </div>`;
+  }
+  html += `</div>`;
+
+  // Today line position (clamped to visible range)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayPct = ((today - minDate) / span * 100).toFixed(2);
+  const todayVisible = today >= minDate && today <= maxDate;
+
+  // Axis labels
+  html += `<div style="position:relative; height:20px; margin-bottom:6px; margin-left:160px;">`;
+  days.forEach((d, i) => {
+    if (i % 3 !== 0) return;
+    const p = ((d - minDate) / span * 100).toFixed(2);
+    html += `<span style="position:absolute; left:${p}%; transform:translateX(-50%); font-size:10px; color:#94a3b8; white-space:nowrap;">${fmtDate(d)}</span>`;
+  });
+  // Today label on axis
+  if (todayVisible) {
+    html += `<span style="position:absolute; left:${todayPct}%; transform:translateX(-50%); font-size:10px; font-weight:700; color:#ef4444; white-space:nowrap;">Today</span>`;
+  }
+  html += `</div>`;
+
+  // Rows wrapper — position:relative so today line can span all rows
+  const rowCount = plans.length;
+  const rowH = 28;
+  const rowGap = 8;
+  const totalH = rowCount * rowH + (rowCount - 1) * rowGap;
+
+  html += `<div style="position:relative;">`;
+
+  // Today vertical line (rendered first, behind bars)
+  if (todayVisible) {
+    html += `
+      <div style="position:absolute; left:calc(160px + (100% - 160px) * ${todayPct} / 100); top:0; width:2px; height:${totalH}px; background:#ef4444; z-index:2; border-radius:1px; pointer-events:none;">
+        <div style="position:absolute; top:-6px; left:50%; transform:translateX(-50%); width:8px; height:8px; border-radius:999px; background:#ef4444;"></div>
+      </div>`;
+  }
+
+  // Rows
+  plans.forEach(p => {
+    const c = colors[p.type];
+    const left  = pct(p.start);
+    const w     = width(p.start, p.end);
+    html += `
+      <div style="display:flex; align-items:center; gap:0; margin-bottom:${rowGap}px;">
+        <div style="width:160px; flex-shrink:0; font-size:12px; color:#475569; padding-right:12px; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${p.label}">${p.label}</div>
+        <div style="flex:1; position:relative; height:${rowH}px; background:#f8fafc; border-radius:4px;">
+          <div style="position:absolute; left:${left}%; width:${w}%; height:100%; background:${c.bar}; border-radius:4px; display:flex; align-items:center; padding:0 8px; overflow:hidden; z-index:1;">
+            <span style="font-size:10px; font-weight:600; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${fmtDate(p.start)} - ${fmtDate(p.end)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div></div>`;
+  document.getElementById('gantt-wrap').innerHTML = html;
+</script>
+</body>
+</html>

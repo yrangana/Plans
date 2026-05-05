@@ -236,11 +236,12 @@
 <div class="reveal">
   <div class="slides">
 
+
     <!-- 1. Title -->
     <section class="title-slide deck">
       <div class="brand-mark"><span class="dot"></span> Plans</div>
-      <h1>Spec-driven planning for AI-assisted development</h1>
-      <p class="subtitle">A lightweight intent layer that keeps your project visible to you, your team, and your AI assistant. Markdown and JSON, no PM tool required.</p>
+      <h1>You ship fast.<br>Your plans don't keep up.</h1>
+      <p class="subtitle">Plans is a lightweight planning convention for AI-assisted projects. Markdown files, one command to set up, your AI assistant reads it automatically.</p>
       <div class="platforms">
         <span class="pill indigo">Claude Code</span>
         <span class="pill amber">Antigravity</span>
@@ -249,159 +250,181 @@
       </div>
     </section>
 
-    <!-- 2. Problem -->
+    <!-- 2. The problem — feel the pain first -->
     <section class="deck">
-      <span class="eyebrow">Problem</span>
-      <h2>You ship fast. You lose track faster.</h2>
+      <span class="eyebrow">The problem</span>
+      <h2>A few weeks of AI velocity and you can't answer "what's in flight?"</h2>
       <div class="grid-2" style="margin-top:18px">
         <div>
-          <p class="lede">A few weeks of AI-assisted velocity and the project becomes opaque to its own author.</p>
           <ul class="clean-list red">
-            <li>Dozens of <code>*_PLAN.md</code> files at the repo root. Active, stale, shipped, all mixed.</li>
-            <li>No single answer to "what's in flight right now?"</li>
-            <li>Plans that quietly contradict each other.</li>
-            <li>Every new session starts with 15 minutes of re-explaining.</li>
+            <li>Dozens of <code>*_PLAN.md</code> files at the repo root. Active, stale, and shipped all mixed together.</li>
+            <li>Every new AI session starts with 15 minutes of re-explaining context you shouldn't need to re-explain.</li>
+            <li>Plans quietly go stale. Code ships. The plan still says "Not started".</li>
+            <li>You don't have a clear picture. Neither does your AI.</li>
           </ul>
         </div>
         <div class="panel">
-          <div class="label-row"><span class="pill outline">repo root</span></div>
+          <div class="label-row"><span class="pill outline">repo root</span><span style="font-size:0.5em;color:var(--red)">nobody knows what's current</span></div>
           <p style="font-family:'JetBrains Mono', monospace; font-size:0.6em; line-height:1.9; color:var(--ink-soft); margin:0">
             FEATURE_A_PLAN.md<br>
             FEATURE_B_PLAN.md  <span style="color:var(--ink-mute)">(stale?)</span><br>
             FEATURE_C_PLAN.md  <span style="color:var(--ink-mute)">(shipped?)</span><br>
             OLD_IDEA_PLAN.md   <span style="color:var(--ink-mute)">(abandoned?)</span><br>
-            NEW_PLAN.md        <span style="color:var(--ink-mute)">(conflicts?)</span>
+            NEW_PLAN.md        <span style="color:var(--ink-mute)">(conflicts with B?)</span>
           </p>
           <p style="margin-top:14px; color:var(--red); font-weight:700; font-size:0.65em">Nobody knows.</p>
         </div>
       </div>
     </section>
 
-    <!-- 3. Insight -->
+    <!-- 3. Is this for you? — self-select early -->
     <section class="deck">
-      <span class="eyebrow">Insight</span>
-      <h2>The problem isn't the AI. It's that intent has no structure.</h2>
-      <div class="quote" style="margin-top:18px">
-        Without structure, no one can reason about where a project stands. Not you, not your team, and not your AI assistant.
-      </div>
-      <div class="grid-3" style="margin-top:22px">
-        <div class="panel">
-          <h4>Plans</h4>
-          <p>Intent layer. What you're building, why, and what phase it's in.</p>
-        </div>
-        <div class="panel">
-          <h4>Git log</h4>
-          <p>Ground truth. What actually shipped, and when.</p>
-        </div>
-        <div class="panel tinted-green">
-          <h4>/plans sync</h4>
-          <p>Reconciles plans against git log on a schedule. Catches drift.</p>
-        </div>
-      </div>
-      <p class="footnote">Primary audience: you. Your AI assistant benefits as a side effect of structured input.</p>
-    </section>
-
-    <!-- 4. Scope -->
-    <section class="deck">
-      <span class="eyebrow">Scope</span>
-      <h2>What this is, and what it isn't.</h2>
-      <div class="grid-2" style="margin-top:18px">
-        <div class="panel tinted-green">
-          <div class="label-row"><span class="pill green">What it is</span></div>
-          <ul class="clean-list green">
-            <li>An intent layer for projects with multiple features in flight.</li>
-            <li>Plain markdown and JSON in your repo, git-excluded by default.</li>
-            <li>Persistent context across plans, for yourself, over time.</li>
-            <li>Reading order: STATUS.md first, then plan files.</li>
-          </ul>
-        </div>
-        <div class="panel">
-          <div class="label-row"><span class="pill red">What it isn't</span></div>
-          <ul class="clean-list red">
-            <li>Not a PM tool. (Linear, Jira, Asana stay where they are.)</li>
-            <li>Not a task tracker. Operates at plan and phase level.</li>
-            <li>Not a team collaboration system.</li>
-            <li>Not a replacement for design docs, RFCs, or ADRs.</li>
-            <li>Not git-tracked or auditable.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. Adopt vs Skip -->
-    <section class="deck">
-      <span class="eyebrow">Audience</span>
-      <h2>Is this for you?</h2>
+      <span class="eyebrow">Is this for you?</span>
+      <h2>Built for solo devs and small teams moving fast with AI.</h2>
       <div class="grid-2" style="margin-top:18px">
         <div class="panel tinted-indigo">
-          <h3>Adopt when</h3>
+          <h3>Good fit</h3>
           <ul class="clean-list">
-            <li>Solo or small team (1 to 3 people).</li>
-            <li>3+ committed features in parallel.</li>
-            <li>You're losing track of in-flight vs shipped.</li>
-            <li>Plans are accumulating at the repo root.</li>
-            <li>You re-explain context every AI session.</li>
+            <li>Solo or small team (1 to 3 people)</li>
+            <li>3 or more features committed and in flight at once</li>
+            <li>You're losing track of what's done vs what's active</li>
+            <li>You re-explain context to your AI every session</li>
+            <li>You want visibility without a PM tool</li>
           </ul>
         </div>
         <div class="panel">
-          <h3 style="color:var(--ink-soft)">Skip when</h3>
+          <h3 style="color:var(--ink-soft)">Not the right fit</h3>
           <ul class="clean-list muted">
-            <li>Single-feature scope.</li>
-            <li>Team of 5+. Use a real PM tool.</li>
-            <li>Regulated environments. You need an audit trail.</li>
-            <li>Open-source projects. Use Issues.</li>
-            <li>One-off scripts and prototypes.</li>
+            <li>Single-feature scope or one-off scripts</li>
+            <li>Team of 5+: use Linear, Jira, or similar</li>
+            <li>You need a git-tracked audit trail</li>
+            <li>Open-source project with public issue tracker</li>
           </ul>
         </div>
       </div>
+      <p class="footnote">Not a PM tool replacement. Operates at plan and phase level, not task level.</p>
     </section>
 
-    <!-- 6. Structure -->
+    <!-- 4. The outcome — show Monday morning first -->
     <section class="deck">
-      <span class="eyebrow">Structure</span>
-      <h2>One directory. Four files. Three folders.</h2>
-      <pre style="margin-top:14px"><code>plans/
-  README.md           Onboarding for anyone new to the repo
-  STATUS.md           Daily check-in: in flight, up next, shipped, backlog
-  plans.json          Machine-readable snapshot, auto-generated
-  roadmap.html        Interactive dashboard, reads plans.json directly
-  active/             In-progress and committed plans
-  shipped/            Completed plans, kept for history
-  superseded/         Plans replaced by a different approach</code></pre>
-      <div class="grid-2" style="margin-top:14px">
-        <div class="panel">
-          <h4>Git-excluded</h4>
-          <p>Lives in your repo, never committed. Local to your machine.</p>
-          <p><code>echo "plans/" &gt;&gt; .git/info/exclude</code></p>
+      <span class="eyebrow">The outcome</span>
+      <h2>Monday morning. One file. You know exactly where you stand.</h2>
+      <div class="grid-2" style="margin-top:16px">
+        <div style="display:flex; flex-direction:column; gap:12px">
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div style="font-size:0.55em; color:var(--ink-mute); font-weight:700; text-transform:uppercase; letter-spacing:0.08em; padding:10px 16px 6px; border-bottom:1px solid var(--line);">STATUS.md</div>
+            <pre style="margin:0; padding:14px 16px; font-size:0.56em; line-height:1.55; background:#1e1e2e; color:#cdd6f4; overflow:auto; max-height:340px; border-radius:0 0 8px 8px;"><code style="font-family:'JetBrains Mono',monospace; background:none;"># MyProject: Project Status
+<span style="color:#6c7086;">*Last updated: 2026-05-06*</span>
+
+<span style="color:#6c7086;">&lt;!-- AUTO-GENERATED --&gt;</span>
+
+<span style="color:#89b4fa;">## In flight</span>
+
+| Initiative        | Status      | Progress    | ETA        |
+| ----------------- | ----------- | ----------- | ---------- |
+| Dark Mode         | In progress | Phase 2/3   | 2026-05-12 |
+| Search Index      | In progress | Phase 1/2   | 2026-05-09 |
+
+<span style="color:#89b4fa;">## Up next</span>
+
+| Initiative        | Depends on  | Effort  |
+| ----------------- | ----------- | ------- |
+| Theme Picker      | Dark Mode   | 1 week  |
+| Search autocomplete | Search index | 1 week |
+
+<span style="color:#6c7086;">&lt;!-- END AUTO-GENERATED --&gt;</span>
+
+<span style="color:#89b4fa;">## Recently shipped</span>
+
+| What               | Shipped    |
+| ------------------ | ---------- |
+| First-run onboarding | 2026-04-23 |
+
+<span style="color:#89b4fa;">## Backlog</span>
+- Export to CSV
+- Keyboard shortcuts</code></pre>
+          </div>
+          <p style="font-size:0.55em; color:var(--ink-mute); text-align:center">
+            <a href="https://yrangana.github.io/Plans/examples/status.html" target="_blank" style="color:var(--indigo)">Open live demo (rendered)</a>
+          </p>
         </div>
-        <div class="panel">
-          <h4>Plain files</h4>
-          <p>Markdown and JSON only. No database, no account, no external service to depend on.</p>
+        <div style="display:flex; flex-direction:column; gap:14px; justify-content:center">
+          <div class="panel tinted-green">
+            <h4>You open this instead of ten files</h4>
+            <p>In flight, up next, shipped, backlog. One read. Two minutes. You know what's happening.</p>
+          </div>
+          <div class="panel tinted-indigo">
+            <h4>Your AI reads it at session start</h4>
+            <p>No re-explaining. It already knows what's in flight and which plan to update when you ship.</p>
+          </div>
+          <div class="panel">
+            <h4>The three auto-generated sections</h4>
+            <p>In flight, Up next, and Recently shipped are regenerated by <code>/plans sync</code>. You never update them manually.</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 7. Plan File Anatomy -->
+    <!-- 5. Setup — two commands -->
     <section class="deck">
-      <span class="eyebrow">Anatomy</span>
-      <h2>Every plan has two layers.</h2>
-      <p class="lede">Frontmatter is for tooling. The status banner is for humans. They must agree.</p>
+      <span class="eyebrow">Setup</span>
+      <h2>Two commands. Under two minutes. Nothing to maintain.</h2>
+      <pre style="margin-top:14px"><code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+plans-init /path/to/your/project</code></pre>
+      <div style="margin-top:16px">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Install once</div>
+            <div class="step-note">Clones the repo, symlinks <code>plans-init</code> and <code>plans-update</code> to <code>~/.local/bin/</code>.</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Bootstrap your project</div>
+            <div class="step-note">Scaffolds <code>plans/</code>, adds it to <code>.git/info/exclude</code>, detects your AI instruction file and offers to append the planning snippet. Nothing happens without confirmation.</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Run /plans new</div>
+            <div class="step-note">Five questions. Writes your first plan file with correct structure. Add a row to STATUS.md. You're done.</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Stay current with plans-update</div>
+            <div class="step-note">Pulls dashboard improvements and skill updates without touching your data. Backups go to <code>.bak</code>.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. The plan file — what you actually write -->
+    <section class="deck">
+      <span class="eyebrow">The plan file</span>
+      <h2>One markdown file per feature. Two layers that must agree.</h2>
+      <p class="lede">Frontmatter is machine-readable. The status banner is human-readable. If they disagree, frontmatter wins. Run <code>/plans sync</code> to catch disagreements automatically.</p>
       <div class="grid-2" style="margin-top:14px">
         <div>
-          <div class="label-row"><span class="pill indigo">Frontmatter</span><span style="font-size:0.5em;color:var(--ink-mute)">YAML, 8 fields</span></div>
+          <div class="label-row"><span class="pill indigo">Frontmatter</span><span style="font-size:0.5em;color:var(--ink-mute)">8 fields, written once, updated as work progresses</span></div>
           <pre><code>---
 status: active
 priority: P1
-owner: you
+owner: yash
 type: feature
 depends_on: [AUTH_PLAN]
 blocks: [DASHBOARD_PLAN]
-last_updated: 2026-05-04
-in_flight: false
+last_updated: 2026-05-06
+in_flight: true
 ---</code></pre>
+          <p style="font-size:0.55em; color:var(--ink-mute); margin-top:8px">Set <code>in_flight: true</code> when work starts. This drives the dashboard "In flight" vs "Up next" split.</p>
         </div>
         <div>
-          <div class="label-row"><span class="pill outline">Status banner</span><span style="font-size:0.5em;color:var(--ink-mute)">markdown, second heading</span></div>
+          <div class="label-row"><span class="pill outline">Status banner</span><span style="font-size:0.5em;color:var(--ink-mute)">the second heading in every plan</span></div>
           <pre><code>## Status
 
 - **Overall:** In progress, Phase 2 of 3
@@ -411,268 +434,184 @@ in_flight: false
 - **Phase 3 (Tests):** Not started
 
 **Next action:** Wire up the API client.
-**Last updated:** 2026-05-04</code></pre>
-        </div>
-      </div>
-      <div class="quote compact" style="margin-top:14px">
-        Two-source rule: if frontmatter and banner disagree, frontmatter wins. Update both together.
-      </div>
-    </section>
-
-    <!-- 8. Lifecycle -->
-    <section class="deck">
-      <span class="eyebrow">Lifecycle</span>
-      <h2>One capture point. One home per stage.</h2>
-      <p class="lede">The rule that prevents scattered docs: every idea starts as a backlog bullet, and only graduates when work is committed.</p>
-      <div style="margin-top:18px">
-        <div class="step-row">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-title">New idea</div>
-            <div class="step-note">Bullet in <code>STATUS.md</code> backlog. No plan file yet, work isn't committed.</div>
-          </div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-title">Committed</div>
-            <div class="step-note">Run <code>/plans new</code> to create <code>plans/active/FEATURE.md</code> with correct structure. Add a row to STATUS.md "Up next".</div>
-          </div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <div class="step-title">Work starts</div>
-            <div class="step-note">Set <code>in_flight: true</code>. Move STATUS.md row to "In flight".</div>
-          </div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <div class="step-title">Phase ships</div>
-            <div class="step-note">Mark phase Done in the banner. Update STATUS.md. Bump <code>last_updated</code>.</div>
-          </div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">5</div>
-          <div class="step-body">
-            <div class="step-title">Fully done</div>
-            <div class="step-note"><code>mv plans/active/FEATURE.md plans/shipped/</code>. Move STATUS.md row to "Recently shipped".</div>
-          </div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">5b</div>
-          <div class="step-body">
-            <div class="step-title">Replaced by another approach</div>
-            <div class="step-note"><code>mv plans/active/FEATURE.md plans/superseded/</code>. Set <code>status: superseded</code>. Distinct from shipped: the work was not completed, the approach was abandoned.</div>
-          </div>
+**Last updated:** 2026-05-06</code></pre>
         </div>
       </div>
     </section>
 
-    <!-- 9. STATUS.md sections -->
+    <!-- 7. /plans new -->
     <section class="deck">
-      <span class="eyebrow">STATUS.md</span>
-      <h2>Your daily check-in. One file replaces the question.</h2>
-      <p class="lede">Six sections, three auto-generated, three hand-maintained. Open this instead of searching through docs.</p>
-      <div class="grid-3" style="margin-top:16px">
-        <div class="panel"><h4>In flight</h4><p>Active work right now.</p><p style="color:var(--indigo); font-weight:600">Auto-generated</p></div>
-        <div class="panel"><h4>Up next</h4><p>Committed for the next 30 days.</p><p style="color:var(--indigo); font-weight:600">Auto-generated</p></div>
-        <div class="panel tinted-green"><h4>Recently shipped</h4><p>Last 30 days, cross-checked against git log.</p><p style="color:var(--green-deep); font-weight:600">Auto-generated</p></div>
-      </div>
-      <div class="grid-3" style="margin-top:12px">
-        <div class="panel"><h4>Backlog</h4><p>Captured ideas, not yet committed.</p><p style="color:var(--ink-mute); font-weight:600">Hand-maintained</p></div>
-        <div class="panel"><h4>Monthly log</h4><p>Append-only history.</p><p style="color:var(--ink-mute); font-weight:600">Hand-maintained</p></div>
-        <div class="panel"><h4>Blocked</h4><p>Risks and external blockers.</p><p style="color:var(--ink-mute); font-weight:600">Hand-maintained</p></div>
-      </div>
-    </section>
-
-    <!-- 10. roadmap.html -->
-    <section class="deck">
-      <span class="eyebrow">Visual layer</span>
-      <h2>roadmap.html: the dashboard you can share.</h2>
-      <p class="lede">A single static HTML file that reads <code>plans.json</code> directly. No server needed beyond <code>python -m http.server</code>.</p>
-      <div class="grid-3" style="margin-top:18px">
-        <div class="panel">
-          <h4>Gantt chart</h4>
-          <p>Interactive timeline with progress bars. Shipped items in green. Today button auto-scrolls.</p>
-        </div>
-        <div class="panel">
-          <h4>Dependency graph</h4>
-          <p>Which plans block which. Zoom, pan, reset. Active plans only by default.</p>
-        </div>
-        <div class="panel">
-          <h4>Plan cards</h4>
-          <p>Filter by status. Phase breakdown per plan. Next action shown inline.</p>
-        </div>
-      </div>
-      <div class="quote compact" style="margin-top:18px">
-        Stakeholder-friendly: shareable, visual, no markdown knowledge required.
-      </div>
-    </section>
-
-    <!-- 11. Drift detection -->
-    <section class="deck">
-      <span class="eyebrow">Reconciliation</span>
-      <h2>Plans drift from reality. That's why /plans sync exists.</h2>
-      <div class="grid-2" style="margin-top:18px">
+      <span class="eyebrow">/plans new</span>
+      <h2>Never write a plan from scratch. Five questions, one correct file.</h2>
+      <p class="lede">A guided command installed by <code>plans-init</code>. It asks five questions and writes a correctly structured plan file — correct frontmatter, correct banner template, correct filename.</p>
+      <div class="grid-2" style="margin-top:14px">
         <div>
-          <p class="lede">Plans describe intent. Git log records reality. Without reconciliation, your planning system becomes misleading rather than helpful.</p>
+          <div class="label-row"><span class="pill indigo">Five questions</span></div>
+          <div class="step-row" style="padding:8px 0">
+            <div class="step-num" style="background:var(--indigo-soft);color:var(--indigo-deep)">1</div>
+            <div class="step-body"><div class="step-note">Plan name (becomes <code>SCREAMING_SNAKE_CASE.md</code>)</div></div>
+          </div>
+          <div class="step-row" style="padding:8px 0">
+            <div class="step-num" style="background:var(--indigo-soft);color:var(--indigo-deep)">2</div>
+            <div class="step-body"><div class="step-note">Type: <code>feature</code>, <code>bug</code>, <code>research</code>, <code>spike</code>, or <code>plan</code></div></div>
+          </div>
+          <div class="step-row" style="padding:8px 0">
+            <div class="step-num" style="background:var(--indigo-soft);color:var(--indigo-deep)">3</div>
+            <div class="step-body"><div class="step-note">Priority: P0 (critical) to P3 (nice to have)</div></div>
+          </div>
+          <div class="step-row" style="padding:8px 0">
+            <div class="step-num" style="background:var(--indigo-soft);color:var(--indigo-deep)">4</div>
+            <div class="step-body"><div class="step-note">Dependencies: what this waits on, what it blocks</div></div>
+          </div>
+          <div class="step-row" style="padding:8px 0">
+            <div class="step-num" style="background:var(--indigo-soft);color:var(--indigo-deep)">5</div>
+            <div class="step-body"><div class="step-note">Owner: your username or name</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="label-row"><span class="pill green">One correctly structured file</span></div>
+          <pre><code>Created plans/active/AUTH_REFACTOR.md
+
+Next steps:
+  1. Fill in Context, Goals, and Phases
+  2. Add a row to STATUS.md "Up next":
+     | AUTH_REFACTOR | feature | P1 | TBD |
+  3. Set in_flight: true when work starts</code></pre>
+          <div class="quote compact" style="margin-top:12px">
+            No blank-page problem. No format errors. <code>/plans sync</code> won't flag it immediately.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. /plans sync -->
+    <section class="deck">
+      <span class="eyebrow">/plans sync</span>
+      <h2>Plans drift from reality. /plans sync catches it before it compounds.</h2>
+      <div class="grid-2" style="margin-top:16px">
+        <div>
+          <p class="lede">Run it weekly. It reads all plan frontmatter, runs <code>git log</code> since last sync, finds every discrepancy, regenerates derived files, and shows you a diff. You confirm before anything is written.</p>
+          <div class="label-row" style="margin-top:12px"><span class="pill red">What it catches</span></div>
           <ul class="clean-list red">
-            <li>Shipped code, plan still "Not started".</li>
-            <li>Active plan, no commits in 14 days.</li>
-            <li>STATUS.md row with no underlying file.</li>
-            <li>Frontmatter and banner disagree.</li>
-            <li>Dependency edges that don't reciprocate.</li>
+            <li>Shipped code, plan still "Not started"</li>
+            <li>Active plan, no commits in 14+ days</li>
+            <li>Frontmatter and status banner disagree</li>
+            <li>STATUS.md row with no underlying plan file</li>
+            <li>Dependency edges that don't reciprocate</li>
           </ul>
         </div>
         <div class="panel solid-ink">
-          <div class="label-row"><span class="pill green">Available</span></div>
-          <h3 style="color:white">/plans sync</h3>
-          <ul class="clean-list">
-            <li style="color:#e0e6f5">Reads all plan frontmatter.</li>
-            <li style="color:#e0e6f5">Runs <code style="background:rgba(255,255,255,0.1); color:#e0e6f5">git log</code> since last sync.</li>
-            <li style="color:#e0e6f5">Detects drift automatically.</li>
-            <li style="color:#e0e6f5">Regenerates plans.json and STATUS.md.</li>
-            <li style="color:#e0e6f5">Shows a diff. Asks before writing.</li>
+          <div class="label-row"><span class="pill green">What it regenerates</span></div>
+          <ul class="clean-list" style="margin-top:4px">
+            <li style="color:#e0e6f5"><strong style="color:white">plans.json</strong> rebuilt from all plan frontmatter</li>
+            <li style="color:#e0e6f5"><strong style="color:white">STATUS.md</strong> In flight and Up next tables</li>
           </ul>
-          <p class="footnote" style="color:#94a3b8; margin-top:12px">15-minute manual audit becomes 2-minute review-and-confirm.</p>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1)">
+            <p style="color:#94a3b8; font-size:0.6em; margin:0 0 8px">Review and confirm:</p>
+            <pre style="background:rgba(255,255,255,0.06); border-radius:8px; padding:12px; margin:0"><code style="font-size:0.58em; color:#e0e6f5">Apply these changes? (y/n/select)
+  y      apply all
+  n      apply nothing
+  select choose per file</code></pre>
+          </div>
+          <p class="footnote" style="color:#94a3b8; margin-top:12px">15-minute manual audit becomes a 2-minute review.</p>
         </div>
       </div>
     </section>
 
-    <!-- 12. AI side effect -->
+    <!-- 9. The dashboard -->
     <section class="deck">
-      <span class="eyebrow">AI as side effect</span>
-      <h2>The system is for you. The AI just benefits from structure.</h2>
-      <div class="grid-2" style="margin-top:18px">
+      <span class="eyebrow">Visual layer</span>
+      <h2>roadmap.html: a shareable dashboard that never needs a server.</h2>
+      <p class="lede">A static HTML file included in <code>plans/</code>. Reads <code>plans.json</code> directly. Open it with <code>python -m http.server 8080</code> and share the URL with anyone.</p>
+      <div class="grid-3" style="margin-top:18px">
         <div class="panel">
-          <h3 style="color:var(--red)">Without this system</h3>
-          <ul class="clean-list red">
-            <li>Re-explain context every session.</li>
-            <li>AI suggests things you decided against last week.</li>
-            <li>Work gets duplicated.</li>
-            <li>15 minutes of context-setting before real work.</li>
-          </ul>
+          <h4>Gantt chart</h4>
+          <p>Interactive timeline. Progress bars per phase. Shipped items in green. Today button auto-scrolls to the current date.</p>
+        </div>
+        <div class="panel">
+          <h4>Dependency graph</h4>
+          <p>Which plans block which. Zoom, pan, reset. Visualises blockers before they become surprises.</p>
         </div>
         <div class="panel tinted-green">
-          <h3 style="color:var(--green-deep)">With this system</h3>
-          <ul class="clean-list green">
-            <li>AI reads STATUS.md at session start.</li>
-            <li>"What's next?" has a deterministic answer.</li>
-            <li>AI knows which plan to update when you ship.</li>
-            <li>Structured input means better reasoning.</li>
-          </ul>
+          <h4>Plan cards</h4>
+          <p>Filter by status. Phase breakdown per plan. Next action shown inline. No markdown knowledge needed.</p>
         </div>
       </div>
-      <p class="footnote">The integration is two lines in <code>CLAUDE.md</code> (or <code>AGENTS.md</code>, <code>.cursorrules</code>): point to STATUS.md, describe the lifecycle.</p>
+      <div class="quote compact" style="margin-top:18px">
+        Kept current automatically: <code>/plans sync</code> regenerates <code>plans.json</code>, the dashboard reads it fresh on every open.
+      </div>
     </section>
 
-    <!-- 13. Platform Portability -->
+    <!-- 10. AI integration -->
     <section class="deck">
-      <span class="eyebrow">Portability</span>
-      <h2>The data model is platform-neutral.</h2>
-      <p class="lede"><code>plans/</code> is pure markdown and JSON. Only the AI instruction file changes per platform.</p>
-      <table>
-        <tr>
-          <th>Component</th>
-          <th>Claude Code</th>
-          <th>Antigravity</th>
-          <th>Cursor</th>
-        </tr>
-        <tr>
-          <td>Instruction file</td>
-          <td><code>CLAUDE.md</code></td>
-          <td><code>AGENTS.md</code></td>
-          <td><code>.cursorrules</code></td>
-        </tr>
-        <tr>
-          <td>Skill location</td>
-          <td><code>.claude/skills/</code></td>
-          <td><code>.agents/skills/*/SKILL.md</code></td>
-          <td>Custom commands</td>
-        </tr>
-        <tr>
-          <td><code>plans/</code> directory</td>
-          <td colspan="3" style="text-align:center; color:var(--green-deep); font-weight:700">Identical across all platforms</td>
-        </tr>
-        <tr>
-          <td><code>plans.json</code></td>
-          <td colspan="3" style="text-align:center; color:var(--green-deep); font-weight:700">Identical across all platforms</td>
-        </tr>
-        <tr>
-          <td><code>roadmap.html</code></td>
-          <td colspan="3" style="text-align:center; color:var(--green-deep); font-weight:700">Identical across all platforms</td>
-        </tr>
-      </table>
-    </section>
+      <span class="eyebrow">AI integration</span>
+      <h2>Your AI reads the same files. Sessions start in two messages.</h2>
+      <p class="lede"><code>plans-init</code> appends a snippet to your <code>CLAUDE.md</code>, <code>AGENTS.md</code>, or <code>.cursorrules</code>. The AI reads it at session start. No re-explaining required.</p>
+      <div class="grid-2" style="margin-top:14px">
+        <div>
+          <div class="label-row"><span class="pill indigo">What goes in CLAUDE.md</span></div>
+          <pre><code>Read plans/STATUS.md at session start.
+Active plans in plans/active/,
+completed in plans/shipped/,
+replaced in plans/superseded/.
 
-    <!-- 14. Quick Start -->
-    <section class="deck">
-      <span class="eyebrow">Quick start</span>
-      <h2>Two commands. The rest is your first plan.</h2>
-      <pre style="margin-top:14px"><code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
-plans-init /path/to/your/project</code></pre>
-      <div style="margin-top:14px">
-        <div class="step-row">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-title">Install</div>
-            <div class="step-note">Clones to <code>~/.local/share/plans</code> and symlinks <code>plans-init</code> and <code>plans-update</code> to <code>~/.local/bin/</code>. Re-run any time to upgrade.</div>
-          </div>
+Two-source rule: frontmatter and banner
+must agree. Frontmatter wins on conflict.
+
+Lifecycle:
+- New idea: backlog bullet only
+- Committed: run /plans new
+- Work starts: set in_flight: true
+- Done: mv active/ to shipped/
+- Replaced: mv active/ to superseded/
+
+Audit drift: /plans sync
+Create a plan: /plans new</code></pre>
         </div>
-        <div class="step-row">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-title">Bootstrap your project</div>
-            <div class="step-note"><code>plans-init</code> copies the template into <code>plans/</code>, adds it to <code>.git/info/exclude</code>, and offers to append the planning section to your AI instruction file (<code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>.cursorrules</code>, <code>.windsurfrules</code>).</div>
+        <div style="display:flex; flex-direction:column; gap:12px">
+          <div class="panel tinted-green">
+            <h4>The AI now knows</h4>
+            <ul class="clean-list green">
+              <li>Where to look first every session</li>
+              <li>What each directory means and when to use it</li>
+              <li>How to create a plan with correct structure</li>
+              <li>How and when to move files through the lifecycle</li>
+            </ul>
           </div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <div class="step-title">Create your first plan</div>
-            <div class="step-note">Run <code>/plans new</code> to create your first plan with correct structure. Add a row to <code>STATUS.md</code>.</div>
-          </div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <div class="step-title">Open the dashboard</div>
-            <div class="step-note"><code>python -m http.server 8080</code>, then visit <code>http://localhost:8080/plans/roadmap.html</code>.</div>
-          </div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">5</div>
-          <div class="step-body">
-            <div class="step-title">Stay current</div>
-            <div class="step-note"><code>plans-update</code> pulls dashboard improvements without touching your data. Backups go to <code>.bak</code>.</div>
+          <div class="panel">
+            <h4>Works across platforms</h4>
+            <p><code>plans/</code> is pure markdown and JSON. Install skill to <code>.claude/skills/</code> for Claude Code, <code>.agents/skills/</code> for Antigravity. The data never changes.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 15. Closing -->
+    <!-- 11. Closing — single clear call to action -->
     <section class="title-slide deck">
       <div class="brand-mark"><span class="dot"></span> Plans</div>
-      <h1>Structure isn't overhead.<br>It's how you stay sane.</h1>
-      <p class="subtitle">Plans as intent. Git as ground truth. Skills to reconcile them.</p>
+      <h1>Two commands.<br>Try it on your current project.</h1>
+      <pre style="max-width:640px; margin:24px auto 0; text-align:left"><code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+plans-init /path/to/your/project</code></pre>
       <div class="closing-grid">
         <div class="panel">
-          <h4>Live demo</h4>
-          <p>yrangana.github.io/Plans/examples/</p>
+          <h4>Live demo — dashboard</h4>
+          <p><a href="https://yrangana.github.io/Plans/examples/" target="_blank">yrangana.github.io/Plans/examples/</a></p>
+        </div>
+        <div class="panel">
+          <h4>Live demo — STATUS.md</h4>
+          <p><a href="https://yrangana.github.io/Plans/examples/status.html" target="_blank">yrangana.github.io/Plans/examples/status.html</a></p>
+        </div>
+        <div class="panel">
+          <h4>Source + docs</h4>
+          <p><a href="https://github.com/yrangana/Plans" target="_blank">github.com/yrangana/Plans</a></p>
         </div>
         <div class="panel">
           <h4>Reference spec</h4>
-          <p>docs/reference.md</p>
+          <p><a href="https://github.com/yrangana/Plans/blob/main/docs/reference.md" target="_blank">docs/reference.md</a></p>
         </div>
         <div class="panel">
           <h4>Blog post</h4>
-          <p>docs/blog-post.md</p>
-        </div>
-        <div class="panel">
-          <h4>Source</h4>
-          <p>github.com/yrangana/Plans</p>
+          <p><a href="https://github.com/yrangana/Plans/blob/main/docs/blog-post.md" target="_blank">docs/blog-post.md</a></p>
         </div>
       </div>
     </section>
