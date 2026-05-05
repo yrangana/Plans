@@ -58,7 +58,9 @@ in_flight: true -> STATUS.md "In flight" row
     phase ships
 Phase marked done -> STATUS.md updated
     fully done
-mv plans/active/ plans/shipped/
+mv plans/active/X.md plans/shipped/
+    replaced by another approach
+mv plans/active/X.md plans/superseded/  (set status: superseded)
 ```
 
 This eliminates the scattered document problem. Every idea has exactly one home at any given stage.

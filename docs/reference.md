@@ -108,7 +108,7 @@ Use plain `mv` for all file moves, not `git mv`.
 
 ### Frontmatter spec
 
-All 7 fields are required.
+8 fields. The first 7 are required at creation. `in_flight` is set separately when work actually starts.
 
 | Field | Type | Values | Description |
 |---|---|---|---|
@@ -119,6 +119,7 @@ All 7 fields are required.
 | `depends_on` | list | filenames without `.md` | Plans this is waiting on |
 | `blocks` | list | filenames without `.md` | Plans waiting on this |
 | `last_updated` | date | `YYYY-MM-DD` | Last meaningful update |
+| `in_flight` | bool | `true` `false` | Set to `true` when work actively starts. Drives dashboard "In flight" vs "Up next" split. Omit or set `false` at creation. |
 
 Example:
 
@@ -131,6 +132,7 @@ type: feature
 depends_on: [AUTH_PLAN]
 blocks: [DASHBOARD_PLAN, WIDGET_PLAN]
 last_updated: 2026-05-04
+in_flight: false
 ---
 ```
 
@@ -342,7 +344,7 @@ Active plans live in `plans/active/`, completed plans in `plans/shipped/`, repla
 
 Every plan file has two layers that must agree. See `plans/README.md` for exact format and valid field values.
 
-1. YAML frontmatter (machine-readable) with 7 required fields: `status`, `priority`, `owner`, `type`, `depends_on`, `blocks`, `last_updated`.
+1. YAML frontmatter (machine-readable) with 8 fields: `status`, `priority`, `owner`, `type`, `depends_on`, `blocks`, `last_updated` (all required at creation), plus `in_flight` (set to `true` when work actively starts).
 2. `## Status` banner (human-readable) showing per-phase progress and the next action.
 
 If frontmatter and banner conflict, frontmatter wins.
@@ -405,7 +407,7 @@ A slash command (Claude Code) or equivalent skill (Antigravity, Cursor) with two
 | Dependency cycle | `depends_on` graph has a cycle | Flag, cannot auto-resolve |
 | Orphaned edge | Plan A `depends_on: [B]` but B doesn't list `blocks: [A]` | Propose adding reverse edge |
 | Two-source disagreement | Frontmatter `status` vs banner conflict | Frontmatter wins; propose fixing banner |
-| Missing frontmatter field | Any of 7 required fields absent | Flag with expected value |
+| Missing frontmatter field | Any of 7 creation-required fields absent | Flag with expected value |
 
 #### Output pipeline
 
