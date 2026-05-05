@@ -28,8 +28,18 @@ jobs:
           test -f plans/roadmap.html
           test -d plans/active
           test -d plans/shipped
+          test -d plans/superseded
           test -f plans/active/EXAMPLE_PLAN.md
           echo "OK: all expected files present"
+
+          echo "--- verifying skill install ---"
+          test -d .claude/skills/plans
+          test -f .claude/skills/plans/SKILL.md
+          echo "OK: /plans skill installed"
+
+          echo "--- verifying mirror file parity ---"
+          cmp "$GITHUB_WORKSPACE/template/plans/roadmap.html" "$GITHUB_WORKSPACE/examples/index.html"
+          echo "OK: roadmap.html and index.html are identical"
 
           echo "--- verifying git exclude entry ---"
           grep -q "^plans/$" .git/info/exclude

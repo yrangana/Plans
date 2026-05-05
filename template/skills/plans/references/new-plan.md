@@ -54,6 +54,7 @@ type: {feature|bug|research|spike|plan}
 depends_on: [{depends_on list, or []}]
 blocks: [{blocks list, or []}]
 last_updated: {today YYYY-MM-DD}
+in_flight: false
 ---
 
 # Plan: {Human-readable title}

@@ -4,7 +4,7 @@ Run all 9 rules. Collect all findings before reporting.
 
 ## Rule 1: Missing frontmatter field
 
-**Check:** Each active plan has all 7 required fields: `status`, `priority`, `owner`, `type`, `depends_on`, `blocks`, `last_updated`.
+**Check:** Each active plan has all 7 creation-required fields: `status`, `priority`, `owner`, `type`, `depends_on`, `blocks`, `last_updated`.
 
 **Flag:** List each missing field with expected type/values.
 

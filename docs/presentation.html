@@ -359,14 +359,15 @@
     <!-- 6. Structure -->
     <section class="deck">
       <span class="eyebrow">Structure</span>
-      <h2>One directory. Five files. Two folders.</h2>
+      <h2>One directory. Four files. Three folders.</h2>
       <pre style="margin-top:14px"><code>plans/
   README.md           Onboarding for anyone new to the repo
   STATUS.md           Daily check-in: in flight, up next, shipped, backlog
   plans.json          Machine-readable snapshot, auto-generated
   roadmap.html        Interactive dashboard, reads plans.json directly
   active/             In-progress and committed plans
-  shipped/            Completed plans, kept for history</code></pre>
+  shipped/            Completed plans, kept for history
+  superseded/         Plans replaced by a different approach</code></pre>
       <div class="grid-2" style="margin-top:14px">
         <div class="panel">
           <h4>Git-excluded</h4>
@@ -387,7 +388,7 @@
       <p class="lede">Frontmatter is for tooling. The status banner is for humans. They must agree.</p>
       <div class="grid-2" style="margin-top:14px">
         <div>
-          <div class="label-row"><span class="pill indigo">Frontmatter</span><span style="font-size:0.5em;color:var(--ink-mute)">YAML, 7 required fields</span></div>
+          <div class="label-row"><span class="pill indigo">Frontmatter</span><span style="font-size:0.5em;color:var(--ink-mute)">YAML, 8 fields</span></div>
           <pre><code>---
 status: active
 priority: P1
@@ -396,6 +397,7 @@ type: feature
 depends_on: [AUTH_PLAN]
 blocks: [DASHBOARD_PLAN]
 last_updated: 2026-05-04
+in_flight: false
 ---</code></pre>
         </div>
         <div>
@@ -456,6 +458,13 @@ last_updated: 2026-05-04
           <div class="step-body">
             <div class="step-title">Fully done</div>
             <div class="step-note"><code>mv plans/active/FEATURE.md plans/shipped/</code>. Move STATUS.md row to "Recently shipped".</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">5b</div>
+          <div class="step-body">
+            <div class="step-title">Replaced by another approach</div>
+            <div class="step-note"><code>mv plans/active/FEATURE.md plans/superseded/</code>. Set <code>status: superseded</code>. Distinct from shipped: the work was not completed, the approach was abandoned.</div>
           </div>
         </div>
       </div>

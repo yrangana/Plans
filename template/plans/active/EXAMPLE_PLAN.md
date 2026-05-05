@@ -6,6 +6,7 @@ type: feature
 depends_on: []
 blocks: []
 last_updated: 2026-01-01
+in_flight: false
 ---
 
 # Plan: Example Feature
