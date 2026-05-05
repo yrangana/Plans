@@ -167,21 +167,18 @@ plans/active/*.md             plans/shipped/*.md
     door)                 dashboard)
 ```
 
-Git log is the ground truth for what shipped. Plan files are the intent layer. The `/plans-sync` skill (coming) reconciles them weekly.
+Git log is the ground truth for what shipped. Plan files are the intent layer. The `/plans sync` skill reconciles them weekly.
 
 ---
 
-## Coming: `/plans-sync` Skill
+## The `/plans` Skill
 
-A Claude Code slash command (and Antigravity skill, Cursor command) that automates the weekly audit:
+A Claude Code slash command (and Antigravity skill, Cursor command) with two modes:
 
-1. Reads all plan frontmatter
-2. Runs `git log` since last sync
-3. Detects drift (shipped phases unmarked, stale plans, missing fields)
-4. Regenerates `plans.json` and STATUS.md auto-sections
-5. Shows proposed changes as a diff, asks before writing
+- **`/plans sync`**: weekly audit. Reads plan frontmatter, runs `git log`, detects drift, regenerates `plans.json` and STATUS.md auto-sections, shows proposed changes before writing.
+- **`/plans new`**: guided creation of a new plan file with correct frontmatter and status banner.
 
-Track progress in [docs/reference.md](docs/reference.md).
+Installed automatically by `plans-init`. See [docs/reference.md](docs/reference.md) for the full skill spec.
 
 ---
 
@@ -205,7 +202,7 @@ This is a small, opinionated convention. Issues and PRs welcome for:
 - Bug fixes in `template/plans/roadmap.html`
 - Doc clarifications
 - Cross-platform skill ports (Cursor, Windsurf)
-- The `/plans-sync` skill implementation
+- Cross-platform skill ports (Cursor, Windsurf)
 
 For substantive changes to the convention itself (frontmatter spec, lifecycle), open an issue first to discuss.
 

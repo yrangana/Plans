@@ -32,15 +32,21 @@ plans/
 │   └── presentation.html        # Slideshow
 ├── template/                    # What users copy into their projects
 │   ├── CLAUDE.md.snippet        # Section adopters paste into their CLAUDE.md
-│   └── plans/                   # The directory adopters drop into their repo
-│       ├── README.md            # Onboarding for adopters
-│       ├── STATUS.md            # Empty front-door template
-│       ├── plans.json           # Empty starter
-│       ├── roadmap.html         # Interactive dashboard
-│       ├── active/              # With EXAMPLE_PLAN.md showing the format
-│       └── shipped/
+│   ├── plans/                   # The directory adopters drop into their repo
+│   │   ├── README.md            # Onboarding for adopters
+│   │   ├── STATUS.md            # Empty front-door template
+│   │   ├── plans.json           # Empty starter
+│   │   ├── roadmap.html         # Interactive dashboard
+│   │   ├── active/              # With EXAMPLE_PLAN.md showing the format
+│   │   ├── shipped/
+│   │   └── superseded/
+│   └── skills/
+│       └── plans/               # /plans skill (sync + new modes)
+│           ├── SKILL.md
+│           └── references/
 ├── scripts/
-│   └── init.sh                  # Copies template/plans into a target dir
+│   ├── init.sh                  # Bootstraps plans/ and installs skill in a target project
+│   └── update.sh                # Updates system files (roadmap.html, README.md, skill)
 └── examples/                    # GitHub Pages demo
     ├── index.html               # Mirror of template/plans/roadmap.html
     └── plans.json               # Demo data with fictional plans
