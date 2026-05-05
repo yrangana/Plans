@@ -167,11 +167,11 @@ plans/active/*.md             plans/shipped/*.md
     door)                 dashboard)
 ```
 
-Git log is the ground truth for what shipped. Plan files are the intent layer. The `/status-sync` skill (coming) reconciles them weekly.
+Git log is the ground truth for what shipped. Plan files are the intent layer. The `/plans-sync` skill (coming) reconciles them weekly.
 
 ---
 
-## Coming: `/status-sync` Skill
+## Coming: `/plans-sync` Skill
 
 A Claude Code slash command (and Antigravity skill, Cursor command) that automates the weekly audit:
 
@@ -205,7 +205,7 @@ This is a small, opinionated convention. Issues and PRs welcome for:
 - Bug fixes in `template/plans/roadmap.html`
 - Doc clarifications
 - Cross-platform skill ports (Cursor, Windsurf)
-- The `/status-sync` skill implementation
+- The `/plans-sync` skill implementation
 
 For substantive changes to the convention itself (frontmatter spec, lifecycle), open an issue first to discuss.
 

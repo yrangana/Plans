@@ -27,7 +27,7 @@ plans/STATUS.md         ← Engineer's front door (in flight, up next)
 plans/roadmap.html      ← Stakeholder view (interactive timeline, dependency graph)
 ```
 
-**Git log** is the ground truth for what actually shipped. Plans are the intent layer. A weekly audit (`/status-sync`, coming) reconciles the two automatically.
+**Git log** is the ground truth for what actually shipped. Plans are the intent layer. A weekly audit (`/plans-sync`, coming) reconciles the two automatically.
 
 ---
 
@@ -149,11 +149,11 @@ At the start of every session, Claude reads `STATUS.md` and relevant plan files.
 - **"What's next?"** has a deterministic answer, no re-explaining
 - **"Is X shipped?"** Claude cross-checks git log against plan status
 - **When you ship something,** Claude knows which plan to update and how
-- **Drift detection:** `/status-sync` (coming) reads git log, compares to plan frontmatter, proposes fixes
+- **Drift detection:** `/plans-sync` (coming) reads git log, compares to plan frontmatter, proposes fixes
 
 ---
 
-## Coming: `/status-sync`
+## Coming: `/plans-sync`
 
 A Claude slash command that automates the weekly audit:
 

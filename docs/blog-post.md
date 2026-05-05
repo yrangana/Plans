@@ -69,7 +69,7 @@ Here's the subtle part: plans describe intent, not reality. Git log is what actu
 
 A plan can say Phase 2 is not started, but the code might already be merged. That's drift. Without a way to catch it, your plans become less useful over time.
 
-The fix is a weekly audit. Right now it's manual, about 15 minutes. I'm building `/status-sync`, a Claude skill that reads git log, cross-references it against plan frontmatter, and proposes fixes as a diff. Review and confirm in about 2 minutes.
+The fix is a weekly audit. Right now it's manual, about 15 minutes. I'm building `/plans-sync`, a Claude skill that reads git log, cross-references it against plan frontmatter, and proposes fixes as a diff. Review and confirm in about 2 minutes.
 
 Frontmatter is machine-readable specifically for this. The skill reads it, validates it, catches disagreements between the frontmatter status and the banner, flags stale plans with no recent commits, detects orphaned dependency edges.
 
@@ -95,7 +95,7 @@ No server, no database, no account. `python -m http.server 8080` and open the fi
 
 The `plans/` directory is pure markdown and JSON. Nothing about it is Claude-specific.
 
-When Antigravity launched (Google's AI coding assistant), I checked their skills format. It's nearly identical to Claude Code's: a `SKILL.md` file with frontmatter in `.agents/skills/`. The `/status-sync` skill ports over by moving one file and renaming the directory.
+When Antigravity launched (Google's AI coding assistant), I checked their skills format. It's nearly identical to Claude Code's: a `SKILL.md` file with frontmatter in `.agents/skills/`. The `/plans-sync` skill ports over by moving one file and renaming the directory.
 
 The plans themselves don't change at all.
 
@@ -120,6 +120,6 @@ When the system itself improves (new dashboard features, fixed bugs), run `plans
 
 If you'd rather see what's happening underneath: it's just `mkdir`, a copy of the template directory, an entry in `.git/info/exclude`, and an append to your AI instruction file. Nothing magical.
 
-The full templates, reference spec, and the roadmap dashboard are in the repo. The `/status-sync` skill is in progress.
+The full templates, reference spec, and the roadmap dashboard are in the repo. The `/plans-sync` skill is in progress.
 
 The insight that made it click: structure isn't overhead. When your intent is structured, you can reason about it, and so can your tools.

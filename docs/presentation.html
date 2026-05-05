@@ -294,7 +294,7 @@
           <p>Ground truth. What actually shipped, and when.</p>
         </div>
         <div class="panel tinted-green">
-          <h4>/status-sync</h4>
+          <h4>/plans-sync</h4>
           <p>Reconciles plans against git log on a schedule. Catches drift.</p>
         </div>
       </div>
@@ -505,7 +505,7 @@ last_updated: 2026-05-04
     <!-- 11. Drift detection -->
     <section class="deck">
       <span class="eyebrow">Reconciliation</span>
-      <h2>Plans drift from reality. That's why /status-sync exists.</h2>
+      <h2>Plans drift from reality. That's why /plans-sync exists.</h2>
       <div class="grid-2" style="margin-top:18px">
         <div>
           <p class="lede">Plans describe intent. Git log records reality. Without reconciliation, your planning system becomes misleading rather than helpful.</p>
@@ -519,7 +519,7 @@ last_updated: 2026-05-04
         </div>
         <div class="panel solid-ink">
           <div class="label-row"><span class="pill green">Coming</span></div>
-          <h3 style="color:white">/status-sync</h3>
+          <h3 style="color:white">/plans-sync</h3>
           <ul class="clean-list">
             <li style="color:#e0e6f5">Reads all plan frontmatter.</li>
             <li style="color:#e0e6f5">Runs <code style="background:rgba(255,255,255,0.1); color:#e0e6f5">git log</code> since last sync.</li>
