@@ -8,16 +8,16 @@
     "type": "feature",
     "depends_on": [],
     "blocks": ["THEME_PICKER"],
-    "last_updated": "2026-01-15",
-    "start_date": "2026-01-12",
+    "last_updated": "2026-05-06",
+    "start_date": "2026-04-28",
     "overall": "In progress (Phase 2 of 3)",
-    "eta": "2026-01-22",
+    "eta": "2026-05-12",
     "in_flight": true,
     "next_action": "Wire up the theme toggle to the settings panel.",
     "phase_summary": [
-      { "phase": 0, "name": "Color tokens",   "status": "shipped",     "date": "2026-01-13" },
-      { "phase": 1, "name": "Component pass", "status": "shipped",     "date": "2026-01-15" },
-      { "phase": 2, "name": "Settings UI",    "status": "in_progress", "eta":  "2026-01-22" }
+      { "phase": 0, "name": "Color tokens",   "status": "shipped",     "date": "2026-04-29" },
+      { "phase": 1, "name": "Component pass", "status": "shipped",     "date": "2026-05-02" },
+      { "phase": 2, "name": "Settings UI",    "status": "in_progress", "eta":  "2026-05-12" }
     ]
   },
   {
@@ -29,16 +29,16 @@
     "type": "feature",
     "depends_on": ["DARK_MODE"],
     "blocks": [],
-    "last_updated": "2026-01-15",
-    "start_date": "2026-01-22",
+    "last_updated": "2026-05-06",
+    "start_date": "2026-05-12",
     "overall": "Not started, queued behind Dark Mode",
-    "eta": "2026-01-29",
+    "eta": "2026-05-20",
     "in_flight": false,
     "next_action": "Wait for Dark Mode Phase 2 to ship, then start design.",
     "phase_summary": [
-      { "phase": 0, "name": "Design", "status": "not_started", "eta": "2026-01-23" },
-      { "phase": 1, "name": "Build",  "status": "not_started", "eta": "2026-01-26" },
-      { "phase": 2, "name": "Tests",  "status": "not_started", "eta": "2026-01-29" }
+      { "phase": 0, "name": "Design", "status": "not_started", "eta": "2026-05-14" },
+      { "phase": 1, "name": "Build",  "status": "not_started", "eta": "2026-05-17" },
+      { "phase": 2, "name": "Tests",  "status": "not_started", "eta": "2026-05-20" }
     ]
   },
   {
@@ -50,15 +50,15 @@
     "type": "feature",
     "depends_on": [],
     "blocks": ["SEARCH_AUTOCOMPLETE"],
-    "last_updated": "2026-01-15",
-    "start_date": "2026-01-08",
+    "last_updated": "2026-05-06",
+    "start_date": "2026-04-24",
     "overall": "In progress (Phase 1 of 2)",
-    "eta": "2026-01-20",
+    "eta": "2026-05-09",
     "in_flight": true,
     "next_action": "Index existing documents and wire up the search bar.",
     "phase_summary": [
-      { "phase": 0, "name": "Schema",   "status": "shipped",     "date": "2026-01-10" },
-      { "phase": 1, "name": "Indexing", "status": "in_progress", "eta":  "2026-01-20" }
+      { "phase": 0, "name": "Schema",   "status": "shipped",     "date": "2026-04-30" },
+      { "phase": 1, "name": "Indexing", "status": "in_progress", "eta":  "2026-05-09" }
     ]
   },
   {
@@ -70,15 +70,15 @@
     "type": "feature",
     "depends_on": ["SEARCH_INDEX"],
     "blocks": [],
-    "last_updated": "2026-01-15",
-    "start_date": "2026-01-20",
+    "last_updated": "2026-05-06",
+    "start_date": "2026-05-09",
     "overall": "Not started, queued behind search index",
-    "eta": "2026-01-27",
+    "eta": "2026-05-16",
     "in_flight": false,
     "next_action": "Wait for SEARCH_INDEX Phase 1 to ship.",
     "phase_summary": [
-      { "phase": 0, "name": "Suggestion API", "status": "not_started", "eta": "2026-01-23" },
-      { "phase": 1, "name": "UI integration", "status": "not_started", "eta": "2026-01-27" }
+      { "phase": 0, "name": "Suggestion API", "status": "not_started", "eta": "2026-05-12" },
+      { "phase": 1, "name": "UI integration", "status": "not_started", "eta": "2026-05-16" }
     ]
   },
   {
@@ -90,15 +90,15 @@
     "type": "feature",
     "depends_on": [],
     "blocks": [],
-    "last_updated": "2026-01-15",
-    "start_date": "2026-01-19",
+    "last_updated": "2026-05-06",
+    "start_date": "2026-05-08",
     "overall": "Not started, standalone",
-    "eta": "2026-01-26",
+    "eta": "2026-05-15",
     "in_flight": false,
     "next_action": "Audit existing breakpoints and identify gaps.",
     "phase_summary": [
-      { "phase": 0, "name": "Audit",  "status": "not_started", "eta": "2026-01-21" },
-      { "phase": 1, "name": "Build",  "status": "not_started", "eta": "2026-01-26" }
+      { "phase": 0, "name": "Audit",  "status": "not_started", "eta": "2026-05-10" },
+      { "phase": 1, "name": "Build",  "status": "not_started", "eta": "2026-05-15" }
     ]
   },
   {
@@ -110,14 +110,14 @@
     "type": "feature",
     "depends_on": [],
     "blocks": [],
-    "last_updated": "2026-01-09",
-    "start_date": "2026-01-04",
-    "overall": "Shipped 2026-01-09",
-    "eta": "2026-01-09",
+    "last_updated": "2026-04-23",
+    "start_date": "2026-04-18",
+    "overall": "Shipped 2026-04-23",
+    "eta": "2026-04-23",
     "in_flight": false,
     "next_action": null,
     "phase_summary": [
-      { "phase": 0, "name": "Welcome flow", "status": "shipped", "date": "2026-01-09" }
+      { "phase": 0, "name": "Welcome flow", "status": "shipped", "date": "2026-04-23" }
     ]
   }
 ]

@@ -91,7 +91,7 @@
     .gantt .bar-wrapper { cursor: default !important; }
     .gantt .bar-wrapper .bar-progress { cursor: default !important; }
     /* Today line */
-    .gantt .today-highlight { fill: #ef4444 !important; opacity: 1 !important; width: 2px !important; }
+    .today-line { pointer-events: none; }
 
     /* Dependency graph */
     #dep-graph { height: 280px; border-radius: 6px; background: #f8f9fb; }
@@ -320,9 +320,47 @@
   let ganttTasks = [];
   let ganttInstance = null;
 
+  function drawTodayLine() {
+    const svg = document.querySelector('#gantt');
+    if (!svg || !ganttInstance) return;
+    // Remove previous line if any
+    svg.querySelectorAll('.today-line').forEach(el => el.remove());
+
+    const today = new Date(); today.setHours(0,0,0,0);
+    const start = ganttInstance.gantt_start;
+    const colW  = ganttInstance.options.column_width;
+    const step  = ganttInstance.options.step; // hours per column
+    const diffH = (today - start) / 36e5;    // ms to hours
+    const x     = (diffH / step) * colW;
+
+    const svgH  = svg.getBoundingClientRect().height || svg.viewBox.baseVal.height || 400;
+    const headerH = ganttInstance.options.header_height || 50;
+
+    // Label
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', x + 3);
+    text.setAttribute('y', headerH - 4);
+    text.setAttribute('fill', '#ef4444');
+    text.setAttribute('font-size', '10');
+    text.setAttribute('font-weight', '700');
+    text.setAttribute('class', 'today-line');
+    text.textContent = 'Today';
+    svg.appendChild(text);
+
+    // Line
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x); line.setAttribute('x2', x);
+    line.setAttribute('y1', headerH); line.setAttribute('y2', svgH);
+    line.setAttribute('stroke', '#ef4444');
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('class', 'today-line');
+    svg.appendChild(line);
+  }
+
   function scrollGanttToToday() {
-    const todayEl = document.querySelector('.today-highlight');
-    if (todayEl) todayEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    drawTodayLine();
+    const line = document.querySelector('.today-line');
+    if (line) line.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
 
   function ganttJumpToToday() {
@@ -446,7 +484,7 @@
       readonly_progress: true,
       on_date_change: () => {},
       on_progress_change: () => {},
-      on_view_change: () => setTimeout(scrollGanttToToday, 50),
+      on_view_change: () => setTimeout(drawTodayLine, 50),
       custom_popup_html: task => `
         <div style="padding:10px 14px;font-size:13px">
           <strong>${task.name}</strong><br>
@@ -454,6 +492,7 @@
           Progress: ${task.progress}%
         </div>`
     });
+    setTimeout(drawTodayLine, 200);
   }
 
   function renderDepGraph(plans) {
