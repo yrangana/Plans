@@ -57,6 +57,7 @@ echo ""
 SNIPPET_MARKER="## Project Status & Plan Management"
 SNIPPET_FILE="$SOURCE/CLAUDE.md.snippet"
 AI_CANDIDATES=("CLAUDE.md" "AGENTS.md" ".cursorrules" ".windsurfrules")
+FOUND_FILES=()
 
 append_snippet_to() {
   local target="$1"
@@ -101,10 +102,45 @@ else
   fi
 fi
 
+# Install the /plans skill (location depends on detected AI platform)
+SKILL_SRC="$SOURCE/skills/plans"
+
+install_skill() {
+  local dest="$1"
+  if [ -d "$dest" ]; then
+    echo "OK: $dest already exists, skipping skill install."
+  else
+    mkdir -p "$(dirname "$dest")"
+    cp -r "$SKILL_SRC" "$dest"
+    echo "OK: installed /plans skill to $dest"
+  fi
+}
+
+if [ -d "$SKILL_SRC" ]; then
+  # Detect platform from found AI instruction files
+  SKILL_INSTALLED=0
+  for f in "${FOUND_FILES[@]}"; do
+    case "$f" in
+      AGENTS.md)
+        install_skill "$TARGET_DIR/.agents/skills/plans"
+        SKILL_INSTALLED=1
+        ;;
+      CLAUDE.md|.cursorrules|.windsurfrules)
+        install_skill "$TARGET_DIR/.claude/skills/plans"
+        SKILL_INSTALLED=1
+        ;;
+    esac
+  done
+  # Default to .claude/skills/ if no instruction file was found
+  if [ "$SKILL_INSTALLED" = "0" ]; then
+    install_skill "$TARGET_DIR/.claude/skills/plans"
+  fi
+fi
+
 echo ""
 echo "Next steps:"
 echo "  1. Read $TARGET_DIR/plans/README.md"
-echo "  2. Replace plans/active/EXAMPLE_PLAN.md with your real first plan"
+echo "  2. Run /plans new to create your first plan (or edit plans/active/EXAMPLE_PLAN.md directly)"
 echo "  3. Open the dashboard (any local server from your project root):"
 echo "     python -m http.server 8080   # Python 3"
 echo "     npx serve -l 8080            # Node.js"

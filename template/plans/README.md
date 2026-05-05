@@ -27,7 +27,7 @@ plans/STATUS.md         ← Engineer's front door (in flight, up next)
 plans/roadmap.html      ← Stakeholder view (interactive timeline, dependency graph)
 ```
 
-**Git log** is the ground truth for what actually shipped. Plans are the intent layer. A weekly audit (`/plans-sync`, coming) reconciles the two automatically.
+**Git log** is the ground truth for what actually shipped. Plans are the intent layer. A weekly audit (`/plans sync`) reconciles the two automatically.
 
 ---
 
@@ -54,6 +54,12 @@ plans/roadmap.html      ← Stakeholder view (interactive timeline, dependency g
 5. Everything ships
    → mv plans/active/MY_FEATURE.md plans/shipped/
    → Move row to STATUS.md "Recently shipped"
+
+6. Plan is replaced by a different approach
+   → mv plans/active/MY_FEATURE.md plans/superseded/
+   → Set status: superseded in frontmatter
+   → Note what replaced it in the plan body
+   → Remove row from STATUS.md "In flight" / "Up next"
 ```
 
 ---
@@ -106,7 +112,9 @@ plans/
 ├── active/             ← Plans in progress or committed-but-not-started
 │   ├── MY_FEATURE.md
 │   └── ...
-└── shipped/            ← Completed plans (kept for history)
+├── shipped/            ← Completed plans (kept for history)
+│   └── ...
+└── superseded/         ← Plans replaced by a different approach (kept for history)
     └── ...
 ```
 
@@ -149,20 +157,18 @@ At the start of every session, Claude reads `STATUS.md` and relevant plan files.
 - **"What's next?"** has a deterministic answer, no re-explaining
 - **"Is X shipped?"** Claude cross-checks git log against plan status
 - **When you ship something,** Claude knows which plan to update and how
-- **Drift detection:** `/plans-sync` (coming) reads git log, compares to plan frontmatter, proposes fixes
+- **Drift detection:** `/plans sync` reads git log, compares to plan frontmatter, proposes fixes
 
 ---
 
-## Coming: `/plans-sync`
+## The `/plans` Skill
 
-A Claude slash command that automates the weekly audit:
+Two commands that extend your AI assistant:
 
-1. Reads all plan frontmatter
-2. Runs `git log` since last sync
-3. Detects drift (shipped phases not marked, stale plans, orphaned dependencies)
-4. Proposes fixes as a diff. Never writes without confirmation.
+- **`/plans sync`**: weekly audit. Reads plan files and git log, detects drift, regenerates `plans.json` and `STATUS.md` auto-sections, proposes all changes before writing anything.
+- **`/plans new`**: guided creation of a new plan file with correct frontmatter and status banner.
 
-Build trigger: after 1-week manual validation (~2026-05-11).
+Install the skill with `plans-init` (included automatically) or see [github.com/yrangana/Plans](https://github.com/yrangana/Plans) for manual setup.
 
 ---
 

@@ -7,10 +7,10 @@
 #   plans-update --no-pull /path/to/proj   # skip git pull (use local source as-is)
 #
 # What it updates (system files, overwrite-safe):
-#   plans/roadmap.html, plans/README.md
+#   plans/roadmap.html, plans/README.md, .claude/skills/plans/, .agents/skills/plans/
 #
 # What it preserves (user-owned, never touched):
-#   plans/STATUS.md, plans.json, active/, shipped/, anything else
+#   plans/STATUS.md, plans.json, active/, shipped/, superseded/, anything else
 
 set -e
 
@@ -70,7 +70,7 @@ for f in "${UPDATE_FILES[@]}"; do
   echo "  - $f"
 done
 echo ""
-echo "User data is never touched: STATUS.md, plans.json, active/, shipped/"
+echo "User data is never touched: STATUS.md, plans.json, active/, shipped/, superseded/"
 echo ""
 
 # Show diffs
@@ -92,6 +92,32 @@ for f in "${UPDATE_FILES[@]}"; do
     HAS_CHANGES=1
   fi
 done
+
+# Update the /plans skill (check both Claude Code and Antigravity locations)
+SKILL_SRC="$REPO_DIR/template/skills/plans"
+
+update_skill() {
+  local dest="$1"
+  if [ ! -d "$dest" ]; then
+    return
+  fi
+  echo ""
+  if diff -rq "$SKILL_SRC" "$dest" > /dev/null 2>&1; then
+    echo "= $dest (already up to date)"
+  else
+    echo "~ $dest (skill update available)"
+    read -p "Update /plans skill at $dest? (y/n) " skill_confirm
+    if [ "$skill_confirm" = "y" ]; then
+      cp -r "$SKILL_SRC/." "$dest/"
+      echo "Updated:   $dest"
+    else
+      echo "Skipped skill update."
+    fi
+  fi
+}
+
+update_skill "$TARGET_DIR/.claude/skills/plans"
+update_skill "$TARGET_DIR/.agents/skills/plans"
 
 if [ "$HAS_CHANGES" = "0" ]; then
   echo ""

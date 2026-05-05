@@ -26,6 +26,10 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 - `plans/README.md` added to system files managed by `plans-update` (was user data, now updated on `plans-update` like `roadmap.html`)
 - Skill renamed from `/status-sync` to `/plans-sync` throughout docs for consistency with `plans-init` / `plans-update` naming
 - Uninstall instructions added to README
+- `plans/superseded/` directory added to the convention: plans replaced by a different approach move here (distinct from `shipped/`, which means the work is done). `template/`, `template/CLAUDE.md.snippet`, all docs, and `update.sh` updated accordingly.
+- `/plans` skill built at `template/skills/plans/` with two modes: `/plans sync` (weekly drift audit: reads frontmatter + banners, cross-references git log, regenerates `plans.json` and `STATUS.md` auto-sections, proposes diff before writing) and `/plans new` (guided creation of a correctly structured plan file). Replaces the earlier single-mode `/plans-sync` skill.
+- `plans-init` now installs the `/plans` skill to the correct platform directory: `.agents/skills/plans/` for `AGENTS.md` projects (Antigravity), `.claude/skills/plans/` for all others (Claude Code, Cursor, Windsurf). Default falls back to `.claude/skills/plans/` when no instruction file is detected.
+- `plans-update` now checks and offers to update the skill at both `.claude/skills/plans/` and `.agents/skills/plans/`, running skill checks before the system-file early exit so skill-only updates are never silently skipped.
 
 ## v0.1.0 (TBD)
 
