@@ -2,6 +2,8 @@
 
 [![Deploy](https://github.com/yrangana/Plans/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/yrangana/Plans/actions/workflows/pages/pages-build-deployment) [![Tests](https://github.com/yrangana/Plans/actions/workflows/test-init.yml/badge.svg)](https://github.com/yrangana/Plans/actions/workflows/test-init.yml)
 
+![Plans demo](examples/demo.svg)
+
 > A lightweight intent layer for AI-assisted projects. Markdown + JSON, works with Claude Code, Antigravity, Cursor, or any AI coding assistant.
 
 [Live demo](https://yrangana.github.io/Plans/examples/) · [Slides](https://yrangana.github.io/Plans/docs/presentation.html) · [Blog post](docs/blog-post.md) · [Reference spec](docs/reference.md)
@@ -72,6 +74,16 @@ php -S localhost:8080        # PHP
 ### 5. Edit your first plan
 
 Open `plans/active/EXAMPLE_PLAN.md`, replace it with your real first plan, and add a row to `plans/STATUS.md`.
+
+### What it looks like
+
+**Interactive roadmap dashboard** ([live demo](https://yrangana.github.io/Plans/examples/)):
+
+![Roadmap dashboard](examples/screenshot-dashboard.png)
+
+**STATUS.md rendered** ([live demo](https://yrangana.github.io/Plans/examples/status.html)):
+
+![Status page](examples/screenshot-status.png)
 
 ---
 
