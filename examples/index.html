@@ -242,9 +242,11 @@
 
   <div id="error-state">
     <h2>Cannot load plans.json</h2>
-    <p>This page requires a local server. Run this from the <code>plans/</code> directory:</p>
-    <code>python -m http.server 8080</code>
-    <p>Then open <strong>http://localhost:8080/roadmap.html</strong></p>
+    <p>This page requires a local server. Run one of these from your project root:</p>
+    <code>python -m http.server 8080</code> &nbsp; (Python 3)<br>
+    <code>npx serve -l 8080</code> &nbsp; (Node.js)<br>
+    <code>php -S localhost:8080</code> &nbsp; (PHP)<br>
+    <p>Then open <strong>http://localhost:8080/plans/roadmap.html</strong></p>
   </div>
 
   <div id="app" style="display:none">

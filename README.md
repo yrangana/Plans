@@ -59,10 +59,12 @@ Append the contents of [`template/CLAUDE.md.snippet`](template/CLAUDE.md.snippet
 
 ### 4. Open the dashboard
 
+Start any local file server from your project root, then open `http://localhost:8080/plans/roadmap.html`:
+
 ```bash
-cd /path/to/your/project
-python -m http.server 8080
-# open http://localhost:8080/plans/roadmap.html
+python -m http.server 8080   # Python 3
+npx serve -l 8080            # Node.js
+php -S localhost:8080        # PHP
 ```
 
 ### 5. Edit your first plan
