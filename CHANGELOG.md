@@ -20,6 +20,12 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 - `install.sh` URLs aligned to canonical `Plans` repo casing (was lowercase, now matches the GitHub repo name)
 - `roadmap.html` derived title uses regular dash instead of em dash, consistent with the no-em-dash style convention
 - `init.sh` auto-detects existing AI instruction files (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.windsurfrules`) and offers to append the plans snippet automatically. Idempotent: re-running skips files that already have the section. Use `--no-snippet` to opt out.
+- `init.sh` and `update.sh`: fixed symlink resolution bug — scripts now work correctly when invoked via symlinks in `~/.local/bin/` (was resolving to symlink directory instead of real script location)
+- `init.sh`: when no AI instruction file is detected, prints the snippet content inline instead of a path to the installed clone
+- `roadmap.html`, `init.sh`, README: server options expanded to Python 3, Node.js (`npx serve`), and PHP (was Python-only)
+- `plans/README.md` added to system files managed by `plans-update` (was user data, now updated on `plans-update` like `roadmap.html`)
+- Skill renamed from `/status-sync` to `/plans-sync` throughout docs for consistency with `plans-init` / `plans-update` naming
+- Uninstall instructions added to README
 
 ## v0.1.0 (TBD)
 
