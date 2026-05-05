@@ -93,6 +93,22 @@ This pulls the latest plans repo, shows a diff of system files, and asks before 
 
 To skip the auto-pull (offline or when you have local edits in the plans repo): `plans-update --no-pull /path/to/your/project`.
 
+### Uninstall the plans CLI
+
+To remove the CLI commands without deleting the plans repo:
+
+```bash
+rm ~/.local/bin/plans-init ~/.local/bin/plans-update
+```
+
+The cloned repo at `~/.local/share/plans` is left in place. Delete it too if you want a clean slate:
+
+```bash
+rm -rf ~/.local/share/plans
+```
+
+Any `plans/` directories in your projects are unaffected (they are local-only and git-excluded).
+
 See [CHANGELOG.md](CHANGELOG.md) for what's changed between versions.
 
 ---
