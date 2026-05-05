@@ -7,10 +7,10 @@
 #   plans-update --no-pull /path/to/proj   # skip git pull (use local source as-is)
 #
 # What it updates (system files, overwrite-safe):
-#   plans/roadmap.html
+#   plans/roadmap.html, plans/README.md
 #
 # What it preserves (user-owned, never touched):
-#   plans/STATUS.md, plans.json, active/, shipped/, README.md, anything else
+#   plans/STATUS.md, plans.json, active/, shipped/, anything else
 
 set -e
 
@@ -60,6 +60,7 @@ fi
 # System files that update.sh manages
 UPDATE_FILES=(
   "plans/roadmap.html"
+  "plans/README.md"
 )
 
 echo "Plans system update for: $TARGET_DIR/plans"
@@ -69,7 +70,7 @@ for f in "${UPDATE_FILES[@]}"; do
   echo "  - $f"
 done
 echo ""
-echo "User data is never touched: STATUS.md, plans.json, active/, shipped/, README.md"
+echo "User data is never touched: STATUS.md, plans.json, active/, shipped/"
 echo ""
 
 # Show diffs

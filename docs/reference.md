@@ -474,8 +474,8 @@ What it does:
 
 | Category | Files | Behavior |
 |---|---|---|
-| System files | `plans/roadmap.html` | Replaced on update. Backup written to `.bak`. |
-| User data | `plans/STATUS.md`, `plans.json`, `active/`, `shipped/`, `README.md`, anything else | Never touched by `plans-update`. |
+| System files | `plans/roadmap.html`, `plans/README.md` | Replaced on update. Backup written to `.bak`. |
+| User data | `plans/STATUS.md`, `plans.json`, `active/`, `shipped/`, anything else | Never touched by `plans-update`. |
 
 If you customize a system file (e.g., your own colour scheme in `roadmap.html`), expect updates to overwrite it. Restore from `<file>.bak` if needed, or run with `--no-pull` to inspect changes before they're fetched.
 
