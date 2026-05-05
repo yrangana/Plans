@@ -8,6 +8,10 @@
 
 set -e
 
+SELF="$0"
+while [ -L "$SELF" ]; do SELF="$(readlink "$SELF")"; done
+SCRIPT_DIR="$(cd "$(dirname "$SELF")" && pwd)"
+
 # Parse args
 NO_SNIPPET=0
 TARGET_DIR=""
@@ -15,15 +19,13 @@ for arg in "$@"; do
   case "$arg" in
     --no-snippet) NO_SNIPPET=1 ;;
     -h|--help)
-      sed -n '2,7p' "$0" | sed 's/^# \{0,1\}//'
+      sed -n '2,7p' "$SELF" | sed 's/^# \{0,1\}//'
       exit 0
       ;;
     *) TARGET_DIR="$arg" ;;
   esac
 done
 TARGET_DIR="${TARGET_DIR:-$(pwd)}"
-
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 if [ ! -d "$SCRIPT_DIR/../template/plans" ]; then
   echo "Error: cannot find template at $SCRIPT_DIR/../template/plans"

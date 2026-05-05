@@ -14,6 +14,11 @@
 
 set -e
 
+SELF="$0"
+while [ -L "$SELF" ]; do SELF="$(readlink "$SELF")"; done
+SCRIPT_DIR="$(cd "$(dirname "$SELF")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 # Parse args
 PULL=1
 TARGET_DIR=""
@@ -21,16 +26,13 @@ for arg in "$@"; do
   case "$arg" in
     --no-pull) PULL=0 ;;
     -h|--help)
-      sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'
+      sed -n '2,11p' "$SELF" | sed 's/^# \{0,1\}//'
       exit 0
       ;;
     *) TARGET_DIR="$arg" ;;
   esac
 done
 TARGET_DIR="${TARGET_DIR:-$(pwd)}"
-
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SOURCE="$REPO_DIR/template"
 
 # Auto-pull from origin if this is a git clone (and not --no-pull)
