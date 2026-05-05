@@ -78,8 +78,11 @@ else
 
   if [ ${#FOUND_FILES[@]} -eq 0 ]; then
     echo "No AI instruction file detected ($(IFS=', '; echo "${AI_CANDIDATES[*]}"))."
-    echo "When you create one, manually append the snippet:"
-    echo "  cat $SNIPPET_FILE >> $TARGET_DIR/CLAUDE.md"
+    echo "When you create one, append this section to it:"
+    echo "---"
+    awk 'found || /^## /{found=1; print}' "$SNIPPET_FILE"
+    echo "---"
+    echo ""
   else
     for f in "${FOUND_FILES[@]}"; do
       target="$TARGET_DIR/$f"
