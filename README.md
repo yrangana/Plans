@@ -6,7 +6,7 @@
 
 > A lightweight intent layer for AI-assisted projects. Markdown + JSON, works with Claude Code, Antigravity, Cursor, or any AI coding assistant.
 
-[Live demo](https://yrangana.github.io/Plans/examples/) · [Slides](https://yrangana.github.io/Plans/docs/presentation.html) · [Blog post](docs/blog-post.md) · [Reference spec](docs/reference.md)
+[Roadmap demo](https://yrangana.github.io/Plans/examples/) · [Status demo](https://yrangana.github.io/Plans/examples/status.html) · [Slides](https://yrangana.github.io/Plans/docs/presentation.html) · [Blog post](docs/blog-post.md) · [Reference spec](docs/reference.md)
 
 ---
 
@@ -23,6 +23,14 @@ It works with any AI coding assistant. The data model is plain markdown and JSON
 - Persistent context for your AI assistant across sessions
 - A shareable visual roadmap for non-technical stakeholders
 - Drift detection between intent (plans) and reality (git log)
+
+**Interactive roadmap dashboard** ([live demo](https://yrangana.github.io/Plans/examples/)):
+
+![Roadmap dashboard](examples/screenshot-dashboard.png)
+
+**STATUS.md rendered** ([live demo](https://yrangana.github.io/Plans/examples/status.html)):
+
+![Status page](examples/screenshot-status.png)
 
 ## Is this for you?
 
@@ -75,16 +83,6 @@ php -S localhost:8080        # PHP
 
 Open `plans/active/EXAMPLE_PLAN.md`, replace it with your real first plan, and add a row to `plans/STATUS.md`.
 
-### What it looks like
-
-**Interactive roadmap dashboard** ([live demo](https://yrangana.github.io/Plans/examples/)):
-
-![Roadmap dashboard](examples/screenshot-dashboard.png)
-
-**STATUS.md rendered** ([live demo](https://yrangana.github.io/Plans/examples/status.html)):
-
-![Status page](examples/screenshot-status.png)
-
 ---
 
 ## Updating
@@ -131,11 +129,12 @@ See [CHANGELOG.md](CHANGELOG.md) for what's changed between versions.
 
 ## Docs and resources
 
-Four ways into the system, depending on what you want:
+Five ways into the system, depending on what you want:
 
 | Resource | Best for | Format |
 | --- | --- | --- |
-| [**Live demo**](https://yrangana.github.io/Plans/examples/) | Seeing the dashboard with real data | Interactive web page |
+| [**Roadmap demo**](https://yrangana.github.io/Plans/examples/) | Seeing the Gantt dashboard with real data | Interactive web page |
+| [**Status demo**](https://yrangana.github.io/Plans/examples/status.html) | Seeing what STATUS.md looks like rendered | Interactive web page |
 | [**Slides**](https://yrangana.github.io/Plans/docs/presentation.html) | A 5-minute overview of the whole system | Reveal.js deck |
 | [**Blog post**](docs/blog-post.md) | The story and motivation behind it | Long-form prose |
 | [**Reference spec**](docs/reference.md) | Implementation details, every field, every rule | Technical reference |
@@ -162,7 +161,12 @@ plans/
 ├── scripts/
 │   └── init.sh              # One-command setup
 └── examples/
-    └── plans.json           # Demo data for the live roadmap
+    ├── index.html           # Live roadmap demo (mirror of template/plans/roadmap.html)
+    ├── status.html          # Live STATUS.md demo
+    ├── plans.json           # Demo data for the live roadmap
+    ├── demo.svg             # Animated demo for README
+    ├── screenshot-dashboard.png
+    └── screenshot-status.png
 ```
 
 ## How It Works
