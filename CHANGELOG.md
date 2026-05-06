@@ -14,6 +14,19 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ## Unreleased
 
+- `roadmap.html`: replaced Frappe Gantt with a pure CSS/JS horizontal bar timeline matching the visual design of `status.html` (dark header, card sections, `#e2e8f0` borders, uppercase label typography). No external Gantt library dependency.
+- `roadmap.html`: today line now rendered via CSS `calc()` in the timeline, consistent with `status.html`. Always visible when today falls within the plan date range.
+- `roadmap.html`: header badge shows last-updated date; section headers use uppercase label style; emoji removed from all section headings.
+- `roadmap.html`: dependency graph now only renders nodes that participate in at least one edge. Isolated active plans (no deps) no longer appear as floating islands.
+- `roadmap.html`: when no dependencies exist, graph controls are hidden and the empty state collapses to a single short row instead of a tall blank box.
+- `roadmap.html`: status pills aligned to `status.html` style (`.pill-active`, `.pill-shipped`, `.pill-blocked`, `.pill-paused`).
+- `examples/demo.svg`: animated SVG terminal demo added for README, showing `plans-init` output and a mini STATUS.md panel with Gantt bars.
+- `examples/status.html`: today line `calc()` formula fixed (was rendering at far left due to invalid mixed-unit expression).
+- `docs/presentation.html`: outcome slide updated to show STATUS.md markdown format with a live link, replacing the colour panel mockup.
+- README: status badges, demo SVG, status.html link, screenshots, and five-entry docs table added.
+
+## Unreleased (carried from previous)
+
 - `update.sh` auto-pulls the plans repo before applying updates (use `--no-pull` to skip)
 - `install.sh` one-liner installer that clones the repo and symlinks `plans-init` / `plans-update` to `~/.local/bin/`
 - `roadmap.html` derives page title from `STATUS.md` H1 (e.g. `# MyProject - Project Status` -> `MyProject - Roadmap`); adopters no longer need to manually edit the title
