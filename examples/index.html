@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Project Roadmap</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.css">
-  <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,6 +12,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #f8f9fb;
       color: #1a1a2e;
+      line-height: 1.65;
     }
 
     header {
@@ -22,13 +21,20 @@
       padding: 24px 40px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
+    }
+    header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+    header .meta { font-size: 13px; color: #8892b0; margin-top: 4px; }
+    header .badge {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(99,102,241,0.2); color: #a5b4fc;
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px solid rgba(99,102,241,0.3);
+      white-space: nowrap; margin-top: 4px;
     }
 
-    header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
-    header .meta { font-size: 13px; color: #8892b0; }
-
-    main { max-width: 1200px; margin: 0 auto; padding: 32px 40px; }
+    main { max-width: 1100px; margin: 0 auto; padding: 40px 40px 80px; }
 
     /* Stats */
     .stats {
@@ -42,10 +48,13 @@
       background: white;
       border-radius: 10px;
       padding: 20px 24px;
-      border: 1px solid #e8ecf0;
+      border: 1px solid #e2e8f0;
     }
 
-    .stat-card .label { font-size: 12px; color: #8892b0; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .stat-card .label {
+      font-size: 11px; color: #94a3b8; text-transform: uppercase;
+      letter-spacing: 0.06em; font-weight: 700; margin-bottom: 8px;
+    }
     .stat-card .value { font-size: 32px; font-weight: 700; }
     .stat-card .value.green  { color: #22c55e; }
     .stat-card .value.yellow { color: #f59e0b; }
@@ -56,16 +65,19 @@
     .section {
       background: white;
       border-radius: 10px;
-      border: 1px solid #e8ecf0;
+      border: 1px solid #e2e8f0;
       margin-bottom: 24px;
       overflow: hidden;
     }
 
     .section-header {
-      padding: 18px 24px;
-      border-bottom: 1px solid #e8ecf0;
-      font-size: 15px;
-      font-weight: 600;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -73,25 +85,8 @@
 
     .section-body { padding: 24px; }
 
-    /* Gantt */
-    #gantt-container { overflow-x: auto; }
-    .gantt .bar-label { fill: #1a1a2e !important; }
-    .gantt .bar { fill: #6366f1 !important; }
-    .gantt .bar.bar-invalid { fill: #e2e8f0 !important; }
-    .gantt .bar-cluster-0 .bar { fill: #6366f1 !important; }  /* indigo */
-    .gantt .bar-cluster-1 .bar { fill: #f59e0b !important; }  /* amber */
-    .gantt .bar-cluster-2 .bar { fill: #14b8a6 !important; }  /* teal */
-    .gantt .bar-cluster-3 .bar { fill: #ec4899 !important; }  /* pink */
-    .gantt .bar-cluster-4 .bar { fill: #8b5cf6 !important; }  /* violet */
-    .gantt .bar-cluster-5 .bar { fill: #0ea5e9 !important; }  /* sky */
-    .gantt .bar-shipped .bar { fill: #22c55e !important; opacity: 0.7; }
-    .gantt .bar-shipped .bar-label { fill: #166534 !important; }
-    /* Disable drag-to-edit visual cues (data is read-only) */
-    .gantt .handle, .gantt .handle-group { display: none !important; }
-    .gantt .bar-wrapper { cursor: default !important; }
-    .gantt .bar-wrapper .bar-progress { cursor: default !important; }
-    /* Today line */
-    .today-line { pointer-events: none; }
+    /* Timeline */
+    #timeline-wrap { overflow-x: auto; }
 
     /* Dependency graph */
     #dep-graph { height: 280px; border-radius: 6px; background: #f8f9fb; }
@@ -105,7 +100,7 @@
     .graph-controls button {
       width: 30px;
       height: 30px;
-      border: 1px solid #e8ecf0;
+      border: 1px solid #e2e8f0;
       border-radius: 6px;
       background: white;
       font-size: 16px;
@@ -119,14 +114,41 @@
 
     .graph-controls button:hover { background: #f1f5f9; }
 
-    /* Plans list */
+    /* Status pills */
+    .status-pill {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 4px; white-space: nowrap;
+    }
+    .pill-active  { background: #eef2ff; color: #4338ca; }
+    .pill-shipped { background: #dcfce7; color: #166534; }
+    .pill-blocked { background: #fee2e2; color: #991b1b; }
+    .pill-paused  { background: #f1f5f9; color: #475569; }
+
+    /* Plans table */
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px; background: white;
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+    th {
+      background: #f8fafc; text-align: left;
+      padding: 10px 14px; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: #94a3b8; border-bottom: 1px solid #e2e8f0;
+    }
+    td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: #475569; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbfc; }
+
+    /* Plan cards */
     .plan-card {
-      border: 1px solid #e8ecf0;
+      border: 1px solid #e2e8f0;
       border-radius: 8px;
       padding: 18px 20px;
       margin-bottom: 12px;
     }
-
     .plan-card:last-child { margin-bottom: 0; }
 
     .plan-header {
@@ -136,22 +158,8 @@
       margin-bottom: 12px;
     }
 
-    .plan-title { font-size: 15px; font-weight: 600; }
-    .plan-meta { font-size: 12px; color: #8892b0; margin-top: 2px; }
-
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-      white-space: nowrap;
-    }
-
-    .badge-active    { background: #fef3c7; color: #92400e; }
-    .badge-shipped   { background: #dcfce7; color: #166534; }
-    .badge-blocked   { background: #fee2e2; color: #991b1b; }
-    .badge-paused    { background: #f1f5f9; color: #475569; }
+    .plan-title { font-size: 15px; font-weight: 600; color: #1a1a2e; }
+    .plan-meta { font-size: 12px; color: #94a3b8; margin-top: 2px; }
 
     .phase-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 
@@ -165,8 +173,7 @@
       background: #f1f5f9;
       color: #475569;
     }
-
-    .phase-chip.shipped    { background: #dcfce7; color: #166534; }
+    .phase-chip.shipped     { background: #dcfce7; color: #166534; }
     .phase-chip.in_progress { background: #fef9c3; color: #854d0e; }
     .phase-chip.not_started { background: #f1f5f9; color: #94a3b8; }
 
@@ -177,7 +184,6 @@
       margin-top: 10px;
       overflow: hidden;
     }
-
     .progress-bar-fill {
       height: 100%;
       background: #6366f1;
@@ -185,9 +191,19 @@
       transition: width 0.4s ease;
     }
 
+    .next-action {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #475569;
+      background: #f8f9fb;
+      border-left: 3px solid #6366f1;
+      padding: 8px 12px;
+      border-radius: 0 4px 4px 0;
+    }
+
     .filter-btn {
       padding: 3px 12px;
-      border: 1px solid #e8ecf0;
+      border: 1px solid #e2e8f0;
       border-radius: 20px;
       background: white;
       font-size: 12px;
@@ -200,15 +216,6 @@
       color: white;
       border-color: #6366f1;
     }
-    .next-action {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #475569;
-      background: #f8f9fb;
-      border-left: 3px solid #6366f1;
-      padding: 8px 12px;
-      border-radius: 0 4px 4px 0;
-    }
 
     /* Error state */
     #error-state {
@@ -216,7 +223,6 @@
       text-align: center;
       padding: 80px 40px;
     }
-
     #error-state h2 { margin-bottom: 12px; color: #ef4444; }
     #error-state code {
       display: inline-block;
@@ -237,7 +243,7 @@
     <h1 id="header-title">Project Roadmap</h1>
     <div class="meta" id="header-meta">Loading...</div>
   </div>
-  <div class="meta" id="header-updated"></div>
+  <span class="badge" id="header-badge">roadmap</span>
 </header>
 
 <main>
@@ -273,27 +279,25 @@
       </div>
     </div>
 
-    <!-- Gantt -->
+    <!-- Timeline -->
     <div class="section">
       <div class="section-header">
-        📅 Initiative Timeline
-        <button onclick="ganttJumpToToday()" title="Jump to today" style="margin-left:auto;padding:4px 12px;border:1px solid #e8ecf0;border-radius:6px;background:white;font-size:12px;cursor:pointer;color:#475569;">Today</button>
+        Initiative Timeline
+        <button onclick="scrollTimeline()" title="Jump to today" style="margin-left:auto;padding:4px 12px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:11px;cursor:pointer;color:#475569;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">Today</button>
       </div>
       <div class="section-body">
-        <div id="gantt-container">
-          <svg id="gantt"></svg>
-        </div>
+        <div id="timeline-wrap"></div>
       </div>
     </div>
 
     <!-- Dependencies -->
     <div class="section">
-      <div class="section-header">🔗 Dependencies</div>
+      <div class="section-header">Dependencies</div>
       <div class="section-body">
         <div class="graph-controls">
-          <button onclick="depNetwork && depNetwork.fit()" title="Reset view">⊙</button>
-          <button onclick="depNetwork && depNetwork.moveTo({ scale: depNetwork.getScale() * 1.3 })" title="Zoom in">＋</button>
-          <button onclick="depNetwork && depNetwork.moveTo({ scale: depNetwork.getScale() * 0.7 })" title="Zoom out">－</button>
+          <button onclick="depNetwork && depNetwork.fit()" title="Reset view">&#8857;</button>
+          <button onclick="depNetwork && depNetwork.moveTo({ scale: depNetwork.getScale() * 1.3 })" title="Zoom in">&#xFF0B;</button>
+          <button onclick="depNetwork && depNetwork.moveTo({ scale: depNetwork.getScale() * 0.7 })" title="Zoom out">&#xFF0D;</button>
         </div>
         <div id="dep-graph"></div>
       </div>
@@ -302,10 +306,10 @@
     <!-- Plans -->
     <div class="section">
       <div class="section-header">
-        📋 All Plans
+        All Plans
         <div id="plan-filters" style="display:flex;gap:6px;margin-left:auto">
-          <button class="filter-btn active" data-filter="all"    onclick="setFilter('all')">All</button>
-          <button class="filter-btn"        data-filter="active" onclick="setFilter('active')">Active</button>
+          <button class="filter-btn active" data-filter="all"     onclick="setFilter('all')">All</button>
+          <button class="filter-btn"        data-filter="active"  onclick="setFilter('active')">Active</button>
           <button class="filter-btn"        data-filter="shipped" onclick="setFilter('shipped')">Shipped</button>
         </div>
       </div>
@@ -317,89 +321,114 @@
 
 <script>
   let depNetwork = null;
-  let ganttTasks = [];
-  let ganttInstance = null;
+  let allPlans   = [];
+  let activeFilter = 'all';
+  let timelinePlans = [];  // plans used for the timeline, for scroll-to-today
 
-  function drawTodayLine() {
-    const svg = document.querySelector('#gantt');
-    if (!svg || !ganttInstance) return;
-    // Remove previous line if any
-    svg.querySelectorAll('.today-line').forEach(el => el.remove());
+  // ── Timeline ──────────────────────────────────────────────────────────────
 
-    const today = new Date(); today.setHours(0,0,0,0);
-    const start = ganttInstance.gantt_start;
-    const colW  = ganttInstance.options.column_width;
-    const step  = ganttInstance.options.step; // hours per column
-    const diffH = (today - start) / 36e5;    // ms to hours
-    const x     = (diffH / step) * colW;
-
-    const svgH  = svg.getBoundingClientRect().height || svg.viewBox.baseVal.height || 400;
-    const headerH = ganttInstance.options.header_height || 50;
-
-    // Label
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', x + 3);
-    text.setAttribute('y', headerH - 4);
-    text.setAttribute('fill', '#ef4444');
-    text.setAttribute('font-size', '10');
-    text.setAttribute('font-weight', '700');
-    text.setAttribute('class', 'today-line');
-    text.textContent = 'Today';
-    svg.appendChild(text);
-
-    // Line
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x); line.setAttribute('x2', x);
-    line.setAttribute('y1', headerH); line.setAttribute('y2', svgH);
-    line.setAttribute('stroke', '#ef4444');
-    line.setAttribute('stroke-width', '2');
-    line.setAttribute('class', 'today-line');
-    svg.appendChild(line);
-  }
-
-  function scrollGanttToToday() {
-    drawTodayLine();
-    const line = document.querySelector('.today-line');
-    if (line) line.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-  }
-
-  function ganttJumpToToday() {
-    if (ganttInstance) ganttInstance.change_view_mode('Week');
-  }
-
-  const STATUS_EMOJI = {
-    shipped: '✅',
-    in_progress: '🟡',
-    not_started: '🔴',
-    paused: '⏸️',
-    blocked: '⚠️'
+  const timelineColors = {
+    active:  { bar: '#6366f1', text: 'white' },
+    shipped: { bar: '#22c55e', text: 'white' },
+    blocked: { bar: '#ef4444', text: 'white' },
+    paused:  { bar: '#94a3b8', text: 'white' },
   };
 
-  function calcProgress(phases) {
-    if (!phases || phases.length === 0) return 0;
-    const shipped = phases.filter(p => p.status === 'shipped').length;
-    return Math.round((shipped / phases.length) * 100);
+  function fmtDate(d) {
+    return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
   }
 
-  function getGanttEnd(plan) {
-    if (plan.eta) return plan.eta;
-    const d = new Date(plan.start_date || plan.last_updated);
-    d.setDate(d.getDate() + 7);
-    return d.toISOString().split('T')[0];
+  function renderTimeline(plans) {
+    const rows = plans.map(p => ({
+      label:  p.title,
+      start:  p.start_date || p.last_updated,
+      end:    p.eta || (() => { const d = new Date(p.start_date || p.last_updated); d.setDate(d.getDate() + 7); return d.toISOString().split('T')[0]; })(),
+      type:   p.status,
+    }));
+
+    timelinePlans = rows;
+
+    const allDates = rows.flatMap(r => [new Date(r.start), new Date(r.end)]);
+    const minDate  = new Date(Math.min(...allDates));
+    const maxDate  = new Date(Math.max(...allDates));
+    const span     = maxDate - minDate;
+
+    function pct(dateStr)     { return ((new Date(dateStr) - minDate) / span * 100).toFixed(2); }
+    function widthPct(s, e)   { return ((new Date(e)       - new Date(s)) / span * 100).toFixed(2); }
+
+    const today = new Date(); today.setHours(0,0,0,0);
+    const todayPct    = ((today - minDate) / span * 100).toFixed(2);
+    const todayVisible = today >= minDate && today <= maxDate;
+
+    // Day axis labels
+    const days = [];
+    for (let d = new Date(minDate); d <= maxDate; d.setDate(d.getDate() + 1)) days.push(new Date(d));
+
+    // Legend
+    const legendTypes = [...new Set(rows.map(r => r.type))];
+    let html = `<div style="display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap;">`;
+    legendTypes.forEach(t => {
+      const c = timelineColors[t] || { bar: '#94a3b8' };
+      const label = t.charAt(0).toUpperCase() + t.slice(1);
+      html += `<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#475569;">
+        <span style="width:12px;height:12px;border-radius:3px;background:${c.bar};display:inline-block;"></span>${label}
+      </div>`;
+    });
+    html += `</div>`;
+
+    // Axis
+    html += `<div style="position:relative;height:20px;margin-bottom:6px;margin-left:160px;">`;
+    days.forEach((d, i) => {
+      if (i % 3 !== 0) return;
+      const p = ((d - minDate) / span * 100).toFixed(2);
+      html += `<span style="position:absolute;left:${p}%;transform:translateX(-50%);font-size:10px;color:#94a3b8;white-space:nowrap;">${fmtDate(d)}</span>`;
+    });
+    if (todayVisible) {
+      html += `<span style="position:absolute;left:${todayPct}%;transform:translateX(-50%);font-size:10px;font-weight:700;color:#ef4444;white-space:nowrap;">Today</span>`;
+    }
+    html += `</div>`;
+
+    // Rows
+    const rowH = 28, rowGap = 8;
+    const totalH = rows.length * rowH + (rows.length - 1) * rowGap;
+
+    html += `<div style="position:relative;">`;
+
+    if (todayVisible) {
+      html += `<div style="position:absolute;left:calc(160px + (100% - 160px) * ${todayPct} / 100);top:0;width:2px;height:${totalH}px;background:#ef4444;z-index:2;border-radius:1px;pointer-events:none;">
+        <div style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:999px;background:#ef4444;"></div>
+      </div>`;
+    }
+
+    rows.forEach(r => {
+      const c    = timelineColors[r.type] || { bar: '#94a3b8', text: 'white' };
+      const left = pct(r.start);
+      const w    = widthPct(r.start, r.end);
+      html += `
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:${rowGap}px;">
+          <div style="width:160px;flex-shrink:0;font-size:12px;color:#475569;padding-right:12px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.label}">${r.label}</div>
+          <div style="flex:1;position:relative;height:${rowH}px;background:#f8fafc;border-radius:4px;">
+            <div style="position:absolute;left:${left}%;width:${w}%;height:100%;background:${c.bar};border-radius:4px;display:flex;align-items:center;padding:0 8px;overflow:hidden;z-index:1;">
+              <span style="font-size:10px;font-weight:600;color:${c.text};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${fmtDate(r.start)} - ${fmtDate(r.end)}</span>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    html += `</div>`;
+    document.getElementById('timeline-wrap').innerHTML = html;
   }
 
-  function getGanttStart(plan) {
-    return plan.start_date || plan.last_updated;
+  function scrollTimeline() {
+    const todayLine = document.querySelector('#timeline-wrap [style*="background:#ef4444"]');
+    if (todayLine) todayLine.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
 
-  function badgeClass(status) {
-    const map = { active: 'badge-active', shipped: 'badge-shipped', blocked: 'badge-blocked', paused: 'badge-paused' };
-    return map[status] || 'badge-active';
-  }
+  // ── Stats ─────────────────────────────────────────────────────────────────
 
   function renderStats(plans) {
     const inFlight = plans.filter(p => p.in_flight).length;
-    const upNext   = plans.filter(p => !p.in_flight).length;
+    const upNext   = plans.filter(p => !p.in_flight && p.status === 'active').length;
     const phases   = plans.flatMap(p => p.phase_summary || []).filter(p => p.status === 'shipped').length;
     document.getElementById('stat-inflight').textContent = inFlight;
     document.getElementById('stat-upnext').textContent   = upNext;
@@ -407,97 +436,11 @@
     document.getElementById('stat-total').textContent    = plans.length;
   }
 
-  function computeClusters(plans) {
-    const idOf = f => f.replace('.md', '');
-    const clusters = {};
-    let next = 0;
-    function bfs(startId) {
-      const id = next++;
-      const queue = [startId];
-      while (queue.length) {
-        const cur = queue.shift();
-        if (clusters[cur] !== undefined) continue;
-        clusters[cur] = id;
-        const plan = plans.find(p => idOf(p.file) === cur);
-        if (!plan) continue;
-        [...(plan.depends_on || []), ...(plan.blocks || [])].forEach(n => {
-          if (clusters[n] === undefined) queue.push(n);
-        });
-      }
-    }
-    plans.forEach(p => {
-      const id = idOf(p.file);
-      if (clusters[id] === undefined) bfs(id);
-    });
-    return clusters;
-  }
-
-  function renderGantt(plans) {
-    const clusters = computeClusters(plans);
-    const PALETTE_SIZE = 6;
-    const idOf = f => f.replace('.md', '');
-
-    // Compute earliest start_date per cluster so clusters order chronologically by their first member
-    const clusterEarliest = {};
-    plans.forEach(p => {
-      const c = clusters[idOf(p.file)];
-      const d = p.start_date || p.last_updated;
-      if (!clusterEarliest[c] || d < clusterEarliest[c]) clusterEarliest[c] = d;
-    });
-
-    // Group by cluster, chronological within
-    const grouped = [...plans].sort((a, b) => {
-      const cA = clusters[idOf(a.file)];
-      const cB = clusters[idOf(b.file)];
-      if (cA !== cB) return clusterEarliest[cA].localeCompare(clusterEarliest[cB]);
-      return (a.start_date || a.last_updated).localeCompare(b.start_date || b.last_updated);
-    });
-
-    const tasks = grouped.map(p => {
-      const id = idOf(p.file);
-      const clusterClass = `bar-cluster-${(clusters[id] ?? 0) % PALETTE_SIZE}`;
-      return {
-        id,
-        name: p.title,
-        start: getGanttStart(p),
-        end: getGanttEnd(p),
-        progress: p.status === 'shipped' ? 100 : calcProgress(p.phase_summary),
-        dependencies: (p.depends_on || []).map(d => d.replace('.md', '')).join(','),
-        custom_class: p.status === 'shipped' ? 'bar-shipped' : clusterClass
-      };
-    });
-
-    ganttTasks = tasks;
-    // Disable drag-to-edit by capturing mousedown before Frappe's handler binds
-    setTimeout(() => {
-      document.querySelectorAll('.gantt .bar-wrapper').forEach(el => {
-        el.addEventListener('mousedown', e => e.stopPropagation(), true);
-      });
-    }, 100);
-    ganttInstance = new Gantt('#gantt', tasks, {
-      view_mode: 'Week',
-      date_format: 'YYYY-MM-DD',
-      bar_height: 28,
-      padding: 14,
-      readonly: true,
-      readonly_dates: true,
-      readonly_progress: true,
-      on_date_change: () => {},
-      on_progress_change: () => {},
-      on_view_change: () => setTimeout(drawTodayLine, 50),
-      custom_popup_html: task => `
-        <div style="padding:10px 14px;font-size:13px">
-          <strong>${task.name}</strong><br>
-          <span style="color:#8892b0">${task.start} → ${task.end}</span><br>
-          Progress: ${task.progress}%
-        </div>`
-    });
-    setTimeout(drawTodayLine, 200);
-  }
+  // ── Dependency graph ──────────────────────────────────────────────────────
 
   function renderDepGraph(plans) {
     const nodes = plans.map(p => ({
-      id: p.file.replace('.md', ''),
+      id:    p.file.replace('.md', ''),
       label: p.title.length > 28 ? p.title.substring(0, 26) + '…' : p.title,
       color: p.in_flight
         ? { background: '#fef9c3', border: '#f59e0b' }
@@ -509,48 +452,66 @@
     plans.forEach(p => {
       (p.blocks || []).forEach(b => {
         edges.push({
-          from: p.file.replace('.md', ''),
-          to: b.replace('.md', ''),
+          from:   p.file.replace('.md', ''),
+          to:     b.replace('.md', ''),
           arrows: 'to',
-          color: { color: '#94a3b8' },
-          width: 1.5
+          color:  { color: '#94a3b8' },
+          width:  1.5
         });
       });
     });
 
     const container = document.getElementById('dep-graph');
-
     if (edges.length === 0) {
+      container.style.height = '60px';
       container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:14px">No dependencies yet</div>';
+      document.querySelector('.graph-controls').style.display = 'none';
       return;
     }
 
-    depNetwork = new vis.Network(container,
-      { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) },
+    // Only show nodes that participate in at least one edge
+    const connected = new Set(edges.flatMap(e => [e.from, e.to]));
+    const visNodes = nodes.filter(n => connected.has(n.id));
+
+    depNetwork = new vis.Network(
+      container,
+      { nodes: new vis.DataSet(visNodes), edges: new vis.DataSet(edges) },
       {
-        physics: { enabled: true, stabilization: { iterations: 100 } },
-        layout: { hierarchical: { direction: 'LR', sortMethod: 'directed', levelSeparation: 220 } },
+        physics:     { enabled: true, stabilization: { iterations: 100 } },
+        layout:      { hierarchical: { direction: 'LR', sortMethod: 'directed', levelSeparation: 220 } },
         interaction: { hover: true, zoomView: true }
       }
     );
   }
 
-  let allPlans = [];
-  let activeFilter = 'all';
+  // ── Plan cards ────────────────────────────────────────────────────────────
 
-  function setFilter(f) {
-    activeFilter = f;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
-    const filtered = f === 'all' ? allPlans : allPlans.filter(p => p.status === f);
-    renderPlans(filtered);
+  function calcProgress(phases) {
+    if (!phases || phases.length === 0) return 0;
+    const shipped = phases.filter(p => p.status === 'shipped').length;
+    return Math.round((shipped / phases.length) * 100);
+  }
+
+  function pillClass(status) {
+    const map = { active: 'pill-active', shipped: 'pill-shipped', blocked: 'pill-blocked', paused: 'pill-paused' };
+    return map[status] || 'pill-active';
+  }
+
+  function phaseLabel(status) {
+    const map = { shipped: 'Shipped', in_progress: 'In progress', not_started: 'Not started', paused: 'Paused', blocked: 'Blocked' };
+    return map[status] || status;
   }
 
   function renderPlans(plans) {
     const container = document.getElementById('plans-list');
+    if (plans.length === 0) {
+      container.innerHTML = '<div style="color:#94a3b8;font-size:14px;text-align:center;padding:24px 0;">No plans match this filter.</div>';
+      return;
+    }
     container.innerHTML = plans.map(p => {
       const progress = calcProgress(p.phase_summary);
       const phases = (p.phase_summary || []).map(ph =>
-        `<span class="phase-chip ${ph.status}">${STATUS_EMOJI[ph.status] || ''} Phase ${ph.phase}: ${ph.name}</span>`
+        `<span class="phase-chip ${ph.status}">Phase ${ph.phase}: ${ph.name} &mdash; ${phaseLabel(ph.status)}</span>`
       ).join('');
 
       return `
@@ -558,11 +519,9 @@
           <div class="plan-header">
             <div>
               <div class="plan-title">${p.title}</div>
-              <div class="plan-meta">
-                ${p.file} &nbsp;·&nbsp; ${p.priority || '?'} &nbsp;·&nbsp; ${p.type} &nbsp;·&nbsp; Updated ${p.last_updated}
-              </div>
+              <div class="plan-meta">${p.file} &nbsp;&middot;&nbsp; ${p.priority || '?'} &nbsp;&middot;&nbsp; ${p.type} &nbsp;&middot;&nbsp; Updated ${p.last_updated}</div>
             </div>
-            <span class="badge ${badgeClass(p.status)}">${p.overall || p.status}</span>
+            <span class="status-pill ${pillClass(p.status)}">${p.overall || p.status}</span>
           </div>
           <div class="progress-bar-wrap">
             <div class="progress-bar-fill" style="width:${progress}%"></div>
@@ -573,15 +532,21 @@
     }).join('');
   }
 
+  function setFilter(f) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+    const filtered = f === 'all' ? allPlans : allPlans.filter(p => p.status === f);
+    renderPlans(filtered);
+  }
+
+  // ── Sort ──────────────────────────────────────────────────────────────────
+
   function sortPlans(plans) {
     const statusOrder = { active: 0, paused: 1, blocked: 2, shipped: 3, superseded: 4 };
     return [...plans].sort((a, b) => {
-      // in-flight before up-next within active
       if (a.in_flight !== b.in_flight) return a.in_flight ? -1 : 1;
-      // then by status
       const so = (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9);
       if (so !== 0) return so;
-      // then by ETA soonest first (null ETAs go last)
       if (a.eta && b.eta) return a.eta.localeCompare(b.eta);
       if (a.eta) return -1;
       if (b.eta) return 1;
@@ -589,41 +554,44 @@
     });
   }
 
+  // ── Main render ───────────────────────────────────────────────────────────
+
   function render(plans) {
     const sorted = sortPlans(plans);
     const active = sorted.filter(p => p.status === 'active');
     const latest = plans.reduce((a, b) => a.last_updated > b.last_updated ? a : b);
+
     document.getElementById('header-meta').textContent = `${active.length} active plan${active.length !== 1 ? 's' : ''}`;
-    document.getElementById('header-updated').textContent = `Last updated: ${latest.last_updated}`;
+    document.getElementById('header-badge').textContent = `updated ${latest.last_updated}`;
 
     allPlans = sorted;
     renderStats(sorted);
-    renderGantt(sorted);
-    // Use same path as Today button for reliability (initial scrollIntoView is unreliable before layout settles)
-    setTimeout(() => { if (ganttInstance) ganttInstance.change_view_mode('Week'); }, 150);
+    renderTimeline(sorted);
     renderDepGraph(active);
     renderPlans(sorted);
 
     document.getElementById('app').style.display = 'block';
   }
 
-  // Derive page title from STATUS.md H1 if present, e.g. "# Nahra - Project Status" yields "Nahra - Roadmap".
-  // Falls back to "Project Roadmap" if STATUS.md isn't available (e.g. demo dirs).
+  // ── Title from STATUS.md ──────────────────────────────────────────────────
+
   function setTitleFromStatus() {
     return fetch('./STATUS.md')
       .then(r => r.ok ? r.text() : null)
       .then(text => {
         if (!text) return;
-        const match = text.match(/^#\s+(.+?)\s*[—\-]\s*Project Status/m);
+        const match = text.match(/^#\s+(.+?)\s*[--]\s*Project Status/m);
         if (match && match[1]) {
           const project = match[1].trim();
-          const title = `${project} - Roadmap`;
+          const title   = `${project} - Roadmap`;
           document.title = title;
           document.getElementById('header-title').textContent = title;
         }
       })
       .catch(() => {});
   }
+
+  // ── Boot ──────────────────────────────────────────────────────────────────
 
   if (location.protocol === 'file:') {
     document.getElementById('error-state').style.display = 'block';
