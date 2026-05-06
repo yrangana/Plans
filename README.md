@@ -216,7 +216,6 @@ This is a small, opinionated convention. Issues and PRs welcome for:
 - Bug fixes in `template/plans/roadmap.html`
 - Doc clarifications
 - Cross-platform skill ports (Cursor, Windsurf)
-- Cross-platform skill ports (Cursor, Windsurf)
 
 For substantive changes to the convention itself (frontmatter spec, lifecycle), open an issue first to discuss.
 
