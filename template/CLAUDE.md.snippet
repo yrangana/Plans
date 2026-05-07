@@ -33,6 +33,6 @@ Idea lifecycle:
 - Every "In flight" and "Up next" row in STATUS.md must have a corresponding plan file
 
 `plans/` is git-excluded. Use plain `mv`, not `git mv`.
-Update plan files as part of the work, not as a follow-up.
+Before ending any session that touches code covered by a plan: update the plan's `## Status` banner and frontmatter `last_updated`. Do not defer this to a follow-up session.
 To audit drift between plans and git, run `/plans sync`.
 To create a new plan file with correct structure, run `/plans new`.
