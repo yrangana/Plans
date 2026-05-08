@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The spec — Plans</title>
+<meta name="description" content="Anatomy of a plan file, frontmatter fields, lifecycle, and the /plans skill." />
+<style>
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --surface-elev: #fbfbfd;
+  --ink: #1d1d1f;
+  --ink-mute: #6e6e73;
+  --ink-faint: #86868b;
+  --border: #d2d2d7;
+  --border-strong: #86868b;
+  --accent: #0071e3;
+  --accent-hover: #0066cc;
+  --link: #0066cc;
+  --dark-bg: #000000;
+  --dark-surface: #1d1d1f;
+  --dark-surface-elev: #272729;
+  --dark-ink: #f5f5f7;
+  --dark-ink-mute: #86868b;
+  --dark-border: #424245;
+  --dark-link: #2997ff;
+  --status-shipped: #34c77b;
+  --status-shipped-bg: rgba(52,199,123,0.12);
+  --status-active: #0071e3;
+  --status-active-bg: rgba(0,113,227,0.10);
+  --status-pending: #86868b;
+  --status-pending-bg: rgba(134,134,139,0.12);
+  --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+  --font-body: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --container: 1180px;
+  --container-narrow: 920px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.022em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ============== nav ============== */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 48px;
+  background: rgba(0,0,0,0.78);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  border-block-end: 1px solid rgba(255,255,255,0.10);
+  color: var(--dark-ink);
+}
+.nav-inner {
+  max-width: var(--container);
+  height: 100%;
+  margin: 0 auto;
+  padding-inline: 22px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 12px;
+}
+.nav-mark {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark-ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-mark::before {
+  content: "";
+  width: 8px; height: 8px;
+  background: var(--accent);
+  display: inline-block;
+  border-radius: 1px;
+}
+.nav-links { display: flex; gap: 22px; margin-inline-start: auto; }
+.nav-links a { color: var(--dark-ink); opacity: 0.86; text-decoration: none; font-size: 12px; }
+.nav-links a:hover { opacity: 1; }
+.nav-links a.current { opacity: 1; color: var(--dark-link); }
+.nav-cta {
+  margin-inline-start: 4px;
+  padding: 4px 12px;
+  border-radius: 980px;
+  background: var(--accent);
+  color: #fff !important;
+  opacity: 1 !important;
+  font-weight: 500;
+}
+
+/* ============== shared ============== */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  margin: 0;
+}
+.eyebrow--accent { color: var(--accent); }
+
+h1, h2, h3 { font-family: var(--font-display); margin: 0; letter-spacing: -0.022em; }
+em.accent { color: var(--accent); font-style: normal; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 22px;
+  border-radius: 980px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  letter-spacing: -0.014em;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--border-strong);
+}
+
+.container { max-width: var(--container); margin: 0 auto; padding-inline: 22px; }
+.container--narrow { max-width: var(--container-narrow); margin: 0 auto; padding-inline: 22px; }
+
+.link-arrow { color: var(--link); text-decoration: none; }
+.link-arrow:hover { text-decoration: underline; }
+
+code, .code-inline {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: rgba(0,0,0,0.04);
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: -0.005em;
+}
+
+/* ============== page header ============== */
+.page-header {
+  background: var(--dark-bg);
+  color: var(--dark-ink);
+  padding-block: 90px 100px;
+  border-block-end: 1px solid var(--dark-border);
+}
+.page-header h1 {
+  font-size: clamp(40px, 5.6vw, 72px);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.028em;
+  margin-block: 18px 0;
+  max-width: 18ch;
+}
+.page-header .lede {
+  font-size: clamp(18px, 1.4vw, 21px);
+  color: var(--dark-ink-mute);
+  margin: 22px 0 0;
+  max-width: 60ch;
+  letter-spacing: -0.018em;
+  line-height: 1.5;
+}
+.crumbs {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--dark-ink-mute);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-flex;
+  gap: 8px;
+}
+.crumbs a { color: var(--dark-ink-mute); text-decoration: none; }
+.crumbs a:hover { color: var(--dark-ink); }
+.crumbs .sep { color: var(--accent); }
+
+/* ============== TOC ============== */
+.toc-rail {
+  background: var(--surface);
+  border-block-end: 1px solid var(--border);
+  position: sticky;
+  top: 48px;
+  z-index: 30;
+}
+.toc-inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 14px 22px;
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.toc-inner a {
+  color: var(--ink-mute);
+  text-decoration: none;
+}
+.toc-inner a:hover { color: var(--ink); }
+.toc-inner .step {
+  color: var(--accent);
+  margin-inline-end: 4px;
+}
+
+/* ============== sections ============== */
+section { padding-block: 96px; }
+section h2 {
+  font-size: clamp(30px, 3.6vw, 42px);
+  font-weight: 600;
+  line-height: 1.1;
+  margin: 14px 0 14px;
+  letter-spacing: -0.022em;
+  max-width: 22ch;
+}
+section h3 {
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  margin: 0 0 10px;
+}
+.section-lede {
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ink-mute);
+  max-width: 60ch;
+  margin: 0 0 56px;
+  letter-spacing: -0.018em;
+}
+
+/* ============== anatomy ============== */
+.anatomy { background: var(--bg); }
+.anatomy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.code-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.code-card-bar {
+  padding: 12px 18px;
+  border-block-end: 1px solid var(--border);
+  background: var(--surface-elev);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.code-card-bar .label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.code-card-bar .meta {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.code-card pre {
+  margin: 0;
+  padding: 22px 22px 24px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink);
+  white-space: pre-wrap;
+  letter-spacing: -0.005em;
+  overflow-x: auto;
+  flex: 1;
+}
+.k { color: var(--ink-mute); }
+.v { color: var(--ink); }
+.h { color: var(--accent); }
+.c { color: var(--ink-faint); }
+.s { color: #1d8048; }
+.b { color: var(--ink); font-weight: 500; }
+
+.note-row {
+  padding: 14px 18px;
+  border-block-start: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--ink-mute);
+  background: var(--surface-elev);
+  letter-spacing: -0.014em;
+}
+.note-row b { color: var(--ink); font-weight: 500; }
+
+.rule-line {
+  background: var(--ink);
+  color: #fff;
+  margin-block-start: 32px;
+  border-radius: 14px;
+  padding: 22px 26px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.rule-line .num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--dark-ink-mute);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.rule-line .body {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  flex: 1;
+  min-width: 280px;
+}
+.rule-line em { color: #fff; font-style: normal; border-block-end: 2px solid var(--accent); padding-block-end: 1px; }
+
+/* ============== frontmatter spec ============== */
+.spec { background: var(--surface); border-block-start: 1px solid var(--border); border-block-end: 1px solid var(--border); }
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14.5px;
+  letter-spacing: -0.014em;
+}
+.spec-table th, .spec-table td {
+  text-align: start;
+  padding: 14px 12px;
+  border-block-end: 1px solid var(--border);
+  vertical-align: top;
+}
+.spec-table th {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-block-end: 1px solid var(--ink);
+  padding-block: 12px;
+}
+.spec-table td.field {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  color: var(--accent);
+  white-space: nowrap;
+  letter-spacing: -0.005em;
+  width: 16%;
+}
+.spec-table td.type {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-mute);
+  white-space: nowrap;
+  letter-spacing: -0.005em;
+}
+.spec-table td.values code {
+  font-size: 12px;
+}
+.spec-table td.req {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.spec-table td.req.yes { color: var(--accent); }
+.spec-table tr:hover td { background: var(--surface-elev); }
+
+/* ============== lifecycle ============== */
+.lifecycle { background: var(--bg); }
+.lc-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-block-start: 32px;
+  position: relative;
+}
+.lc-step {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+.lc-step .stage {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.lc-step .stage .num {
+  display: inline-block;
+  margin-inline-end: 8px;
+  background: var(--accent);
+  color: #fff;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  text-align: center;
+  line-height: 18px;
+  font-size: 10px;
+  vertical-align: 1px;
+}
+.lc-step h4 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: -0.018em;
+  line-height: 1.25;
+}
+.lc-step p {
+  font-size: 13.5px;
+  color: var(--ink-mute);
+  line-height: 1.5;
+  margin: 0;
+  letter-spacing: -0.014em;
+}
+.lc-step code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  background: var(--surface-elev);
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  display: inline-block;
+  margin-block-start: 6px;
+}
+
+/* connecting arrows on lifecycle (desktop only) */
+@media (min-width: 901px) {
+  .lc-grid::before {
+    content: "";
+    position: absolute;
+    top: 36px;
+    inset-inline: 36px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border) 50%, transparent 50%);
+    background-size: 8px 1px;
+    z-index: 0;
+    pointer-events: none;
+  }
+}
+
+/* ============== /plans skill ============== */
+.skill-section { background: var(--surface); border-block-start: 1px solid var(--border); border-block-end: 1px solid var(--border); }
+.skill-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-block-start: 32px;
+}
+.skill-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 28px 26px;
+}
+.skill-card .cmd-line {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--accent);
+  letter-spacing: -0.005em;
+  margin-block-end: 16px;
+}
+.skill-card .cmd-line .slash { color: var(--ink-faint); }
+.skill-card h3 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+.skill-card p {
+  color: var(--ink-mute);
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0 0 18px;
+  letter-spacing: -0.014em;
+}
+.skill-card ul {
+  margin: 0;
+  padding-inline-start: 0;
+  list-style: none;
+  font-size: 14px;
+  color: var(--ink);
+  letter-spacing: -0.014em;
+}
+.skill-card ul li {
+  padding-block: 8px;
+  border-block-start: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+}
+.skill-card ul li:last-child { border-block-end: 1px solid var(--border); }
+.skill-card ul li::before {
+  content: "→";
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+/* ============== closing CTA ============== */
+.closing {
+  background: var(--dark-bg);
+  color: var(--dark-ink);
+  text-align: center;
+  padding-block: 120px;
+}
+.closing h2 {
+  font-size: clamp(34px, 4.4vw, 52px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  max-width: 22ch;
+  margin: 0 auto;
+}
+.closing p {
+  margin: 22px auto 32px;
+  color: var(--dark-ink-mute);
+  max-width: 50ch;
+  font-size: 18px;
+  letter-spacing: -0.018em;
+}
+.closing .cta-row {
+  display: inline-flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.closing .btn-ghost {
+  background: rgba(255,255,255,0.10);
+  color: var(--dark-ink);
+  border-color: rgba(255,255,255,0.14);
+}
+
+/* ============== footer ============== */
+.footer {
+  background: var(--dark-bg);
+  color: var(--dark-ink-mute);
+  border-block-start: 1px solid var(--dark-border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+.footer-inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 28px 22px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.footer a { color: var(--dark-ink-mute); text-decoration: none; }
+.footer a:hover { color: var(--dark-ink); }
+.footer .footer-links { display: inline-flex; gap: 22px; flex-wrap: wrap; }
+
+/* ============== responsive ============== */
+@media (max-width: 900px) {
+  section { padding-block: 72px; }
+  .anatomy-grid { grid-template-columns: 1fr; }
+  .lc-grid { grid-template-columns: 1fr 1fr; }
+  .skill-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+}
+@media (max-width: 560px) {
+  .lc-grid { grid-template-columns: 1fr; }
+  .spec-table td.type { display: none; }
+  .spec-table th:nth-child(2) { display: none; }
+  .footer-inner { flex-direction: column; gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-mark" href="index.html">Plans</a>
+    <nav class="nav-links">
+      <a href="index.html#problem">Why</a>
+      <a href="index.html#pieces">How</a>
+      <a href="index.html#demo">Demo</a>
+      <a href="index.html#platforms">Compatibility</a>
+      <a class="current" href="docs.html">Spec</a>
+      <a href="https://github.com/yrangana/Plans">GitHub ↗</a>
+    </nav>
+    <a class="nav-cta" href="index.html#install">Install</a>
+  </div>
+</header>
+
+<!-- ============== HEADER ============== -->
+<section class="page-header" data-od-id="docs-header">
+  <div class="container">
+    <p class="crumbs">
+      <a href="index.html">plans</a><span class="sep">/</span><span>spec</span>
+    </p>
+    <h1>The spec, in one page.</h1>
+    <p class="lede">
+      Anatomy of a plan file, every frontmatter field, the lifecycle from
+      idea to shipped, and the two commands that let your AI assistant
+      read along. Implementation details — full reference is on GitHub.
+    </p>
+  </div>
+</section>
+
+<nav class="toc-rail" aria-label="Section navigation">
+  <div class="toc-inner">
+    <a href="#anatomy"><span class="step">01</span> Anatomy</a>
+    <a href="#frontmatter"><span class="step">02</span> Frontmatter</a>
+    <a href="#lifecycle"><span class="step">03</span> Lifecycle</a>
+    <a href="#skill"><span class="step">04</span> /plans skill</a>
+    <a href="https://github.com/yrangana/Plans/blob/main/docs/reference.md"><span class="step">05</span> Full reference ↗</a>
+  </div>
+</nav>
+
+<!-- ============== ANATOMY ============== -->
+<section class="anatomy" id="anatomy" data-od-id="anatomy">
+  <div class="container">
+    <p class="eyebrow eyebrow--accent">01 · ANATOMY</p>
+    <h2>Two layers. They must agree.</h2>
+    <p class="section-lede">
+      Every plan file has machine-readable YAML frontmatter and a
+      human-readable Status banner. If they conflict, frontmatter wins.
+      The dashboard reads frontmatter; <code>/plans sync</code> watches
+      for drift between the two.
+    </p>
+
+    <div class="anatomy-grid">
+      <div class="code-card">
+        <div class="code-card-bar">
+          <span class="label">plans/active/DARK_MODE.md</span>
+          <span class="meta">YAML · machine-readable</span>
+        </div>
+<pre><span class="c">---</span>
+<span class="k">status</span>:        <span class="v">active</span>
+<span class="k">priority</span>:      <span class="h">P1</span>
+<span class="k">owner</span>:         <span class="v">alex</span>
+<span class="k">type</span>:          <span class="v">feature</span>
+<span class="k">depends_on</span>:    <span class="v">[]</span>
+<span class="k">blocks</span>:        <span class="v">[THEME_PICKER]</span>
+<span class="k">last_updated</span>:  <span class="v">2026-05-06</span>
+<span class="k">in_flight</span>:     <span class="h">true</span>
+<span class="k">start_date</span>:    <span class="v">2026-04-28</span>
+<span class="c">---</span></pre>
+        <div class="note-row">
+          <b>9 fields.</b> Eight are required at creation. <code>in_flight</code> flips to <code>true</code> the moment work actively starts.
+        </div>
+      </div>
+
+      <div class="code-card">
+        <div class="code-card-bar">
+          <span class="label">## Status banner (same file)</span>
+          <span class="meta">prose · human-readable</span>
+        </div>
+<pre><span class="b">## Status</span>
+
+- <span class="b">Overall:</span> In progress, Phase 2 of 3
+- <span class="b">Phase 0 (Color tokens):</span>     <span class="s">Done · 2026-04-29</span>
+- <span class="b">Phase 1 (Component pass):</span>   <span class="s">Done · 2026-05-02</span>
+- <span class="b">Phase 2 (Settings UI):</span>      <span class="h">In progress · ETA 2026-05-12</span>
+
+<span class="b">Next action:</span> Wire up the theme toggle to
+the settings panel.</pre>
+        <div class="note-row">
+          <b>Phase progress + next action.</b> What an engineer reads when they re-enter cold. The dashboard does not parse this — it is for humans.
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-line">
+      <span class="num">The one rule</span>
+      <p class="body">
+        New ideas live as <em>backlog bullets in STATUS.md</em>. No plan
+        file gets created until work is committed. No idea lives in two
+        places.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FRONTMATTER SPEC ============== -->
+<section class="spec" id="frontmatter" data-od-id="frontmatter">
+  <div class="container">
+    <p class="eyebrow eyebrow--accent">02 · FRONTMATTER</p>
+    <h2>Every field. Every valid value.</h2>
+    <p class="section-lede">
+      Nine fields, all flat YAML. Strings, dates, and string lists. No
+      nested objects, no custom types. <code>plans.json</code> is
+      regenerated from these fields — never hand-edited.
+    </p>
+
+    <table class="spec-table">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Type</th>
+          <th>Valid values</th>
+          <th>Required</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="field">status</td>
+          <td class="type">string</td>
+          <td class="values"><code>active</code> · <code>shipped</code> · <code>superseded</code></td>
+          <td class="req yes">yes</td>
+        </tr>
+        <tr>
+          <td class="field">priority</td>
+          <td class="type">enum</td>
+          <td class="values"><code>P0</code> (drop everything) · <code>P1</code> · <code>P2</code> · <code>P3</code> (someday)</td>
+          <td class="req yes">yes</td>
+        </tr>
+        <tr>
+          <td class="field">owner</td>
+          <td class="type">string</td>
+          <td class="values">a name or handle. <code>you</code> is fine for solo projects.</td>
+          <td class="req yes">yes</td>
+        </tr>
+        <tr>
+          <td class="field">type</td>
+          <td class="type">enum</td>
+          <td class="values"><code>feature</code> · <code>refactor</code> · <code>bug</code> · <code>infra</code> · <code>docs</code></td>
+          <td class="req yes">yes</td>
+        </tr>
+        <tr>
+          <td class="field">depends_on</td>
+          <td class="type">string[]</td>
+          <td class="values">filenames (without <code>.md</code>) of plans this one waits on</td>
+          <td class="req yes">yes</td>
+        </tr>
+        <tr>
+          <td class="field">blocks</td>
+          <td class="type">string[]</td>
+          <td class="values">filenames of plans waiting on this one</td>
+          <td class="req yes">yes</td>
+        </tr>
+        <tr>
+          <td class="field">last_updated</td>
+          <td class="type">YYYY-MM-DD</td>
+          <td class="values">date of the most recent edit. Bumped whenever a phase changes.</td>
+          <td class="req yes">yes</td>
+        </tr>
+        <tr>
+          <td class="field">in_flight</td>
+          <td class="type">boolean</td>
+          <td class="values"><code>true</code> when work has actively started — drives the Gantt timeline</td>
+          <td class="req">when&nbsp;active</td>
+        </tr>
+        <tr>
+          <td class="field">start_date</td>
+          <td class="type">YYYY-MM-DD</td>
+          <td class="values">when work began (or projected start, for queued plans)</td>
+          <td class="req">optional</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============== LIFECYCLE ============== -->
+<section class="lifecycle" id="lifecycle" data-od-id="lifecycle">
+  <div class="container">
+    <p class="eyebrow eyebrow--accent">03 · LIFECYCLE</p>
+    <h2>One idea. One home at every stage.</h2>
+    <p class="section-lede">
+      An idea moves through five stages, exactly. There is one canonical
+      location for it at each stage — never two. This is what stops the
+      stale-file pile-up.
+    </p>
+
+    <div class="lc-grid">
+      <div class="lc-step">
+        <p class="stage"><span class="num">1</span>Idea</p>
+        <h4>Backlog bullet only</h4>
+        <p>Add a one-line bullet to <code>STATUS.md</code> backlog. No plan file yet.</p>
+      </div>
+      <div class="lc-step">
+        <p class="stage"><span class="num">2</span>Committed</p>
+        <h4>Plan file created</h4>
+        <p>Run <code>/plans new</code>. Frontmatter is filled, banner is templated, row added to <code>STATUS.md</code> "Up next".</p>
+      </div>
+      <div class="lc-step">
+        <p class="stage"><span class="num">3</span>Started</p>
+        <h4>in_flight: true</h4>
+        <p>Flip the flag. Row moves to "In flight". The Gantt picks it up automatically on next sync.</p>
+      </div>
+      <div class="lc-step">
+        <p class="stage"><span class="num">4</span>Shipped</p>
+        <h4>mv to shipped/</h4>
+        <p><code>mv plans/active/X.md plans/shipped/X.md</code>. Row moves to "Recently shipped".</p>
+      </div>
+      <div class="lc-step">
+        <p class="stage"><span class="num">5</span>Replaced</p>
+        <h4>mv to superseded/</h4>
+        <p>Different approach won. <code>status: superseded</code>. Kept for archaeology, not noise.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== /plans SKILL ============== -->
+<section class="skill-section" id="skill" data-od-id="skill">
+  <div class="container">
+    <p class="eyebrow eyebrow--accent">04 · /plans SKILL</p>
+    <h2>Two slash commands. Drift goes away.</h2>
+    <p class="section-lede">
+      A Claude Code skill (and Antigravity / Cursor port) with two modes.
+      Both run inside your assistant — no separate process, no daemon,
+      no API key.
+    </p>
+
+    <div class="skill-grid">
+      <article class="skill-card">
+        <p class="cmd-line"><span class="slash">/</span>plans sync</p>
+        <h3>Weekly drift audit</h3>
+        <p>
+          Reads every plan's frontmatter, runs <code>git log</code>, cross-references the two,
+          and shows you a diff before writing anything.
+        </p>
+        <ul>
+          <li>Catches phases marked "not started" that are already merged</li>
+          <li>Flags plans with no commits in 14 days</li>
+          <li>Detects orphaned <code>depends_on</code> / <code>blocks</code> edges</li>
+          <li>Regenerates <code>plans.json</code> and STATUS.md auto-sections</li>
+          <li>Always proposes — never writes silently</li>
+        </ul>
+      </article>
+
+      <article class="skill-card">
+        <p class="cmd-line"><span class="slash">/</span>plans new</p>
+        <h3>Guided plan creation</h3>
+        <p>
+          Walks you through the eight required fields. Picks a filename
+          from the title. Inserts the templated <code>## Status</code> banner. Adds the
+          row to STATUS.md.
+        </p>
+        <ul>
+          <li>Validates priority, status, type are in the enum</li>
+          <li>Resolves <code>depends_on</code> to existing files</li>
+          <li>Won't create the file if frontmatter is incomplete</li>
+          <li>Updates STATUS.md backlog if you started from a bullet</li>
+          <li>Runs in the assistant — your IDE stays where it was</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CLOSING CTA ============== -->
+<section class="closing" data-od-id="closing">
+  <div class="container--narrow">
+    <h2>That's the whole spec. Two commands and you're running.</h2>
+    <p>
+      Full reference (every edge case, every CLI flag, the JSON schema)
+      lives in the repo.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="index.html#install">Install</a>
+      <a class="btn btn-ghost" href="roadmap.html">Open the demo</a>
+      <a class="btn btn-ghost" href="https://github.com/yrangana/Plans/blob/main/docs/reference.md">Full reference ↗</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div>Plans · MIT · a planning convention for AI-assisted projects</div>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="roadmap.html">Demo</a>
+      <a href="https://github.com/yrangana/Plans">GitHub</a>
+      <a href="presentation.html">Slides</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plans · Status</title>
+<style>
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --surface-elev: #fbfbfd;
+  --ink: #1d1d1f;
+  --ink-mute: #6e6e73;
+  --ink-faint: #86868b;
+  --border: #d2d2d7;
+  --border-soft: #e5e5e8;
+  --border-strong: #86868b;
+  --accent: #0071e3;
+  --status-shipped: #34c77b;
+  --status-shipped-bg: rgba(52, 199, 123, 0.12);
+  --status-shipped-ink: #1d8048;
+  --status-active: #0071e3;
+  --status-active-bg: rgba(0, 113, 227, 0.10);
+  --status-pending-bg: rgba(134, 134, 139, 0.10);
+  --status-pending-ink: #56565a;
+  --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+  --font-body: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --sidebar-w: 240px;
+  --doc-w: 720px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.47; letter-spacing: -0.014em; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; min-height: 100vh; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; letter-spacing: -0.022em; font-weight: 600; }
+
+/* ── Top nav ───────────────────────────────────────────────────── */
+.topnav { height: 40px; background: rgba(0,0,0,0.82); backdrop-filter: saturate(180%) blur(18px); -webkit-backdrop-filter: saturate(180%) blur(18px); border-block-end: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; padding-inline: 18px; gap: 18px; position: sticky; top: 0; z-index: 100; flex-shrink: 0; }
+.topnav-back { font-family: var(--font-mono); font-size: 11.5px; color: rgba(255,255,255,0.72); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; letter-spacing: -0.005em; transition: color 100ms; }
+.topnav-back:hover { color: rgba(255,255,255,1); }
+.topnav-back::before { content: "←"; font-size: 13px; }
+.topnav-sep { color: rgba(255,255,255,0.2); font-size: 13px; }
+.topnav-title { font-family: var(--font-mono); font-size: 11.5px; color: rgba(255,255,255,0.86); display: inline-flex; align-items: center; gap: 7px; letter-spacing: -0.005em; }
+.topnav-title::before { content: ""; width: 6px; height: 6px; background: var(--status-shipped); border-radius: 1px; display: inline-block; }
+.topnav-links { margin-inline-start: auto; display: inline-flex; gap: 18px; font-family: var(--font-mono); font-size: 11px; }
+.topnav-links a { color: rgba(255,255,255,0.55); text-decoration: none; letter-spacing: -0.005em; transition: color 100ms; }
+.topnav-links a:hover { color: rgba(255,255,255,0.9); }
+.topnav-links a.current { color: rgba(255,255,255,0.9); }
+
+/* ── Layout ────────────────────────────────────────────────────── */
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; flex: 1; align-items: start; max-width: 1360px; margin-inline: auto; width: 100%; }
+
+/* ── Sidebar ───────────────────────────────────────────────────── */
+.sidebar { background: var(--surface); border-inline-end: 1px solid var(--border); position: sticky; top: 40px; height: calc(100vh - 40px); overflow-y: auto; padding: 22px 20px 32px; display: flex; flex-direction: column; gap: 24px; scrollbar-width: thin; }
+.sidebar-block { display: flex; flex-direction: column; gap: 8px; }
+.sidebar-label { font-family: var(--font-mono); font-size: 9.5px; font-weight: 500; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.1em; }
+.sidebar-desc { font-size: 12px; color: var(--ink-mute); line-height: 1.55; letter-spacing: -0.01em; }
+.sidebar-rule { height: 1px; background: var(--border-soft); }
+.sidebar-legend { display: flex; flex-direction: column; gap: 7px; }
+.legend-item { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); letter-spacing: -0.005em; }
+.sidebar-link { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11.5px; color: var(--accent); text-decoration: none; letter-spacing: -0.005em; padding: 8px 10px; border: 1px solid var(--border-soft); border-radius: 6px; background: var(--surface-elev); transition: border-color 100ms, background 100ms; }
+.sidebar-link:hover { border-color: var(--accent); background: rgba(0,113,227,0.04); }
+.sidebar-link::before { content: "↗"; font-size: 12px; color: var(--ink-faint); }
+.sidebar-toc { display: flex; flex-direction: column; gap: 5px; }
+.toc-item { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); text-decoration: none; letter-spacing: -0.005em; padding: 3px 0; border-block-start: none; transition: color 100ms; }
+.toc-item:hover { color: var(--accent); }
+.toc-item.section { color: var(--ink); font-weight: 500; }
+.toc-item.sub { padding-inline-start: 10px; color: var(--ink-faint); }
+
+/* ── Main ──────────────────────────────────────────────────────── */
+.main { padding: 28px 36px 72px; }
+
+/* ── Markdown-style document ───────────────────────────────────── */
+.doc-header { margin-block-end: 28px; padding-block-end: 20px; border-block-end: 1px solid var(--border); }
+.doc-eyebrow { font-family: var(--font-mono); font-size: 10px; font-weight: 500; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.1em; margin-block-end: 10px; }
+.doc-title { font-family: var(--font-mono); font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); line-height: 1.1; margin-block-end: 10px; }
+.doc-title::before { content: "# "; color: var(--ink-faint); font-weight: 400; }
+.doc-meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); display: inline-flex; gap: 16px; flex-wrap: wrap; letter-spacing: -0.005em; }
+.doc-meta span::before { content: "·"; margin-inline-end: 8px; color: var(--border-strong); }
+.doc-meta span:first-child::before { display: none; }
+
+/* Summary strip */
+.doc-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); margin-block: 22px; overflow: hidden; }
+.summary-cell { padding: 18px 20px; border-inline-end: 1px solid var(--border); }
+.summary-cell:last-child { border-inline-end: 0; }
+.summary-cell .lbl { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-block-end: 8px; }
+.summary-cell .val { font-family: var(--font-display); font-size: 30px; font-weight: 600; letter-spacing: -0.025em; line-height: 1; font-variant-numeric: tabular-nums; }
+.summary-cell .val em { color: var(--accent); font-style: normal; }
+.summary-cell .val em.green { color: var(--status-shipped); }
+.summary-cell .val em.mute { color: var(--ink-mute); }
+.summary-cell .hint { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-mute); margin-block-start: 5px; }
+
+/* Doc headings */
+.md-h2 { font-family: var(--font-mono); font-size: 15px; font-weight: 700; letter-spacing: -0.015em; color: var(--ink); margin: 40px 0 14px; display: flex; align-items: baseline; gap: 8px; padding-block-end: 8px; border-block-end: 1px solid var(--border-soft); }
+.md-h2::before { content: "## "; color: var(--ink-faint); font-weight: 400; font-size: 13px; }
+.md-h2 .tag { font-size: 10px; color: var(--ink-faint); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 400; margin-inline-start: auto; }
+
+/* Plan rows */
+.plan-row { display: grid; grid-template-columns: 1fr 100px 180px; gap: 18px; align-items: start; padding: 16px 0; border-block-end: 1px solid var(--border-soft); }
+.plan-row:last-child { border-block-end: 0; }
+.row-head { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; margin-block-end: 4px; }
+.row-title { font-family: var(--font-display); font-size: 14.5px; font-weight: 500; letter-spacing: -0.018em; }
+.row-id { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); letter-spacing: 0.02em; }
+.row-meta { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-mute); display: inline-flex; gap: 9px; flex-wrap: wrap; letter-spacing: -0.005em; }
+.row-meta .pri { background: var(--bg); border: 1px solid var(--border-soft); padding: 0 5px; border-radius: 3px; }
+.row-meta .pri.p0 { color: #aa1d1d; border-color: rgba(170,29,29,0.18); background: rgba(170,29,29,0.06); }
+.row-meta .pri.p1 { color: var(--accent); border-color: rgba(0,113,227,0.20); background: rgba(0,113,227,0.06); }
+.row-next { font-size: 12.5px; color: var(--ink-mute); letter-spacing: -0.012em; margin-block-start: 7px; line-height: 1.45; }
+.row-next::before { content: "Next"; font-family: var(--font-mono); font-size: 9.5px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-inline-end: 8px; font-weight: 500; }
+.row-progress .pct-row { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-mute); display: flex; justify-content: space-between; margin-block-end: 5px; font-variant-numeric: tabular-nums; }
+.bar-track { height: 4px; background: var(--bg); border-radius: 2px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--status-shipped); border-radius: 2px; }
+.bar-fill.zero { width: 1px !important; background: var(--ink-faint); }
+.row-phases { display: flex; flex-direction: column; gap: 4px; }
+.ph { display: grid; grid-template-columns: 14px 1fr auto; gap: 7px; align-items: center; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-mute); letter-spacing: -0.005em; }
+.ph .dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--border-strong); justify-self: center; }
+.ph.shipped .dot { background: var(--status-shipped); border-color: var(--status-shipped); }
+.ph.in_progress .dot { background: var(--status-active); border-color: var(--status-active); box-shadow: 0 0 0 3px rgba(0,113,227,0.18); }
+.ph.shipped .nm { color: var(--ink); }
+.ph.in_progress .nm { color: var(--ink); font-weight: 500; }
+.ph.not_started .nm { color: var(--ink-faint); }
+.ph .when { color: var(--ink-faint); font-size: 10px; letter-spacing: 0.02em; }
+.plan-row.is-shipped .row-title { color: var(--ink-mute); }
+
+/* Pills */
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+.pill.shipped { background: var(--status-shipped-bg); color: var(--status-shipped-ink); }
+.pill.in-flight { background: rgba(0,113,227,0.14); color: var(--accent); }
+.pill.in-flight::before { content: ""; display: inline-block; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; margin-inline-end: 5px; vertical-align: 1px; animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.pill.up-next { background: var(--status-pending-bg); color: var(--status-pending-ink); }
+
+/* Empty state */
+.none-msg { font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); padding: 14px 0; letter-spacing: 0.02em; text-align: center; }
+
+/* Gantt (compact for status) */
+.gantt { display: grid; grid-template-columns: 180px 1fr; gap: 9px; position: relative; font-size: 12px; }
+.gantt-axis-row { display: contents; }
+.gantt-axis { grid-column: 2; position: relative; height: 20px; border-block-end: 1px solid var(--border-soft); margin-block-end: 5px; font-family: var(--font-mono); font-size: 9px; color: var(--ink-faint); letter-spacing: 0.04em; text-transform: uppercase; }
+.gantt-axis span { position: absolute; top: 3px; transform: translateX(-50%); white-space: nowrap; }
+.gantt-row { display: contents; }
+.gantt-label { font-family: var(--font-display); font-size: 11.5px; color: var(--ink); display: flex; align-items: center; letter-spacing: -0.014em; }
+.gantt-label .pri { font-family: var(--font-mono); font-size: 8.5px; background: var(--bg); color: var(--ink-mute); padding: 1px 4px; margin-inline-end: 6px; border-radius: 3px; letter-spacing: 0.04em; border: 1px solid var(--border-soft); }
+.gantt-label .pri.p0 { color: #aa1d1d; border-color: rgba(170,29,29,0.18); background: rgba(170,29,29,0.06); }
+.gantt-label .pri.p1 { color: var(--accent); border-color: rgba(0,113,227,0.20); background: rgba(0,113,227,0.06); }
+.gantt-label .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gantt-track { position: relative; height: 22px; background: var(--bg); border-radius: 4px; }
+.gantt-bar { position: absolute; top: 3px; height: 16px; border-radius: 3px; display: flex; align-items: center; padding-inline: 7px; font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; font-variant-numeric: tabular-nums; }
+.gantt-bar.shipped { background: var(--status-shipped); color: #003e1a; }
+.gantt-bar.active { background: var(--status-active); color: #fff; }
+.gantt-bar.pending { background: transparent; border: 1px dashed var(--border-strong); color: var(--ink-mute); }
+.gantt-today { position: absolute; top: 0; bottom: 0; width: 0; z-index: 5; pointer-events: none; }
+.gantt-today::before { content: ""; position: absolute; top: 18px; bottom: 0; left: 0; width: 1px; background: var(--accent); opacity: 0.65; }
+.gantt-today::after { content: "TODAY"; position: absolute; top: 4px; left: 0; transform: translateX(-50%); font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.12em; color: var(--accent); background: var(--surface); padding: 0 5px; white-space: nowrap; font-weight: 500; }
+
+/* Deps (compact) */
+.deps { display: flex; flex-direction: column; gap: 12px; }
+.dep-chain { display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
+.dep-node { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 13px; font-size: 12px; display: inline-flex; flex-direction: column; gap: 3px; min-width: 160px; font-family: var(--font-display); letter-spacing: -0.012em; }
+.dep-node.in-flight { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,0.08); }
+.dep-node.shipped { border-color: var(--status-shipped); background: rgba(52,199,123,0.04); }
+.dep-node.standalone { border-style: dashed; }
+.dep-node .id { font-family: var(--font-mono); font-size: 9px; color: var(--ink-faint); letter-spacing: 0.04em; text-transform: uppercase; }
+.dep-node .ttl { font-weight: 500; color: var(--ink); }
+.dep-node .row { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-mute); display: inline-flex; gap: 6px; margin-block-start: 3px; }
+.dep-arrow { width: 32px; height: 1.5px; background: var(--ink-faint); position: relative; margin-inline: 4px; flex-shrink: 0; }
+.dep-arrow::after { content: ""; position: absolute; right: -1px; top: -3.5px; border: 4px solid transparent; border-left-color: var(--ink-faint); }
+.dep-blocks { font-family: var(--font-mono); font-size: 9px; color: var(--ink-faint); letter-spacing: 0.06em; text-transform: uppercase; margin-inline: 4px; display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+
+/* Footer */
+.footer { border-block-start: 1px solid var(--border-soft); padding: 14px 0; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-faint); letter-spacing: 0.02em; flex-wrap: wrap; gap: 8px; margin-block-start: 16px; }
+.footer a { color: var(--ink-mute); text-decoration: none; }
+.footer a:hover { color: var(--ink); }
+.footer-links { display: inline-flex; gap: 18px; }
+
+body.embed .sidebar { display: none !important; }
+body.embed .layout { grid-template-columns: 1fr; }
+
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 18px 20px 48px; }
+  .doc-summary { grid-template-columns: 1fr 1fr; }
+  .summary-cell:last-child { grid-column: 1 / -1; border-inline-end: 0; border-block-start: 1px solid var(--border); }
+  .plan-row { grid-template-columns: 1fr; gap: 10px; }
+  .gantt { grid-template-columns: 110px 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="topnav-back" href="index.html">plans</a>
+  <span class="topnav-sep">/</span>
+  <span class="topnav-title">Status</span>
+  <div class="topnav-links">
+    <a href="roadmap.html">Roadmap</a>
+    <a href="status.html" class="current">Status</a>
+    <a href="https://github.com/yrangana/Plans" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-block">
+      <div class="sidebar-label">About this view</div>
+      <div class="sidebar-desc">A rendered version of <code style="font-family: var(--font-mono); font-size: 11px; background: var(--bg); padding: 1px 5px; border-radius: 3px;">STATUS.md</code> — the daily front door. Open it in the morning to see what's shipping, what's queued, and what just landed.</div>
+    </div>
+    <div class="sidebar-rule"></div>
+    <div class="sidebar-block">
+      <div class="sidebar-label">Contents</div>
+      <nav class="sidebar-toc">
+        <a class="toc-item section" href="#summary">Summary</a>
+        <a class="toc-item section" href="#timeline">Timeline</a>
+        <a class="toc-item section" href="#deps">Dependencies</a>
+        <a class="toc-item section" href="#inflight">## In flight</a>
+        <a class="toc-item sub" id="toc-inflight-items" href="#inflight">—</a>
+        <a class="toc-item section" href="#upnext">## Up next</a>
+        <a class="toc-item section" href="#shipped">## Recently shipped</a>
+      </nav>
+    </div>
+    <div class="sidebar-rule"></div>
+    <div class="sidebar-block">
+      <div class="sidebar-label">Legend</div>
+      <div class="sidebar-legend">
+        <div class="legend-item"><span class="pill in-flight" style="font-size:8.5px;">In flight</span>Actively shipping</div>
+        <div class="legend-item"><span class="pill up-next" style="font-size:8.5px;">Up next</span>Queued, not started</div>
+        <div class="legend-item"><span class="pill shipped" style="font-size:8.5px;">Shipped</span>Complete</div>
+      </div>
+    </div>
+    <div class="sidebar-rule"></div>
+    <a class="sidebar-link" href="roadmap.html">Full roadmap</a>
+    <a class="sidebar-link" href="index.html">Back to site</a>
+  </aside>
+
+  <main class="main">
+    <div class="doc-header">
+      <div class="doc-eyebrow">plans / STATUS.md</div>
+      <div class="doc-title">Project Status</div>
+      <div class="doc-meta">
+        <span id="meta-updated">as of —</span>
+        <span id="meta-counts">—</span>
+      </div>
+    </div>
+
+    <div class="doc-summary" id="summary">
+      <div class="summary-cell">
+        <div class="lbl">In flight</div>
+        <div class="val"><em id="s-flight">0</em></div>
+        <div class="hint" id="s-flight-hint">active plans</div>
+      </div>
+      <div class="summary-cell">
+        <div class="lbl">Up next</div>
+        <div class="val"><em class="mute" id="s-next">0</em></div>
+        <div class="hint">queued · not started</div>
+      </div>
+      <div class="summary-cell">
+        <div class="lbl">Shipped</div>
+        <div class="val"><em class="green" id="s-shipped">0</em></div>
+        <div class="hint" id="s-shipped-hint">completed</div>
+      </div>
+    </div>
+
+    <div class="md-h2" id="timeline">Timeline <span class="tag">Gantt · ETA-driven</span></div>
+    <div class="gantt" id="gantt"></div>
+
+    <div class="md-h2" id="deps">Dependencies <span class="tag">Block chains · active only</span></div>
+    <div class="deps" id="deps-container"></div>
+
+    <div class="md-h2" id="inflight">In flight <span class="tag">Actively shipping</span></div>
+    <div id="inflight-list"></div>
+
+    <div class="md-h2" id="upnext">Up next <span class="tag">Queued · not yet started</span></div>
+    <div id="queued-list"></div>
+
+    <div class="md-h2" id="shipped">Recently shipped <span class="tag">Completed</span></div>
+    <div id="shipped-list"></div>
+
+    <footer class="footer">
+      <span>plans · MIT · plain markdown + json</span>
+      <div class="footer-links">
+        <a href="index.html">← Site</a>
+        <a href="roadmap.html">Roadmap</a>
+        <a href="https://github.com/yrangana/Plans" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<script>
+const PLANS = [
+  { "file": "DARK_MODE.md", "title": "Dark Mode", "status": "active", "priority": "P1", "owner": "alex", "type": "feature", "depends_on": [], "blocks": ["THEME_PICKER"], "last_updated": "2026-05-06", "start_date": "2026-04-28", "overall": "In progress (Phase 2 of 3)", "eta": "2026-05-12", "in_flight": true, "next_action": "Wire up the theme toggle to the settings panel.", "phase_summary": [{ "phase": 0, "name": "Color tokens", "status": "shipped", "date": "2026-04-29" }, { "phase": 1, "name": "Component pass", "status": "shipped", "date": "2026-05-02" }, { "phase": 2, "name": "Settings UI", "status": "in_progress", "eta": "2026-05-12" }] },
+  { "file": "SEARCH_INDEX.md", "title": "Full-text search index", "status": "active", "priority": "P0", "owner": "sam", "type": "feature", "depends_on": [], "blocks": ["SEARCH_AUTOCOMPLETE"], "last_updated": "2026-05-06", "start_date": "2026-04-24", "overall": "In progress (Phase 1 of 2)", "eta": "2026-05-09", "in_flight": true, "next_action": "Index existing documents and wire up the search bar.", "phase_summary": [{ "phase": 0, "name": "Schema", "status": "shipped", "date": "2026-04-30" }, { "phase": 1, "name": "Indexing", "status": "in_progress", "eta": "2026-05-09" }] },
+  { "file": "THEME_PICKER.md", "title": "Theme Picker", "status": "active", "priority": "P2", "owner": "alex", "type": "feature", "depends_on": ["DARK_MODE"], "blocks": [], "last_updated": "2026-05-06", "start_date": "2026-05-12", "overall": "Not started, queued behind Dark Mode", "eta": "2026-05-20", "in_flight": false, "next_action": "Wait for Dark Mode Phase 2 to ship, then start design.", "phase_summary": [{ "phase": 0, "name": "Design", "status": "not_started", "eta": "2026-05-14" }, { "phase": 1, "name": "Build", "status": "not_started", "eta": "2026-05-17" }, { "phase": 2, "name": "Tests", "status": "not_started", "eta": "2026-05-20" }] },
+  { "file": "SEARCH_AUTOCOMPLETE.md", "title": "Search autocomplete", "status": "active", "priority": "P2", "owner": "sam", "type": "feature", "depends_on": ["SEARCH_INDEX"], "blocks": [], "last_updated": "2026-05-06", "start_date": "2026-05-09", "overall": "Not started, queued behind search index", "eta": "2026-05-16", "in_flight": false, "next_action": "Wait for SEARCH_INDEX Phase 1 to ship.", "phase_summary": [{ "phase": 0, "name": "Suggestion API", "status": "not_started", "eta": "2026-05-12" }, { "phase": 1, "name": "UI integration", "status": "not_started", "eta": "2026-05-16" }] },
+  { "file": "MOBILE_RESPONSIVE.md", "title": "Mobile responsive layout", "status": "active", "priority": "P1", "owner": "alex", "type": "feature", "depends_on": [], "blocks": [], "last_updated": "2026-05-06", "start_date": "2026-05-08", "overall": "Not started, standalone", "eta": "2026-05-15", "in_flight": false, "next_action": "Audit existing breakpoints and identify gaps.", "phase_summary": [{ "phase": 0, "name": "Audit", "status": "not_started", "eta": "2026-05-10" }, { "phase": 1, "name": "Build", "status": "not_started", "eta": "2026-05-15" }] },
+  { "file": "ONBOARDING.md", "title": "First-run onboarding", "status": "shipped", "priority": "P1", "owner": "alex", "type": "feature", "depends_on": [], "blocks": [], "last_updated": "2026-04-23", "start_date": "2026-04-18", "overall": "Shipped 2026-04-23", "eta": "2026-04-23", "in_flight": false, "next_action": null, "phase_summary": [{ "phase": 0, "name": "Welcome flow", "status": "shipped", "date": "2026-04-23" }] }
+];
+
+const today = new Date('2026-05-07');
+const fmtDay = d => new Date(d).toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+const calcProgress = phases => !phases?.length ? 0 : Math.round(phases.filter(p => p.status === 'shipped').length / phases.length * 100);
+const priOrder = { P0: 0, P1: 1, P2: 2 };
+const byPri = (a, b) => (priOrder[a.priority] ?? 9) - (priOrder[b.priority] ?? 9);
+
+const inflight = PLANS.filter(p => p.in_flight).sort(byPri);
+const queued   = PLANS.filter(p => !p.in_flight && p.status === 'active').sort(byPri);
+const shipped  = PLANS.filter(p => p.status === 'shipped');
+
+// Meta
+const latest = PLANS.reduce((a, b) => a.last_updated > b.last_updated ? a : b);
+document.getElementById('s-flight').textContent = inflight.length;
+document.getElementById('s-next').textContent = queued.length;
+document.getElementById('s-shipped').textContent = shipped.length;
+document.getElementById('s-flight-hint').textContent = `${inflight.length} plan${inflight.length !== 1 ? 's' : ''} shipping`;
+document.getElementById('s-shipped-hint').textContent = `${shipped.length} completed`;
+document.getElementById('meta-updated').textContent = `as of ${fmtDay(latest.last_updated)} 2026`;
+document.getElementById('meta-counts').textContent = `${inflight.length} in flight · ${queued.length} queued · ${shipped.length} shipped`;
+
+// TOC sidebar
+document.getElementById('toc-inflight-items').textContent = inflight.map(p => p.title).join(', ') || 'none';
+
+// Gantt
+(function renderGantt() {
+  const rows = PLANS.map(p => ({ plan: p, start: new Date(p.start_date || p.last_updated), end: new Date(p.eta || p.last_updated) }));
+  const allDates = rows.flatMap(r => [r.start, r.end]).concat([today]);
+  let minD = new Date(Math.min(...allDates)); minD.setDate(minD.getDate() - 1);
+  let maxD = new Date(Math.max(...allDates)); maxD.setDate(maxD.getDate() + 1);
+  const span = maxD - minD;
+  const pct = d => ((new Date(d) - minD) / span * 100);
+  // sort: inflight first, then by priority
+  const sorted = [...rows].sort((a, b) => {
+    if (a.plan.in_flight !== b.plan.in_flight) return a.plan.in_flight ? -1 : 1;
+    return (priOrder[a.plan.priority] ?? 9) - (priOrder[b.plan.priority] ?? 9);
+  });
+  const container = document.getElementById('gantt');
+  let html = '<div class="gantt-axis-row"><div class="gantt-axis">';
+  const nTicks = 6;
+  for (let i = 0; i < nTicks; i++) {
+    const t = new Date(minD.getTime() + (span * i) / (nTicks - 1));
+    html += `<span style="left: ${(i / (nTicks - 1) * 100).toFixed(2)}%">${fmtDay(t)}</span>`;
+  }
+  html += '</div></div>';
+  sorted.forEach(r => {
+    const status = r.plan.status === 'shipped' ? 'shipped' : r.plan.in_flight ? 'active' : 'pending';
+    const left = pct(r.start);
+    const width = Math.max(pct(r.end) - left, 1.5);
+    const pri = (r.plan.priority || '').toLowerCase();
+    const range = `${fmtDay(r.start)}–${fmtDay(r.end)}`;
+    html += `<div class="gantt-row">
+      <div class="gantt-label"><span class="pri ${pri}">${r.plan.priority || '—'}</span><span class="nm">${r.plan.title}</span></div>
+      <div class="gantt-track"><div class="gantt-bar ${status}" style="left:${left.toFixed(2)}%;width:${width.toFixed(2)}%;">${range}</div></div>
+    </div>`;
+  });
+  if (today >= minD && today <= maxD) {
+    const todayLeft = pct(today);
+    container.style.position = 'relative';
+    html += `<div class="gantt-today" style="position:absolute;top:0;bottom:0;left:calc(180px + 9px + (100% - 180px - 9px)*${(todayLeft/100).toFixed(4)});"></div>`;
+  }
+  container.innerHTML = html;
+})();
+
+// Dependencies
+(function renderDeps() {
+  const active = PLANS.filter(p => p.status === 'active');
+  const byId = new Map(active.map(p => [p.file.replace('.md',''), p]));
+  const heads = active.filter(p => !(p.depends_on || []).length);
+  function buildChain(head) {
+    const chain = [head]; let cur = head;
+    while (true) { const nxt = (cur.blocks || [])[0]; if (!nxt) break; const n = byId.get(nxt); if (!n || chain.includes(n)) break; chain.push(n); cur = n; }
+    return chain;
+  }
+  const seen = new Set(); const chains = [];
+  heads.forEach(h => { const c = buildChain(h); chains.push(c); c.forEach(p => seen.add(p.file)); });
+  active.forEach(p => { if (!seen.has(p.file)) chains.push([p]); });
+  const container = document.getElementById('deps-container');
+  if (!chains.length) { container.innerHTML = `<div class="none-msg">No dependencies tracked</div>`; return; }
+  let html = '';
+  chains.forEach(chain => {
+    html += `<div class="dep-chain">`;
+    chain.forEach((p, i) => {
+      const id = p.file.replace('.md','');
+      const cls = p.in_flight ? 'in-flight' : p.status === 'shipped' ? 'shipped' : chain.length === 1 ? 'standalone' : '';
+      const phase = (p.phase_summary || []).find(ph => ph.status === 'in_progress');
+      const phaseLabel = phase ? `ph ${phase.phase + 1}/${p.phase_summary.length}` : p.in_flight ? 'in flight' : p.status === 'shipped' ? 'shipped' : 'queued';
+      html += `<div class="dep-node ${cls}"><span class="id">${id}</span><span class="ttl">${p.title}</span><span class="row"><span>${p.priority||'—'}</span><span>·</span><span>${p.owner||'—'}</span><span>·</span><span>${phaseLabel}</span></span></div>`;
+      if (i < chain.length - 1) html += `<div class="dep-blocks">blocks<div class="dep-arrow"></div></div>`;
+    });
+    if (chain.length === 1 && !chain[0].blocks?.length && !chain[0].depends_on?.length)
+      html += `<span style="font-family:var(--font-mono);font-size:9.5px;color:var(--ink-faint);margin-inline-start:12px;">standalone</span>`;
+    html += `</div>`;
+  });
+  container.innerHTML = html;
+})();
+
+// Plan rows
+function planRowHtml(p, statusCls) {
+  const pri = (p.priority || '').toLowerCase();
+  const pct = calcProgress(p.phase_summary);
+  const phasesHtml = (p.phase_summary || []).map(ph => {
+    const date = ph.status === 'shipped' ? ph.date : ph.eta;
+    return `<div class="ph ${ph.status}"><span class="dot"></span><span class="nm">${ph.name}</span><span class="when">${date ? fmtDay(date) : '—'}</span></div>`;
+  }).join('');
+  let pillHtml = statusCls === 'in-flight' ? `<span class="pill in-flight">In flight</span>`
+               : statusCls === 'up-next'   ? `<span class="pill up-next">Up next</span>`
+               : `<span class="pill shipped">Shipped</span>`;
+  return `<article class="plan-row${statusCls === 'shipped' ? ' is-shipped' : ''}">
+    <div>
+      <div class="row-head"><span class="row-title">${p.title}</span><span class="row-id">${p.file}</span>${pillHtml}</div>
+      <div class="row-meta"><span class="pri ${pri}">${p.priority||'—'}</span><span>· ${p.type}</span><span>· owner ${p.owner}</span>${p.eta ? `<span>· eta ${fmtDay(p.eta)}</span>` : ''}</div>
+      ${p.next_action ? `<div class="row-next">${p.next_action}</div>` : ''}
+    </div>
+    <div class="row-progress"><div class="pct-row"><span>Progress</span><span>${pct}%</span></div><div class="bar-track"><div class="bar-fill${pct === 0 ? ' zero' : ''}" style="width:${pct}%"></div></div></div>
+    <div class="row-phases">${phasesHtml}</div>
+  </article>`;
+}
+
+function renderSection(plans, containerId, statusCls) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = plans.length
+    ? plans.map(p => planRowHtml(p, statusCls)).join('')
+    : `<div class="none-msg">None</div>`;
+}
+
+renderSection(inflight, 'inflight-list', 'in-flight');
+renderSection(queued,   'queued-list',   'up-next');
+renderSection(shipped,  'shipped-list',  'shipped');
+</script>
+<script>if (new URLSearchParams(location.search).get('embed') === '1') document.body.classList.add('embed');</script>
+</body>
+</html>
