@@ -65,6 +65,7 @@ git log --oneline --since="{last STATUS.md date}"  (commits since last sync)
 
 For each active plan, parse:
 - All 7 frontmatter fields: `status`, `priority`, `owner`, `type`, `depends_on`, `blocks`, `last_updated`
+- Optional frontmatter fields if present: `start_date`, `eta`, `in_flight`
 - `## Status` banner: Overall line, per-phase lines, Next action, Last updated
 
 ---
