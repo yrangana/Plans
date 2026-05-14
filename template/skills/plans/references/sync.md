@@ -91,7 +91,7 @@ WARNINGS (review needed):
 
 PROPOSED UPDATES:
   plans.json (regenerated from current frontmatter, N plans)
-  STATUS.md  (In flight / Up next tables updated)
+  STATUS.md  (auto-generated sections regenerated: At a glance, gantt, dependencies, In flight, Up next)
 ```
 
 If nothing found: print `Everything is in sync.` and stop.
@@ -117,7 +117,15 @@ Regenerate only the sections between the auto-generated markers:
 <!-- END AUTO-GENERATED -->
 ```
 
-Leave everything outside those markers untouched (monthly log, backlog, blocked/risks).
+Inside the markers, regenerate these sections in this order:
+
+1. `## At a glance` summary table: counts of in flight, up next, and shipped (last 30 days)
+2. `## Roadmap at a glance` mermaid gantt
+3. `## Cross-plan dependencies` mermaid flowchart
+4. `## In flight: what we're working on now` table
+5. `## Up next: committed for next 30 days` table
+
+Leave everything outside those markers untouched (recently shipped, monthly log, backlog, blocked/risks).
 
 Show a summary of what changed in each table.
 

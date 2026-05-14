@@ -7,6 +7,12 @@
 
 <!-- AUTO-GENERATED from plans/plans.json. Edit plans/*.md frontmatter, not this section. -->
 
+## At a glance
+
+| In flight | Up next | Shipped (30d) |
+| --- | --- | --- |
+| 1 | 0 | 0 |
+
 ## Roadmap at a glance
 
 ```mermaid
@@ -15,6 +21,13 @@ gantt
     dateFormat YYYY-MM-DD
     section In flight
     Example feature              :active, ex, 2026-01-01, 7d
+```
+
+## Cross-plan dependencies
+
+```mermaid
+flowchart TD
+    A["Example feature"]
 ```
 
 ## In flight: what we're working on now
@@ -27,13 +40,6 @@ gantt
 
 | Initiative | Why it matters | Effort | Depends on | Plan |
 | --- | --- | --- | --- | --- |
-
-## Cross-plan dependencies
-
-```mermaid
-flowchart TD
-    A["Example feature"]
-```
 
 <!-- END AUTO-GENERATED -->
 
