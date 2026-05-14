@@ -37,10 +37,6 @@ jobs:
           test -f .claude/skills/plans/SKILL.md
           echo "OK: /plans skill installed"
 
-          echo "--- verifying mirror file parity ---"
-          cmp "$GITHUB_WORKSPACE/template/plans/roadmap.html" "$GITHUB_WORKSPACE/examples/index.html"
-          echo "OK: roadmap.html and index.html are identical"
-
           echo "--- verifying git exclude entry ---"
           grep -q "^plans/$" .git/info/exclude
           echo "OK: plans/ excluded from git"

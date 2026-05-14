@@ -13,7 +13,8 @@ A shareable spec-driven planning convention. The repo contains:
 - **Documentation** explaining the system (`README.md`, `docs/`)
 - **A drop-in template** users copy into their own projects (`template/plans/`)
 - **A bootstrap script** that automates the copy (`scripts/init.sh`)
-- **A live demo** rendered by GitHub Pages (`examples/`)
+- **A static site** rendered by GitHub Pages from `web/` (landing page, live roadmap demo, status demo, slides, docs)
+- **Static assets** used by the README (`examples/demo.svg`, screenshots)
 
 This repo does **not** itself adopt the planning convention by default. It's the system, not a user of the system. (See "Using the system on this repo" below if you change your mind.)
 
@@ -47,23 +48,27 @@ plans/
 ├── scripts/
 │   ├── init.sh                  # Bootstraps plans/ and installs skill in a target project
 │   └── update.sh                # Updates system files (roadmap.html, README.md, skill)
-└── examples/                    # GitHub Pages demo
-    ├── index.html               # Mirror of template/plans/roadmap.html
-    └── plans.json               # Demo data with fictional plans
+├── web/                         # GitHub Pages site (deployed by .github/workflows)
+│   ├── index.html               # Landing page
+│   ├── roadmap.html             # Live roadmap demo (inline data)
+│   ├── status.html              # Live STATUS.md demo
+│   ├── presentation.html        # Slides
+│   └── docs.html                # Browsable docs
+└── examples/                    # Static assets for the README
+    ├── demo.svg                 # Animated terminal demo
+    ├── screenshot-dashboard.png
+    └── screenshot-status.png
 ```
 
 ---
 
-## Mirror files (keep in sync)
+## Site deployment
 
-These pairs must stay identical except for their data source:
+GitHub Pages publishes the `web/` directory to the `gh-pages` branch via `.github/workflows/deploy-pages.yml` on every push to `main` that touches `web/`. The live URL is `https://yrangana.github.io/Plans/`.
 
-| File A | File B | What's different |
-|---|---|---|
-| `template/plans/roadmap.html` | `examples/index.html` | Identical, just deployed in two places |
-| `template/plans/plans.json` | `examples/plans.json` | Template = single example plan; examples = realistic demo data |
+`web/roadmap.html` embeds demo data inline (`const PLANS = [...]`), so it ships as a single file with no `plans.json` fetch. This is intentional and lets the deployed demo stay self-contained.
 
-When you fix a bug in `roadmap.html`, copy the fix to both. Same for any visual or behaviour changes.
+`template/plans/roadmap.html` is the version adopters get in their own project. It fetches `plans.json` at runtime so adopters can edit their plans and re-render. The two files are **not** mirrors any more, they have diverged on purpose. Style or behaviour fixes that should appear in both have to be applied to each one separately.
 
 ---
 
@@ -94,8 +99,8 @@ Run these from the repo root.
 
 2. **Test the demo locally:**
    ```bash
-   (cd examples && python -m http.server 8080)
-   # open http://localhost:8080/ and verify the gantt, dep graph, and plan cards render
+   (cd web && python -m http.server 8080)
+   # open http://localhost:8080/ and verify the landing page, roadmap, status, slides, and docs render
    ```
 
 3. **Lint check:** open the changed `.md` files in VSCode and confirm no warnings in the Problems panel.
@@ -108,8 +113,8 @@ Run these from the repo root.
 2. Test as above
 3. Commit with a clear message (no `git mv` needed since `plans/` isn't excluded here)
 4. Push to `main`
-5. GitHub Pages auto-deploys within 1 to 2 minutes
-6. Verify: `https://yrangana.github.io/Plans/examples/`
+5. GitHub Pages auto-deploys within 1 to 2 minutes (only when `web/` changed)
+6. Verify: `https://yrangana.github.io/Plans/`
 
 If working with an AI assistant: the maintainer typically handles all `git commit` and `git push` operations themselves. Don't run them from the assistant unless explicitly asked.
 

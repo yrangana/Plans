@@ -6,7 +6,7 @@
 
 > A lightweight intent layer for AI-assisted projects. Markdown + JSON, works with Claude Code, Antigravity, Cursor, or any AI coding assistant.
 
-[Roadmap demo](https://yrangana.github.io/Plans/examples/) · [Status demo](https://yrangana.github.io/Plans/examples/status.html) · [Slides](https://yrangana.github.io/Plans/docs/presentation.html) · [Blog post](docs/blog-post.md) · [Reference spec](docs/reference.md)
+[Home](https://yrangana.github.io/Plans/) · [Roadmap demo](https://yrangana.github.io/Plans/roadmap.html) · [Status demo](https://yrangana.github.io/Plans/status.html) · [Slides](https://yrangana.github.io/Plans/presentation.html) · [Docs](https://yrangana.github.io/Plans/docs.html) · [Blog post](docs/blog-post.md) · [Reference spec](docs/reference.md)
 
 ---
 
@@ -24,11 +24,11 @@ It works with any AI coding assistant. The data model is plain markdown and JSON
 - A shareable visual roadmap for non-technical stakeholders
 - Drift detection between intent (plans) and reality (git log)
 
-**Interactive roadmap dashboard** ([live demo](https://yrangana.github.io/Plans/examples/)):
+**Interactive roadmap dashboard** ([live demo](https://yrangana.github.io/Plans/roadmap.html)):
 
 ![Roadmap dashboard](examples/screenshot-dashboard.png)
 
-**STATUS.md rendered** ([live demo](https://yrangana.github.io/Plans/examples/status.html)):
+**STATUS.md rendered** ([live demo](https://yrangana.github.io/Plans/status.html)):
 
 ![Status page](examples/screenshot-status.png)
 
@@ -133,9 +133,11 @@ Five ways into the system, depending on what you want:
 
 | Resource | Best for | Format |
 | --- | --- | --- |
-| [**Roadmap demo**](https://yrangana.github.io/Plans/examples/) | Seeing the Gantt dashboard with real data | Interactive web page |
-| [**Status demo**](https://yrangana.github.io/Plans/examples/status.html) | Seeing what STATUS.md looks like rendered | Interactive web page |
-| [**Slides**](https://yrangana.github.io/Plans/docs/presentation.html) | A 5-minute overview of the whole system | Reveal.js deck |
+| [**Home**](https://yrangana.github.io/Plans/) | Landing page with links to everything below | Web page |
+| [**Roadmap demo**](https://yrangana.github.io/Plans/roadmap.html) | Seeing the Gantt dashboard with real data | Interactive web page |
+| [**Status demo**](https://yrangana.github.io/Plans/status.html) | Seeing what STATUS.md looks like rendered | Interactive web page |
+| [**Slides**](https://yrangana.github.io/Plans/presentation.html) | A 5-minute overview of the whole system | Reveal.js deck |
+| [**Docs**](https://yrangana.github.io/Plans/docs.html) | Browsable docs rendered from the repo | Web page |
 | [**Blog post**](docs/blog-post.md) | The story and motivation behind it | Long-form prose |
 | [**Reference spec**](docs/reference.md) | Implementation details, every field, every rule | Technical reference |
 
@@ -160,11 +162,14 @@ plans/
 │   └── CLAUDE.md.snippet    # The section to add to your AI instruction file
 ├── scripts/
 │   └── init.sh              # One-command setup
-└── examples/
-    ├── index.html           # Live roadmap demo (mirror of template/plans/roadmap.html)
-    ├── status.html          # Live STATUS.md demo
-    ├── plans.json           # Demo data for the live roadmap
-    ├── demo.svg             # Animated demo for README
+├── web/                     # GitHub Pages site (deployed automatically)
+│   ├── index.html           # Landing page
+│   ├── roadmap.html         # Live roadmap demo
+│   ├── status.html          # Live STATUS.md demo
+│   ├── presentation.html    # Slides
+│   └── docs.html            # Browsable docs
+└── examples/                # Static assets for README
+    ├── demo.svg             # Animated demo
     ├── screenshot-dashboard.png
     └── screenshot-status.png
 ```
