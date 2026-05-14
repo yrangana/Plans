@@ -110,11 +110,12 @@ Run these from the repo root.
 ## Release process
 
 1. Make changes locally
-2. Test as above
-3. Commit with a clear message (no `git mv` needed since `plans/` isn't excluded here)
-4. Push to `main`
-5. GitHub Pages auto-deploys within 1 to 2 minutes (only when `web/` changed)
-6. Verify: `https://yrangana.github.io/Plans/`
+2. For a meaningful release, bump `VERSION` and the matching `version:` field in `template/skills/plans/SKILL.md` together. They must always agree: `VERSION` is what `/plans sync` fetches to detect a stale skill. Minor bump for new features, patch for fixes (see `CHANGELOG.md`).
+3. Test as above
+4. Commit with a clear message (no `git mv` needed since `plans/` isn't excluded here)
+5. Push to `main`
+6. GitHub Pages auto-deploys within 1 to 2 minutes (only when `web/` changed)
+7. Verify: `https://yrangana.github.io/Plans/`
 
 If working with an AI assistant: the maintainer typically handles all `git commit` and `git push` operations themselves. Don't run them from the assistant unless explicitly asked.
 

@@ -96,6 +96,9 @@ done
 # Update the /plans skill (check both Claude Code and Antigravity locations)
 SKILL_SRC="$REPO_DIR/template/skills/plans"
 
+# Skill version, read from SKILL.md frontmatter (empty if not found)
+SKILL_VERSION="$(sed -n 's/^version: *//p' "$SKILL_SRC/SKILL.md" 2>/dev/null | head -1)"
+
 update_skill() {
   local dest="$1"
   if [ ! -d "$dest" ]; then
@@ -110,6 +113,11 @@ update_skill() {
     if [ "$skill_confirm" = "y" ]; then
       cp -r "$SKILL_SRC/." "$dest/"
       echo "Updated:   $dest"
+      if [ -n "$SKILL_VERSION" ]; then
+        echo "Skill updated to v$SKILL_VERSION. Run /plans sync to apply any STATUS.md structure changes."
+      else
+        echo "Run /plans sync to apply any STATUS.md structure changes."
+      fi
     else
       echo "Skipped skill update."
     fi
