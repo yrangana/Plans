@@ -14,16 +14,16 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ## Unreleased
 
-- `roadmap.html`: replaced Frappe Gantt with a pure CSS/JS horizontal bar timeline matching the visual design of `status.html` (dark header, card sections, `#e2e8f0` borders, uppercase label typography). No external Gantt library dependency.
-- `roadmap.html`: today line now rendered via CSS `calc()` in the timeline, consistent with `status.html`. Always visible when today falls within the plan date range.
-- `roadmap.html`: header badge shows last-updated date; section headers use uppercase label style; emoji removed from all section headings.
-- `roadmap.html`: dependency graph now only renders nodes that participate in at least one edge. Isolated active plans (no deps) no longer appear as floating islands.
-- `roadmap.html`: when no dependencies exist, graph controls are hidden and the empty state collapses to a single short row instead of a tall blank box.
-- `roadmap.html`: status pills aligned to `status.html` style (`.pill-active`, `.pill-shipped`, `.pill-blocked`, `.pill-paused`).
+- `template/plans/roadmap.html`: rebuilt on the deployed `web/roadmap.html` design (metric strip, Gantt with date axis and today line, dependency block-chains, plan list with phase dots and progress bars, sidebar legend). Keeps the `plans.json` / `STATUS.md` fetch layer and the `file://` error state. Drops the vis.js dependency: the dependency view is now static block-chains instead of a force-directed graph. The deployed demo (`web/`) and the adopter template no longer share a build, so this brings adopters to visual parity with the demo.
+- `template/plans/roadmap.html`: STATUS.md title regex now matches the canonical `# {Project}: Project Status` colon format (also accepts dash and en dash). Previously expected only a dash, so the page title never resolved against the shipped STATUS.md template.
+- `template/plans/STATUS.md`: added an `## At a glance` summary table (in flight / up next / shipped counts) and reordered the auto-generated zone to At a glance, Roadmap (Gantt), Cross-plan dependencies, In flight, Up next. Matches the read flow of the web status view. Hand-maintained sections (recently shipped, monthly log, backlog, blocked/risks) are unchanged and still outside the auto-generated markers.
+- `docs/reference.md`: STATUS.md structure block and the auto-versus-hand-maintained source table updated to the new section order and the new `At a glance` section.
+- `/plans` skill: `sync.md` Step 5 now lists the five auto-generated STATUS.md sections in regeneration order; Step 3 report text names all regenerated sections instead of only the two tables.
+- `/plans` skill: `new-plan.md` "Up next" row template fixed to 5 columns (`Initiative | Why it matters | Effort | Depends on | Plan`); it previously emitted a 4-column row that did not match the table.
+- `template/CLAUDE.md.snippet`: corrected frontmatter description from "8 fields" to "7 required fields plus an optional 8th (`in_flight`)", consistent with `docs/reference.md`.
 - `examples/demo.svg`: animated SVG terminal demo added for README, showing `plans-init` output and a mini STATUS.md panel with Gantt bars.
-- `examples/status.html`: today line `calc()` formula fixed (was rendering at far left due to invalid mixed-unit expression).
 - `docs/presentation.html`: outcome slide updated to show STATUS.md markdown format with a live link, replacing the colour panel mockup.
-- README: status badges, demo SVG, status.html link, screenshots, and five-entry docs table added.
+- README: status badges, demo SVG, screenshots, and the docs table added; GitHub Pages links repointed from the retired `examples/` paths to the `web/` deploy root.
 
 ## Unreleased (carried from previous)
 

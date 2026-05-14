@@ -11,7 +11,7 @@ Active plans live in `plans/active/`, completed plans in `plans/shipped/`, repla
 
 Every plan file has two layers that must agree. See `plans/README.md` for exact format and valid field values.
 
-1. YAML frontmatter (machine-readable) with 8 fields: `status`, `priority`, `owner`, `type`, `depends_on`, `blocks`, `last_updated` (all required at creation), plus `in_flight` (set to `true` when work actively starts).
+1. YAML frontmatter (machine-readable) with 7 required fields: `status`, `priority`, `owner`, `type`, `depends_on`, `blocks`, `last_updated`, plus an optional 8th, `in_flight` (set to `true` when work actively starts).
 2. `## Status` banner (human-readable) showing per-phase progress and the next action.
 
 If frontmatter and banner conflict, frontmatter wins.

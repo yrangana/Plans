@@ -111,7 +111,7 @@ Created plans/active/{NAME}.md
 Next steps:
   1. Fill in the Context, Goals, and Phases sections
   2. Add a row to plans/STATUS.md "Up next" table:
-     | [{Title}](active/{NAME}.md) | {type} | {priority} | {eta or TBD} |
+     | {Title} | {why it matters} | {effort} | {depends_on or none} | [{NAME}.md](active/{NAME}.md) |
   3. Set in_flight: true in frontmatter when work actually starts
 ```
 

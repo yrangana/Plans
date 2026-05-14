@@ -1,607 +1,638 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project Roadmap</title>
-  <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Project Roadmap</title>
+<style>
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --surface-elev: #fbfbfd;
+  --ink: #1d1d1f;
+  --ink-mute: #6e6e73;
+  --ink-faint: #86868b;
+  --border: #d2d2d7;
+  --border-soft: #e5e5e8;
+  --border-strong: #86868b;
+  --accent: #0071e3;
+  --accent-hover: #0066cc;
+  --status-shipped: #34c77b;
+  --status-shipped-bg: rgba(52, 199, 123, 0.12);
+  --status-shipped-ink: #1d8048;
+  --status-active: #0071e3;
+  --status-active-bg: rgba(0, 113, 227, 0.10);
+  --status-pending: #86868b;
+  --status-pending-bg: rgba(134, 134, 139, 0.10);
+  --status-pending-ink: #56565a;
+  --status-blocked: #d4380d;
+  --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+  --font-body: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --sidebar-w: 240px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.47;
+  letter-spacing: -0.014em;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+h1, h2, h3 { font-family: var(--font-display); margin: 0; letter-spacing: -0.022em; font-weight: 600; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f8f9fb;
-      color: #1a1a2e;
-      line-height: 1.65;
-    }
+/* ── Layout ────────────────────────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  flex: 1;
+  align-items: start;
+  max-width: 1360px;
+  margin-inline: auto;
+  width: 100%;
+}
 
-    header {
-      background: #1a1a2e;
-      color: white;
-      padding: 24px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
-    header .meta { font-size: 13px; color: #8892b0; margin-top: 4px; }
-    header .badge {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-      text-transform: uppercase;
-      background: rgba(99,102,241,0.2); color: #a5b4fc;
-      padding: 4px 10px; border-radius: 999px;
-      border: 1px solid rgba(99,102,241,0.3);
-      white-space: nowrap; margin-top: 4px;
-    }
+/* ── Sidebar ───────────────────────────────────────────────────── */
+.sidebar {
+  background: var(--surface);
+  border-inline-end: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 22px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  scrollbar-width: thin;
+}
+.sidebar-block { display: flex; flex-direction: column; gap: 8px; }
+.sidebar-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.sidebar-desc {
+  font-size: 12px;
+  color: var(--ink-mute);
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+}
+.sidebar-desc code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--bg);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.sidebar-rule { height: 1px; background: var(--border-soft); }
+.sidebar-legend { display: flex; flex-direction: column; gap: 7px; }
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-mute);
+  letter-spacing: -0.005em;
+}
+.legend-swatch {
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.pri-key {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.pri-key.p0 { color: #aa1d1d; background: rgba(170,29,29,0.06); border: 1px solid rgba(170,29,29,0.18); }
+.pri-key.p1 { color: var(--accent); background: rgba(0,113,227,0.06); border: 1px solid rgba(0,113,227,0.2); }
+.pri-key.p2 { color: var(--ink-mute); background: var(--bg); border: 1px solid var(--border-soft); }
 
-    main { max-width: 1100px; margin: 0 auto; padding: 40px 40px 80px; }
+/* ── Main ──────────────────────────────────────────────────────── */
+.main { padding: 24px 28px 64px; }
 
-    /* Stats */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 32px;
-    }
+/* ── Top bar ───────────────────────────────────────────────────── */
+.bar {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding-block-end: 18px;
+  border-block-end: 1px solid var(--border);
+  margin-block-end: 22px;
+  flex-wrap: wrap;
+}
+.bar h1 { font-size: 19px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink); }
+.bar h1 .sep { color: var(--ink-faint); margin-inline: 8px; font-weight: 400; }
+.bar .meta {
+  margin-inline-start: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.bar .meta span { display: inline-flex; align-items: center; gap: 6px; }
+.bar .meta .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--status-active); display: inline-block; }
 
-    .stat-card {
-      background: white;
-      border-radius: 10px;
-      padding: 20px 24px;
-      border: 1px solid #e2e8f0;
-    }
+/* ── Metric strip ──────────────────────────────────────────────── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  margin-block-end: 28px;
+  overflow: hidden;
+}
+.metric { padding: 20px 22px 18px; border-inline-end: 1px solid var(--border); }
+.metric:last-child { border-inline-end: 0; }
+.metric .label { font-family: var(--font-mono); font-size: 10px; font-weight: 500; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-block-end: 10px; }
+.metric .num { font-family: var(--font-display); font-size: 34px; font-weight: 600; letter-spacing: -0.025em; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+.metric .num em { color: var(--accent); font-style: normal; }
+.metric .num em.green { color: var(--status-shipped); }
+.metric .num em.gray { color: var(--ink-mute); }
+.metric .sub { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-mute); margin-block-start: 6px; letter-spacing: -0.005em; }
 
-    .stat-card .label {
-      font-size: 11px; color: #94a3b8; text-transform: uppercase;
-      letter-spacing: 0.06em; font-weight: 700; margin-bottom: 8px;
-    }
-    .stat-card .value { font-size: 32px; font-weight: 700; }
-    .stat-card .value.green  { color: #22c55e; }
-    .stat-card .value.yellow { color: #f59e0b; }
-    .stat-card .value.blue   { color: #6366f1; }
-    .stat-card .value.gray   { color: #94a3b8; }
+/* ── Section frame ─────────────────────────────────────────────── */
+.section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-block-end: 20px; overflow: hidden; }
+.section-head { display: flex; align-items: center; gap: 12px; padding: 14px 22px; border-block-end: 1px solid var(--border); }
+.section-head h2 { font-family: var(--font-display); font-size: 13px; font-weight: 500; letter-spacing: -0.012em; color: var(--ink); }
+.section-head .tag { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); letter-spacing: 0.06em; text-transform: uppercase; }
+.section-head .ctrls { margin-inline-start: auto; display: inline-flex; gap: 6px; }
+.section-body { padding: 20px 22px 24px; }
 
-    /* Sections */
-    .section {
-      background: white;
-      border-radius: 10px;
-      border: 1px solid #e2e8f0;
-      margin-bottom: 24px;
-      overflow: hidden;
-    }
+/* ── Filter chips ──────────────────────────────────────────────── */
+.chip { font-family: var(--font-body); font-size: 12px; letter-spacing: -0.01em; border: 1px solid var(--border); background: var(--surface); color: var(--ink-mute); padding: 4px 11px; border-radius: 980px; cursor: pointer; transition: all 120ms ease; }
+.chip:hover { color: var(--ink); border-color: var(--border-strong); }
+.chip.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.chip .count { font-family: var(--font-mono); font-size: 10px; margin-inline-start: 5px; opacity: 0.7; }
 
-    .section-header {
-      padding: 16px 24px;
-      border-bottom: 1px solid #e2e8f0;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #94a3b8;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+/* ── Timeline (Gantt) ──────────────────────────────────────────── */
+.gantt { display: grid; grid-template-columns: 190px 1fr; gap: 10px; position: relative; font-size: 12px; }
+.gantt-axis-row { display: contents; }
+.gantt-axis { grid-column: 2; position: relative; height: 22px; border-block-end: 1px solid var(--border-soft); margin-block-end: 6px; font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-faint); letter-spacing: 0.04em; text-transform: uppercase; }
+.gantt-axis span { position: absolute; top: 4px; transform: translateX(-50%); white-space: nowrap; }
+.gantt-row { display: contents; }
+.gantt-row > * { transition: opacity 180ms ease; }
+.gantt-row.dim > * { opacity: 0.3; }
+.gantt-label { font-family: var(--font-display); font-size: 12px; color: var(--ink); display: flex; align-items: center; letter-spacing: -0.014em; padding-inline-end: 4px; cursor: pointer; }
+.gantt-label .pri { font-family: var(--font-mono); font-size: 9px; background: var(--bg); color: var(--ink-mute); padding: 1px 5px; margin-inline-end: 7px; border-radius: 3px; letter-spacing: 0.04em; border: 1px solid var(--border-soft); }
+.gantt-label .pri.p0 { color: #aa1d1d; border-color: rgba(170,29,29,0.18); background: rgba(170,29,29,0.06); }
+.gantt-label .pri.p1 { color: var(--accent); border-color: rgba(0,113,227,0.20); background: rgba(0,113,227,0.06); }
+.gantt-label .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gantt-track { position: relative; height: 26px; background: var(--bg); border-radius: 4px; overflow: visible; }
+.gantt-bar { position: absolute; top: 4px; height: 18px; border-radius: 3px; display: flex; align-items: center; padding-inline: 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; font-variant-numeric: tabular-nums; cursor: pointer; }
+.gantt-bar.shipped { background: var(--status-shipped); color: #003e1a; }
+.gantt-bar.active { background: var(--status-active); color: #fff; }
+.gantt-bar.pending { background: transparent; border: 1px dashed var(--border-strong); color: var(--ink-mute); }
+.gantt-bar.shipped::before { content: "✓ "; font-weight: 700; font-family: var(--font-display); }
+.gantt-today { position: absolute; top: 0; bottom: 0; width: 0; z-index: 5; pointer-events: none; }
+.gantt-today::before { content: ""; position: absolute; top: 22px; bottom: 0; left: 0; width: 1px; background: var(--accent); opacity: 0.65; }
+.gantt-today::after { content: "TODAY"; position: absolute; top: 6px; left: 0; transform: translateX(-50%); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; color: var(--accent); background: var(--surface); padding: 0 6px; white-space: nowrap; font-weight: 500; }
+.gantt-legend { display: flex; gap: 16px; margin-block-end: 18px; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-mute); letter-spacing: -0.005em; flex-wrap: wrap; }
+.gantt-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.gantt-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 
-    .section-body { padding: 24px; }
+/* ── Dependency flow ───────────────────────────────────────────── */
+.deps { display: flex; flex-direction: column; gap: 14px; }
+.dep-chain { display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+.dep-node { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 12.5px; display: inline-flex; flex-direction: column; gap: 3px; min-width: 180px; font-family: var(--font-display); letter-spacing: -0.012em; }
+.dep-node.in-flight { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,0.08); }
+.dep-node.shipped { border-color: var(--status-shipped); background: rgba(52,199,123,0.04); }
+.dep-node.standalone { border-style: dashed; }
+.dep-node .id { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-faint); letter-spacing: 0.04em; text-transform: uppercase; }
+.dep-node .ttl { font-weight: 500; color: var(--ink); }
+.dep-node .row { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: -0.005em; display: inline-flex; gap: 8px; margin-block-start: 4px; }
+.dep-arrow { width: 36px; height: 1.5px; background: var(--ink-faint); position: relative; margin-inline: 4px; flex-shrink: 0; }
+.dep-arrow::after { content: ""; position: absolute; right: -1px; top: -3.5px; border: 4px solid transparent; border-left-color: var(--ink-faint); }
+.dep-blocks { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-faint); letter-spacing: 0.06em; text-transform: uppercase; margin-inline: 4px; display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+.dep-empty { text-align: center; font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); padding: 14px 0; letter-spacing: 0.02em; }
 
-    /* Timeline */
-    #timeline-wrap { overflow-x: auto; }
+/* ── Plan list ─────────────────────────────────────────────────── */
+.plans { display: flex; flex-direction: column; }
+.plan { display: grid; grid-template-columns: 1fr 90px 220px; align-items: start; gap: 22px; padding: 16px 0; border-block-end: 1px solid var(--border-soft); }
+.plan:last-child { border-block-end: 0; }
+.plan-main { min-width: 0; }
+.plan-head { display: inline-flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-block-end: 5px; }
+.plan-title { font-family: var(--font-display); font-size: 15px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink); }
+.plan-id { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-faint); letter-spacing: 0.04em; }
+.plan-meta { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-mute); letter-spacing: -0.005em; margin-block-end: 8px; display: inline-flex; gap: 10px; flex-wrap: wrap; }
+.plan-meta .pri-tag { background: var(--bg); border: 1px solid var(--border-soft); padding: 0 5px; border-radius: 3px; }
+.plan-meta .pri-tag.p0 { color: #aa1d1d; border-color: rgba(170,29,29,0.18); background: rgba(170,29,29,0.06); }
+.plan-meta .pri-tag.p1 { color: var(--accent); border-color: rgba(0,113,227,0.20); background: rgba(0,113,227,0.06); }
+.plan-next { font-family: var(--font-body); font-size: 12.5px; color: var(--ink-mute); letter-spacing: -0.012em; line-height: 1.45; }
+.plan-next::before { content: "Next"; font-family: var(--font-mono); font-size: 9.5px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-inline-end: 8px; font-weight: 500; }
+.plan-progress { padding-block-start: 4px; }
+.plan-progress .pct { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 11px; color: var(--ink-mute); letter-spacing: -0.005em; display: flex; justify-content: space-between; margin-block-end: 6px; }
+.progress { height: 4px; background: var(--bg); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--status-shipped); border-radius: 2px; }
+.progress-fill.zero { background: var(--ink-faint); width: 1px; }
+.plan-phases { display: flex; flex-direction: column; gap: 4px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: -0.005em; }
+.plan-phases .ph { display: grid; grid-template-columns: 16px 1fr auto; gap: 7px; align-items: center; color: var(--ink-mute); }
+.plan-phases .dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--border-strong); justify-self: center; }
+.plan-phases .ph.shipped .dot { background: var(--status-shipped); border-color: var(--status-shipped); }
+.plan-phases .ph.in_progress .dot { background: var(--status-active); border-color: var(--status-active); box-shadow: 0 0 0 3px rgba(0,113,227,0.18); }
+.plan-phases .ph.shipped .nm { color: var(--ink); }
+.plan-phases .ph.in_progress .nm { color: var(--ink); font-weight: 500; }
+.plan-phases .ph.not_started .nm { color: var(--ink-faint); }
+.plan-phases .when { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); letter-spacing: 0.02em; }
 
-    /* Dependency graph */
-    #dep-graph { height: 280px; border-radius: 6px; background: #f8f9fb; }
+/* ── Status pills ──────────────────────────────────────────────── */
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+.pill.shipped { background: var(--status-shipped-bg); color: var(--status-shipped-ink); }
+.pill.active { background: var(--status-active-bg); color: var(--accent); }
+.pill.pending { background: var(--status-pending-bg); color: var(--status-pending-ink); }
+.pill.in-flight { background: rgba(0,113,227,0.14); color: var(--accent); }
+.pill.in-flight::before { content: ""; display: inline-block; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; margin-inline-end: 5px; vertical-align: 1px; animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 
-    .graph-controls {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
+/* ── Footer ────────────────────────────────────────────────────── */
+.footer {
+  border-block-start: 1px solid var(--border-soft);
+  padding: 14px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.02em;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block-start: 8px;
+}
 
-    .graph-controls button {
-      width: 30px;
-      height: 30px;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      background: white;
-      font-size: 16px;
-      cursor: pointer;
-      color: #475569;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
+/* ── Error state ───────────────────────────────────────────────── */
+#error-state {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 40px;
+  gap: 8px;
+}
+#error-state h2 { font-family: var(--font-display); font-size: 18px; color: var(--status-blocked); margin-block-end: 6px; }
+#error-state p { color: var(--ink-mute); font-size: 13px; max-width: 460px; }
+#error-state code {
+  display: inline-block;
+  font-family: var(--font-mono);
+  background: var(--ink);
+  color: #a8ff78;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  margin: 4px 0;
+}
 
-    .graph-controls button:hover { background: #f1f5f9; }
-
-    /* Status pills */
-    .status-pill {
-      display: inline-block; font-size: 11px; font-weight: 700;
-      padding: 2px 8px; border-radius: 4px; white-space: nowrap;
-    }
-    .pill-active  { background: #eef2ff; color: #4338ca; }
-    .pill-shipped { background: #dcfce7; color: #166534; }
-    .pill-blocked { background: #fee2e2; color: #991b1b; }
-    .pill-paused  { background: #f1f5f9; color: #475569; }
-
-    /* Plans table */
-    .table-wrap { overflow-x: auto; }
-    table {
-      width: 100%; border-collapse: collapse;
-      font-size: 13px; background: white;
-      border-radius: 10px; overflow: hidden;
-      border: 1px solid #e2e8f0;
-    }
-    th {
-      background: #f8fafc; text-align: left;
-      padding: 10px 14px; font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.06em;
-      color: #94a3b8; border-bottom: 1px solid #e2e8f0;
-    }
-    td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: #475569; vertical-align: top; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #fafbfc; }
-
-    /* Plan cards */
-    .plan-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 18px 20px;
-      margin-bottom: 12px;
-    }
-    .plan-card:last-child { margin-bottom: 0; }
-
-    .plan-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-    }
-
-    .plan-title { font-size: 15px; font-weight: 600; color: #1a1a2e; }
-    .plan-meta { font-size: 12px; color: #94a3b8; margin-top: 2px; }
-
-    .phase-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-
-    .phase-chip {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      background: #f1f5f9;
-      color: #475569;
-    }
-    .phase-chip.shipped     { background: #dcfce7; color: #166534; }
-    .phase-chip.in_progress { background: #fef9c3; color: #854d0e; }
-    .phase-chip.not_started { background: #f1f5f9; color: #94a3b8; }
-
-    .progress-bar-wrap {
-      background: #f1f5f9;
-      border-radius: 4px;
-      height: 6px;
-      margin-top: 10px;
-      overflow: hidden;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      background: #6366f1;
-      border-radius: 4px;
-      transition: width 0.4s ease;
-    }
-
-    .next-action {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #475569;
-      background: #f8f9fb;
-      border-left: 3px solid #6366f1;
-      padding: 8px 12px;
-      border-radius: 0 4px 4px 0;
-    }
-
-    .filter-btn {
-      padding: 3px 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: 20px;
-      background: white;
-      font-size: 12px;
-      cursor: pointer;
-      color: #475569;
-      transition: background 0.15s, color 0.15s;
-    }
-    .filter-btn.active {
-      background: #6366f1;
-      color: white;
-      border-color: #6366f1;
-    }
-
-    /* Error state */
-    #error-state {
-      display: none;
-      text-align: center;
-      padding: 80px 40px;
-    }
-    #error-state h2 { margin-bottom: 12px; color: #ef4444; }
-    #error-state code {
-      display: inline-block;
-      background: #1a1a2e;
-      color: #a8ff78;
-      padding: 12px 24px;
-      border-radius: 6px;
-      font-size: 14px;
-      margin: 16px 0;
-    }
-    #error-state p { color: #64748b; font-size: 14px; }
-  </style>
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 18px 20px 48px; }
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .metric:nth-child(2) { border-inline-end: 0; }
+  .metric:nth-child(1), .metric:nth-child(2) { border-block-end: 1px solid var(--border); }
+  .gantt { grid-template-columns: 120px 1fr; }
+  .plan { grid-template-columns: 1fr; gap: 12px; }
+}
+</style>
 </head>
 <body>
 
-<header>
+<div id="error-state">
+  <h2>Cannot load plans.json</h2>
+  <p>This page reads <code>plans.json</code> over HTTP, so it needs a local server. Run one of these from your project root:</p>
   <div>
-    <h1 id="header-title">Project Roadmap</h1>
-    <div class="meta" id="header-meta">Loading...</div>
+    <code>python -m http.server 8080</code> &nbsp;(Python 3)<br>
+    <code>npx serve -l 8080</code> &nbsp;(Node.js)<br>
+    <code>php -S localhost:8080</code> &nbsp;(PHP)
   </div>
-  <span class="badge" id="header-badge">roadmap</span>
-</header>
+  <p>Then open <strong>http://localhost:8080/plans/roadmap.html</strong></p>
+</div>
 
-<main>
-
-  <div id="error-state">
-    <h2>Cannot load plans.json</h2>
-    <p>This page requires a local server. Run one of these from your project root:</p>
-    <code>python -m http.server 8080</code> &nbsp; (Python 3)<br>
-    <code>npx serve -l 8080</code> &nbsp; (Node.js)<br>
-    <code>php -S localhost:8080</code> &nbsp; (PHP)<br>
-    <p>Then open <strong>http://localhost:8080/plans/roadmap.html</strong></p>
-  </div>
-
-  <div id="app" style="display:none">
-
-    <!-- Stats -->
-    <div class="stats">
-      <div class="stat-card">
-        <div class="label">In Flight</div>
-        <div class="value yellow" id="stat-inflight">...</div>
+<div class="layout" id="layout" style="display:none">
+  <aside class="sidebar">
+    <div class="sidebar-block">
+      <div class="sidebar-label">About this view</div>
+      <div class="sidebar-desc">This dashboard renders <code>plans.json</code> into a Gantt timeline, a blocking-chain dependency graph, and a filterable plan list. Run <code>/plans sync</code> to regenerate the data.</div>
+    </div>
+    <div class="sidebar-rule"></div>
+    <div class="sidebar-block">
+      <div class="sidebar-label">Timeline legend</div>
+      <div class="sidebar-legend">
+        <div class="legend-item"><span class="legend-swatch" style="background: var(--status-shipped)"></span>Shipped</div>
+        <div class="legend-item"><span class="legend-swatch" style="background: var(--status-active)"></span>In flight</div>
+        <div class="legend-item"><span class="legend-swatch" style="background: transparent; border: 1.5px dashed var(--border-strong)"></span>Queued</div>
+        <div class="legend-item"><span class="legend-swatch" style="background: var(--accent); width: 2px; border-radius: 0; height: 12px;"></span>Today</div>
       </div>
-      <div class="stat-card">
-        <div class="label">Up Next</div>
-        <div class="value blue" id="stat-upnext">...</div>
+    </div>
+    <div class="sidebar-rule"></div>
+    <div class="sidebar-block">
+      <div class="sidebar-label">Priority</div>
+      <div class="sidebar-legend">
+        <div class="legend-item"><span class="pri-key p0">P0</span>Critical · ships first</div>
+        <div class="legend-item"><span class="pri-key p1">P1</span>High · current sprint</div>
+        <div class="legend-item"><span class="pri-key p2">P2</span>Normal · queued</div>
       </div>
-      <div class="stat-card">
-        <div class="label">Phases Shipped</div>
-        <div class="value green" id="stat-phases">...</div>
+    </div>
+    <div class="sidebar-rule"></div>
+    <div class="sidebar-block">
+      <div class="sidebar-label">Dependencies</div>
+      <div class="sidebar-desc">Solid border = in flight. Green border = shipped. Dashed border = standalone (no blockers). Arrow means "blocks →".</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="bar">
+      <h1 id="header-title">Project Plans <span class="sep">·</span> <span style="color: var(--ink-mute); font-weight: 500;">Roadmap</span></h1>
+      <div class="meta">
+        <span><i class="dot"></i><span id="meta-active">— active</span></span>
+        <span id="meta-updated">updated —</span>
       </div>
-      <div class="stat-card">
-        <div class="label">Total Plans</div>
-        <div class="value gray" id="stat-total">...</div>
+    </header>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="label">In flight</div>
+        <div class="num"><em id="m-flight">0</em></div>
+        <div class="sub">phases shipping now</div>
+      </div>
+      <div class="metric">
+        <div class="label">Up next</div>
+        <div class="num"><em class="gray" id="m-next">0</em></div>
+        <div class="sub">queued · not yet started</div>
+      </div>
+      <div class="metric">
+        <div class="label">Phases shipped</div>
+        <div class="num"><em class="green" id="m-shipped">0</em></div>
+        <div class="sub" id="m-shipped-sub">across all plans</div>
+      </div>
+      <div class="metric">
+        <div class="label">Plans tracked</div>
+        <div class="num" id="m-total">0</div>
+        <div class="sub" id="m-total-sub">active + shipped</div>
       </div>
     </div>
 
-    <!-- Timeline -->
-    <div class="section">
-      <div class="section-header">
-        Initiative Timeline
-        <button onclick="scrollTimeline()" title="Jump to today" style="margin-left:auto;padding:4px 12px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:11px;cursor:pointer;color:#475569;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">Today</button>
+    <section class="section">
+      <div class="section-head">
+        <h2>Timeline</h2>
+        <span class="tag">Gantt · ETA-driven</span>
       </div>
       <div class="section-body">
-        <div id="timeline-wrap"></div>
+        <div class="gantt-legend">
+          <span><i style="background: var(--status-shipped)"></i>shipped</span>
+          <span><i style="background: var(--status-active)"></i>in flight</span>
+          <span><i style="background: transparent; border: 1px dashed var(--border-strong);"></i>queued</span>
+          <span style="color: var(--accent);"><i style="background: var(--accent); width: 1.5px; height: 12px; border-radius: 0;"></i>today</span>
+        </div>
+        <div class="gantt" id="gantt"></div>
       </div>
-    </div>
+    </section>
 
-    <!-- Dependencies -->
-    <div class="section">
-      <div class="section-header">Dependencies</div>
+    <section class="section">
+      <div class="section-head">
+        <h2>Dependencies</h2>
+        <span class="tag">Block / depends-on chains · active only</span>
+      </div>
       <div class="section-body">
-        <div class="graph-controls">
-          <button onclick="depNetwork && depNetwork.fit()" title="Reset view">&#8857;</button>
-          <button onclick="depNetwork && depNetwork.moveTo({ scale: depNetwork.getScale() * 1.3 })" title="Zoom in">&#xFF0B;</button>
-          <button onclick="depNetwork && depNetwork.moveTo({ scale: depNetwork.getScale() * 0.7 })" title="Zoom out">&#xFF0D;</button>
-        </div>
-        <div id="dep-graph"></div>
+        <div class="deps" id="deps"></div>
       </div>
-    </div>
+    </section>
 
-    <!-- Plans -->
-    <div class="section">
-      <div class="section-header">
-        All Plans
-        <div id="plan-filters" style="display:flex;gap:6px;margin-left:auto">
-          <button class="filter-btn active" data-filter="all"     onclick="setFilter('all')">All</button>
-          <button class="filter-btn"        data-filter="active"  onclick="setFilter('active')">Active</button>
-          <button class="filter-btn"        data-filter="shipped" onclick="setFilter('shipped')">Shipped</button>
+    <section class="section">
+      <div class="section-head">
+        <h2>All plans</h2>
+        <div class="ctrls">
+          <button class="chip active" data-filter="all">All <span class="count" id="c-all">0</span></button>
+          <button class="chip" data-filter="active">Active <span class="count" id="c-active">0</span></button>
+          <button class="chip" data-filter="shipped">Shipped <span class="count" id="c-shipped">0</span></button>
         </div>
       </div>
-      <div class="section-body" id="plans-list"></div>
-    </div>
+      <div class="section-body">
+        <div class="plans" id="plans"></div>
+      </div>
+    </section>
 
-  </div>
-</main>
+    <footer class="footer">
+      <span>plans · spec-driven planning · plain markdown + json</span>
+      <span id="footer-updated"></span>
+    </footer>
+  </main>
+</div>
 
 <script>
-  let depNetwork = null;
-  let allPlans   = [];
-  let activeFilter = 'all';
-  let timelinePlans = [];  // plans used for the timeline, for scroll-to-today
+const fmtDay = d => new Date(d).toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+const fmtFull = d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-  // ── Timeline ──────────────────────────────────────────────────────────────
+const today = new Date(); today.setHours(0, 0, 0, 0);
 
-  const timelineColors = {
-    active:  { bar: '#6366f1', text: 'white' },
-    shipped: { bar: '#22c55e', text: 'white' },
-    blocked: { bar: '#ef4444', text: 'white' },
-    paused:  { bar: '#94a3b8', text: 'white' },
-  };
+function sortPlans(arr) {
+  const so = { active: 0, paused: 1, blocked: 2, shipped: 3, superseded: 4 };
+  return [...arr].sort((a, b) => {
+    if (a.in_flight !== b.in_flight) return a.in_flight ? -1 : 1;
+    const s = (so[a.status] ?? 9) - (so[b.status] ?? 9);
+    if (s !== 0) return s;
+    if (a.priority && b.priority) return a.priority.localeCompare(b.priority);
+    return 0;
+  });
+}
 
-  function fmtDate(d) {
-    return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+function renderMetrics(plans) {
+  const inFlight = plans.filter(p => p.in_flight).length;
+  const upNext = plans.filter(p => !p.in_flight && p.status === 'active').length;
+  const allPhases = plans.flatMap(p => p.phase_summary || []);
+  const shippedPhases = allPhases.filter(p => p.status === 'shipped').length;
+  document.getElementById('m-flight').textContent = inFlight;
+  document.getElementById('m-next').textContent = upNext;
+  document.getElementById('m-shipped').textContent = shippedPhases;
+  document.getElementById('m-shipped-sub').textContent = `of ${allPhases.length} total phases`;
+  document.getElementById('m-total').textContent = plans.length;
+  const active = plans.filter(p => p.status === 'active').length;
+  const shipped = plans.filter(p => p.status === 'shipped').length;
+  document.getElementById('m-total-sub').textContent = `${active} active · ${shipped} shipped`;
+  const latest = plans.reduce((a, b) => a.last_updated > b.last_updated ? a : b);
+  document.getElementById('meta-active').textContent = `${active} active plan${active === 1 ? '' : 's'}`;
+  document.getElementById('meta-updated').textContent = `updated ${fmtFull(latest.last_updated)} · ${latest.last_updated.slice(0,4)}`;
+  document.getElementById('footer-updated').textContent = `last sync ${latest.last_updated}`;
+  document.getElementById('c-all').textContent = plans.length;
+  document.getElementById('c-active').textContent = active;
+  document.getElementById('c-shipped').textContent = shipped;
+}
+
+function renderGantt(plans) {
+  const rows = plans.map(p => ({ plan: p, start: new Date(p.start_date || p.last_updated), end: new Date(p.eta || p.last_updated) }));
+  const allDates = rows.flatMap(r => [r.start, r.end]).concat([today]);
+  let minD = new Date(Math.min(...allDates)); minD.setDate(minD.getDate() - 1);
+  let maxD = new Date(Math.max(...allDates)); maxD.setDate(maxD.getDate() + 1);
+  const span = maxD - minD;
+  const pct = d => ((new Date(d) - minD) / span * 100);
+  const container = document.getElementById('gantt');
+  let html = '<div class="gantt-axis-row"><div class="gantt-axis">';
+  const nTicks = 6;
+  for (let i = 0; i < nTicks; i++) {
+    const t = new Date(minD.getTime() + (span * i) / (nTicks - 1));
+    html += `<span style="left: ${(i / (nTicks - 1) * 100).toFixed(2)}%">${fmtDay(t)}</span>`;
   }
+  html += '</div></div>';
+  rows.forEach(r => {
+    const status = r.plan.status === 'shipped' ? 'shipped' : r.plan.in_flight ? 'active' : 'pending';
+    const left = pct(r.start);
+    const width = Math.max(pct(r.end) - left, 1.5);
+    const pri = (r.plan.priority || '').toLowerCase();
+    const range = `${fmtDay(r.start)} – ${fmtDay(r.end)}`;
+    html += `<div class="gantt-row" data-id="${r.plan.file}">
+      <div class="gantt-label"><span class="pri ${pri}">${r.plan.priority || '—'}</span><span class="name">${r.plan.title}</span></div>
+      <div class="gantt-track"><div class="gantt-bar ${status}" style="left: ${left.toFixed(2)}%; width: ${width.toFixed(2)}%;" title="${r.plan.title} · ${range}">${range}${r.plan.owner ? ' · ' + r.plan.owner : ''}</div></div>
+    </div>`;
+  });
+  if (today >= minD && today <= maxD) {
+    const todayLeft = pct(today);
+    container.style.position = 'relative';
+    html += `<div class="gantt-today" style="position: absolute; top: 0; bottom: 0; left: calc(190px + 10px + (100% - 190px - 10px) * ${(todayLeft/100).toFixed(4)});"></div>`;
+  }
+  container.innerHTML = html;
+}
 
-  function renderTimeline(plans) {
-    const rows = plans.map(p => ({
-      label:  p.title,
-      start:  p.start_date || p.last_updated,
-      end:    p.eta || (() => { const d = new Date(p.start_date || p.last_updated); d.setDate(d.getDate() + 7); return d.toISOString().split('T')[0]; })(),
-      type:   p.status,
-    }));
-
-    timelinePlans = rows;
-
-    const allDates = rows.flatMap(r => [new Date(r.start), new Date(r.end)]);
-    const minDate  = new Date(Math.min(...allDates));
-    const maxDate  = new Date(Math.max(...allDates));
-    const span     = maxDate - minDate;
-
-    function pct(dateStr)     { return ((new Date(dateStr) - minDate) / span * 100).toFixed(2); }
-    function widthPct(s, e)   { return ((new Date(e)       - new Date(s)) / span * 100).toFixed(2); }
-
-    const today = new Date(); today.setHours(0,0,0,0);
-    const todayPct    = ((today - minDate) / span * 100).toFixed(2);
-    const todayVisible = today >= minDate && today <= maxDate;
-
-    // Day axis labels
-    const days = [];
-    for (let d = new Date(minDate); d <= maxDate; d.setDate(d.getDate() + 1)) days.push(new Date(d));
-
-    // Legend
-    const legendTypes = [...new Set(rows.map(r => r.type))];
-    let html = `<div style="display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap;">`;
-    legendTypes.forEach(t => {
-      const c = timelineColors[t] || { bar: '#94a3b8' };
-      const label = t.charAt(0).toUpperCase() + t.slice(1);
-      html += `<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#475569;">
-        <span style="width:12px;height:12px;border-radius:3px;background:${c.bar};display:inline-block;"></span>${label}
-      </div>`;
+function renderDeps(plans) {
+  const active = plans.filter(p => p.status === 'active');
+  const byId = new Map(active.map(p => [p.file.replace('.md',''), p]));
+  const heads = active.filter(p => (p.depends_on || []).length === 0);
+  function buildChain(head) {
+    const chain = [head]; let current = head;
+    while (true) { const nxt = (current.blocks || [])[0]; if (!nxt) break; const n = byId.get(nxt); if (!n || chain.includes(n)) break; chain.push(n); current = n; }
+    return chain;
+  }
+  const seen = new Set(); const chains = [];
+  heads.forEach(h => { const c = buildChain(h); chains.push(c); c.forEach(p => seen.add(p.file)); });
+  active.forEach(p => { if (!seen.has(p.file)) chains.push([p]); });
+  const container = document.getElementById('deps');
+  if (chains.length === 0) { container.innerHTML = `<div class="dep-empty">No dependencies tracked</div>`; return; }
+  let html = '';
+  chains.forEach(chain => {
+    html += `<div class="dep-chain">`;
+    chain.forEach((p, i) => {
+      const id = p.file.replace('.md','');
+      const cls = p.in_flight ? 'in-flight' : p.status === 'shipped' ? 'shipped' : chain.length === 1 ? 'standalone' : '';
+      const phase = (p.phase_summary || []).find(ph => ph.status === 'in_progress');
+      const phaseLabel = phase ? `Phase ${phase.phase + 1} of ${p.phase_summary.length}` : p.in_flight ? 'in flight' : p.status === 'shipped' ? 'shipped' : 'queued';
+      html += `<div class="dep-node ${cls}"><span class="id">${id}</span><span class="ttl">${p.title}</span><span class="row"><span>${p.priority || '—'}</span><span>·</span><span>${p.owner || '—'}</span><span>·</span><span>${phaseLabel}</span></span></div>`;
+      if (i < chain.length - 1) html += `<div class="dep-blocks">blocks<div class="dep-arrow"></div></div>`;
     });
+    if (chain.length === 1 && !chain[0].blocks?.length && !chain[0].depends_on?.length)
+      html += `<span style="font-family:var(--font-mono);font-size:9.5px;color:var(--ink-faint);margin-inline-start:12px;letter-spacing:0.04em;">standalone</span>`;
     html += `</div>`;
+  });
+  container.innerHTML = html;
+}
 
-    // Axis
-    html += `<div style="position:relative;height:20px;margin-bottom:6px;margin-left:160px;">`;
-    days.forEach((d, i) => {
-      if (i % 3 !== 0) return;
-      const p = ((d - minDate) / span * 100).toFixed(2);
-      html += `<span style="position:absolute;left:${p}%;transform:translateX(-50%);font-size:10px;color:#94a3b8;white-space:nowrap;">${fmtDate(d)}</span>`;
-    });
-    if (todayVisible) {
-      html += `<span style="position:absolute;left:${todayPct}%;transform:translateX(-50%);font-size:10px;font-weight:700;color:#ef4444;white-space:nowrap;">Today</span>`;
-    }
-    html += `</div>`;
+function calcProgress(phases) {
+  if (!phases || !phases.length) return 0;
+  return Math.round(phases.filter(p => p.status === 'shipped').length / phases.length * 100);
+}
+function statusOf(p) {
+  if (p.status === 'shipped') return { cls: 'shipped', label: 'Shipped' };
+  if (p.in_flight) return { cls: 'in-flight', label: 'In flight' };
+  return { cls: 'pending', label: 'Up next' };
+}
 
-    // Rows
-    const rowH = 28, rowGap = 8;
-    const totalH = rows.length * rowH + (rows.length - 1) * rowGap;
-
-    html += `<div style="position:relative;">`;
-
-    if (todayVisible) {
-      html += `<div style="position:absolute;left:calc(160px + (100% - 160px) * ${todayPct} / 100);top:0;width:2px;height:${totalH}px;background:#ef4444;z-index:2;border-radius:1px;pointer-events:none;">
-        <div style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:999px;background:#ef4444;"></div>
-      </div>`;
-    }
-
-    rows.forEach(r => {
-      const c    = timelineColors[r.type] || { bar: '#94a3b8', text: 'white' };
-      const left = pct(r.start);
-      const w    = widthPct(r.start, r.end);
-      html += `
-        <div style="display:flex;align-items:center;gap:0;margin-bottom:${rowGap}px;">
-          <div style="width:160px;flex-shrink:0;font-size:12px;color:#475569;padding-right:12px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.label}">${r.label}</div>
-          <div style="flex:1;position:relative;height:${rowH}px;background:#f8fafc;border-radius:4px;">
-            <div style="position:absolute;left:${left}%;width:${w}%;height:100%;background:${c.bar};border-radius:4px;display:flex;align-items:center;padding:0 8px;overflow:hidden;z-index:1;">
-              <span style="font-size:10px;font-weight:600;color:${c.text};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${fmtDate(r.start)} - ${fmtDate(r.end)}</span>
-            </div>
-          </div>
-        </div>`;
-    });
-
-    html += `</div>`;
-    document.getElementById('timeline-wrap').innerHTML = html;
-  }
-
-  function scrollTimeline() {
-    const todayLine = document.querySelector('#timeline-wrap [style*="background:#ef4444"]');
-    if (todayLine) todayLine.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-  }
-
-  // ── Stats ─────────────────────────────────────────────────────────────────
-
-  function renderStats(plans) {
-    const inFlight = plans.filter(p => p.in_flight).length;
-    const upNext   = plans.filter(p => !p.in_flight && p.status === 'active').length;
-    const phases   = plans.flatMap(p => p.phase_summary || []).filter(p => p.status === 'shipped').length;
-    document.getElementById('stat-inflight').textContent = inFlight;
-    document.getElementById('stat-upnext').textContent   = upNext;
-    document.getElementById('stat-phases').textContent   = phases;
-    document.getElementById('stat-total').textContent    = plans.length;
-  }
-
-  // ── Dependency graph ──────────────────────────────────────────────────────
-
-  function renderDepGraph(plans) {
-    const nodes = plans.map(p => ({
-      id:    p.file.replace('.md', ''),
-      label: p.title.length > 28 ? p.title.substring(0, 26) + '…' : p.title,
-      color: p.in_flight
-        ? { background: '#fef9c3', border: '#f59e0b' }
-        : { background: '#ede9fe', border: '#6366f1' },
-      font: { size: 13 }
-    }));
-
-    const edges = [];
-    plans.forEach(p => {
-      (p.blocks || []).forEach(b => {
-        edges.push({
-          from:   p.file.replace('.md', ''),
-          to:     b.replace('.md', ''),
-          arrows: 'to',
-          color:  { color: '#94a3b8' },
-          width:  1.5
-        });
-      });
-    });
-
-    const container = document.getElementById('dep-graph');
-    if (edges.length === 0) {
-      container.style.height = '60px';
-      container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:14px">No dependencies yet</div>';
-      document.querySelector('.graph-controls').style.display = 'none';
-      return;
-    }
-
-    // Only show nodes that participate in at least one edge
-    const connected = new Set(edges.flatMap(e => [e.from, e.to]));
-    const visNodes = nodes.filter(n => connected.has(n.id));
-
-    depNetwork = new vis.Network(
-      container,
-      { nodes: new vis.DataSet(visNodes), edges: new vis.DataSet(edges) },
-      {
-        physics:     { enabled: true, stabilization: { iterations: 100 } },
-        layout:      { hierarchical: { direction: 'LR', sortMethod: 'directed', levelSeparation: 220 } },
-        interaction: { hover: true, zoomView: true }
-      }
-    );
-  }
-
-  // ── Plan cards ────────────────────────────────────────────────────────────
-
-  function calcProgress(phases) {
-    if (!phases || phases.length === 0) return 0;
-    const shipped = phases.filter(p => p.status === 'shipped').length;
-    return Math.round((shipped / phases.length) * 100);
-  }
-
-  function pillClass(status) {
-    const map = { active: 'pill-active', shipped: 'pill-shipped', blocked: 'pill-blocked', paused: 'pill-paused' };
-    return map[status] || 'pill-active';
-  }
-
-  function phaseLabel(status) {
-    const map = { shipped: 'Shipped', in_progress: 'In progress', not_started: 'Not started', paused: 'Paused', blocked: 'Blocked' };
-    return map[status] || status;
-  }
-
-  function renderPlans(plans) {
-    const container = document.getElementById('plans-list');
-    if (plans.length === 0) {
-      container.innerHTML = '<div style="color:#94a3b8;font-size:14px;text-align:center;padding:24px 0;">No plans match this filter.</div>';
-      return;
-    }
-    container.innerHTML = plans.map(p => {
-      const progress = calcProgress(p.phase_summary);
-      const phases = (p.phase_summary || []).map(ph =>
-        `<span class="phase-chip ${ph.status}">Phase ${ph.phase}: ${ph.name} &mdash; ${phaseLabel(ph.status)}</span>`
-      ).join('');
-
-      return `
-        <div class="plan-card">
-          <div class="plan-header">
-            <div>
-              <div class="plan-title">${p.title}</div>
-              <div class="plan-meta">${p.file} &nbsp;&middot;&nbsp; ${p.priority || '?'} &nbsp;&middot;&nbsp; ${p.type} &nbsp;&middot;&nbsp; Updated ${p.last_updated}</div>
-            </div>
-            <span class="status-pill ${pillClass(p.status)}">${p.overall || p.status}</span>
-          </div>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar-fill" style="width:${progress}%"></div>
-          </div>
-          <div class="phase-list">${phases}</div>
-          ${p.next_action ? `<div class="next-action">Next: ${p.next_action}</div>` : ''}
-        </div>`;
+function renderPlans(plans) {
+  const container = document.getElementById('plans');
+  if (!plans.length) { container.innerHTML = `<div class="dep-empty">No plans match this filter.</div>`; return; }
+  container.innerHTML = plans.map(p => {
+    const s = statusOf(p);
+    const pct = calcProgress(p.phase_summary);
+    const pri = (p.priority || '').toLowerCase();
+    const phasesHtml = (p.phase_summary || []).map(ph => {
+      const date = ph.status === 'shipped' ? ph.date : ph.eta;
+      return `<div class="ph ${ph.status}"><span class="dot"></span><span class="nm">${ph.name}</span><span class="when">${date ? fmtDay(date) : '—'}</span></div>`;
     }).join('');
-  }
+    return `<article class="plan" data-status="${p.status}">
+      <div class="plan-main">
+        <div class="plan-head"><span class="plan-title">${p.title}</span><span class="plan-id">${p.file}</span><span class="pill ${s.cls}">${s.label}</span></div>
+        <div class="plan-meta"><span class="pri-tag ${pri}">${p.priority || '—'}</span><span>· ${p.type}</span><span>· owner ${p.owner}</span>${p.eta ? `<span>· eta ${fmtFull(p.eta)}</span>` : ''}</div>
+        ${p.next_action ? `<div class="plan-next">${p.next_action}</div>` : ''}
+      </div>
+      <div class="plan-progress"><div class="pct"><span>Progress</span><span>${pct}%</span></div><div class="progress"><div class="progress-fill ${pct === 0 ? 'zero' : ''}" style="width:${pct}%"></div></div></div>
+      <div class="plan-phases">${phasesHtml}</div>
+    </article>`;
+  }).join('');
+}
 
-  function setFilter(f) {
-    activeFilter = f;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
-    const filtered = f === 'all' ? allPlans : allPlans.filter(p => p.status === f);
-    renderPlans(filtered);
-  }
+let sorted = [];
 
-  // ── Sort ──────────────────────────────────────────────────────────────────
+function render(plans) {
+  sorted = sortPlans(plans);
+  renderMetrics(sorted);
+  renderGantt(sorted);
+  renderDeps(sorted);
+  renderPlans(sorted);
 
-  function sortPlans(plans) {
-    const statusOrder = { active: 0, paused: 1, blocked: 2, shipped: 3, superseded: 4 };
-    return [...plans].sort((a, b) => {
-      if (a.in_flight !== b.in_flight) return a.in_flight ? -1 : 1;
-      const so = (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9);
-      if (so !== 0) return so;
-      if (a.eta && b.eta) return a.eta.localeCompare(b.eta);
-      if (a.eta) return -1;
-      if (b.eta) return 1;
-      return 0;
+  document.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      renderPlans(f === 'all' ? sorted : sorted.filter(p => p.status === f));
     });
-  }
+  });
 
-  // ── Main render ───────────────────────────────────────────────────────────
+  document.querySelectorAll('.gantt-row').forEach(row => {
+    row.addEventListener('mouseenter', () => {
+      const id = row.dataset.id;
+      document.querySelectorAll('.gantt-row').forEach(r => { if (r.dataset.id !== id) r.classList.add('dim'); });
+    });
+    row.addEventListener('mouseleave', () => { document.querySelectorAll('.gantt-row').forEach(r => r.classList.remove('dim')); });
+  });
 
-  function render(plans) {
-    const sorted = sortPlans(plans);
-    const active = sorted.filter(p => p.status === 'active');
-    const latest = plans.reduce((a, b) => a.last_updated > b.last_updated ? a : b);
+  document.getElementById('layout').style.display = 'grid';
+}
 
-    document.getElementById('header-meta').textContent = `${active.length} active plan${active.length !== 1 ? 's' : ''}`;
-    document.getElementById('header-badge').textContent = `updated ${latest.last_updated}`;
+// ── Title from STATUS.md ────────────────────────────────────────
+function setTitleFromStatus() {
+  return fetch('./STATUS.md')
+    .then(r => r.ok ? r.text() : null)
+    .then(text => {
+      if (!text) return;
+      const match = text.match(/^#\s+(.+?)\s*[:–-]\s*Project Status/m);
+      if (match && match[1]) {
+        const project = match[1].trim();
+        document.title = `${project} · Roadmap`;
+        document.getElementById('header-title').innerHTML =
+          `${project} <span class="sep">·</span> <span style="color: var(--ink-mute); font-weight: 500;">Roadmap</span>`;
+      }
+    })
+    .catch(() => {});
+}
 
-    allPlans = sorted;
-    renderStats(sorted);
-    renderTimeline(sorted);
-    renderDepGraph(active);
-    renderPlans(sorted);
-
-    document.getElementById('app').style.display = 'block';
-  }
-
-  // ── Title from STATUS.md ──────────────────────────────────────────────────
-
-  function setTitleFromStatus() {
-    return fetch('./STATUS.md')
-      .then(r => r.ok ? r.text() : null)
-      .then(text => {
-        if (!text) return;
-        const match = text.match(/^#\s+(.+?)\s*[--]\s*Project Status/m);
-        if (match && match[1]) {
-          const project = match[1].trim();
-          const title   = `${project} - Roadmap`;
-          document.title = title;
-          document.getElementById('header-title').textContent = title;
-        }
-      })
-      .catch(() => {});
-  }
-
-  // ── Boot ──────────────────────────────────────────────────────────────────
-
-  if (location.protocol === 'file:') {
-    document.getElementById('error-state').style.display = 'block';
-  } else {
-    setTitleFromStatus();
-    fetch('./plans.json')
-      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-      .then(render)
-      .catch(() => { document.getElementById('error-state').style.display = 'block'; });
-  }
+// ── Boot ────────────────────────────────────────────────────────
+if (location.protocol === 'file:') {
+  document.getElementById('error-state').style.display = 'flex';
+} else {
+  setTitleFromStatus();
+  fetch('./plans.json')
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(render)
+    .catch(() => { document.getElementById('error-state').style.display = 'flex'; });
+}
 </script>
 </body>
 </html>

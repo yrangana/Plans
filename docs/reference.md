@@ -249,17 +249,20 @@ The daily check-in file. One file answers: what's in flight, what's next, what j
 
 <!-- AUTO-GENERATED from plans/plans.json -->
 
+## At a glance
+{summary table: in flight / up next / shipped counts}
+
 ## Roadmap at a glance
 {mermaid gantt}
+
+## Cross-plan dependencies
+{mermaid flowchart}
 
 ## In flight: what we're working on now
 {table}
 
 ## Up next: committed for next 30 days
 {table}
-
-## Cross-plan dependencies
-{mermaid flowchart}
 
 <!-- END AUTO-GENERATED -->
 
@@ -284,10 +287,11 @@ The daily check-in file. One file answers: what's in flight, what's next, what j
 
 | Section | Source |
 |---|---|
+| At a glance | Auto, count of `plans.json` entries by `in_flight` / `status` |
 | Gantt chart | Auto, from `plans.json` |
+| Dependencies flowchart | Auto, from `plans.json` `depends_on`/`blocks` |
 | In flight table | Auto, from `plans.json` where `in_flight: true` |
 | Up next table | Auto, from `plans.json` where `status: active, in_flight: false` |
-| Dependencies flowchart | Auto, from `plans.json` `depends_on`/`blocks` |
 | Recently shipped | Auto, from git log since last update |
 | Monthly log | Hand-maintained, append-only |
 | Backlog | Hand-maintained, ideas not yet committed |
