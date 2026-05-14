@@ -43,12 +43,32 @@ if git is not available or not a git repo:
 
 ## Run Order
 
+0. Version check: nudge if the skill is outdated (never blocks)
 1. Read: collect current state from all sources
 2. Detect: run all drift rules
 3. Report: print findings grouped by severity
 4. Regenerate: build new plans.json and STATUS.md auto-sections
 5. Confirm: ask before writing anything
 6. Apply: write only confirmed changes
+
+---
+
+## Step 0: Version check
+
+A best-effort check that the installed skill is current. This step must never block sync.
+
+1. Read the `version:` field from this skill's `SKILL.md` frontmatter (one directory up from this file).
+2. Fetch the latest published version: `https://raw.githubusercontent.com/yrangana/Plans/main/VERSION` (short timeout).
+3. Compare:
+   - **Any failure** (offline, non-200, timeout, missing or unparseable version on either side): print nothing. Proceed to Step 1.
+   - **Installed version is behind**: print one line, then proceed to Step 1:
+     ```
+     Note: plans skill v{installed} is installed, v{latest} is available.
+           Run plans-update to upgrade, then re-run /plans sync.
+     ```
+   - **Installed version is current or ahead**: print nothing. Proceed to Step 1.
+
+The check is informational only. It never aborts sync, never prompts, and never writes anything.
 
 ---
 
