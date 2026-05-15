@@ -177,7 +177,8 @@ Install the skill with `plans-init` (included automatically) or see [github.com/
 ## Quick Rules
 
 - **One capture point:** ideas go to `STATUS.md` backlog, nowhere else
-- **No root plan files:** `plans/active/` is the only home for new plans
+- **`plans/active/` is the only home for new plans:** never create plan files at the repo root or in an AI assistant's scratch or memory directory (`~/.claude/`, `~/.cursor/`, `.agents/`, `.windsurf/`, or any equivalent). Plans written outside `plans/active/` are invisible to collaborators, the dashboard, and `/plans sync`
 - **Every "In flight" / "Up next" row needs a plan file:** create both together
+- **Update plans before ending a session:** if a session touched code covered by an active plan, update its `## Status` banner and bump `last_updated` in its frontmatter before finishing. Do not defer this to a follow-up session
 - **Don't bulk-migrate old plans:** triage them on-demand when revisited
 - **`plans.json` is auto-generated:** edit plan `.md` files, never the JSON directly

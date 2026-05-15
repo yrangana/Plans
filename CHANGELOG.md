@@ -12,6 +12,13 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.2.2
+
+- `template/CLAUDE.md.snippet` restructured into a thin, load-bearing summary that defers to `plans/README.md` for the full convention. The snippet is pasted once into each adopter's CLAUDE.md and is not refreshed by `plans-update`, so it now carries only the rules an assistant could violate without having loaded `plans/README.md`: write plans only in `plans/active/`, never hand-edit `plans.json`, update plans before ending a session, audit drift with `/plans sync`. Frontmatter spec, two-source rule, lifecycle, and file moves are no longer duplicated in the snippet; they live in `plans/README.md`, which `plans-update` refreshes.
+- New rule (added to both the snippet and `plans/README.md` Quick Rules): plan files must not be saved to AI assistant scratch or memory directories (`~/.claude/`, `~/.cursor/`, `.agents/`, `.windsurf/`, or equivalent), to plan-mode artifacts, or to loose files at the repo root. Closes a real gap where assistants defaulted to internal plan-mode scratch instead of `plans/active/`.
+- `template/plans/README.md` Quick Rules: end-of-session plan-update mandate promoted from snippet-only to a Quick Rule, so it lives in the system-managed file that `plans-update` refreshes, not only in the per-adopter snippet.
+- Existing adopters keep their old snippet (no auto-update path). Re-paste from `template/CLAUDE.md.snippet` to pick up the slimmer version; `plans/README.md` updates arrive automatically on the next `plans-update`.
+
 ## v0.2.1
 
 Fixes the half-wired temporal data path. `roadmap.html` already consumed `start_date` and `eta`, and the schema already documented them, but nothing captured, derived, or enforced those fields. The result was a Gantt where every bar collapsed to a zero-width point on `last_updated`.
