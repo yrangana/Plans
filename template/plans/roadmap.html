@@ -495,7 +495,10 @@ function planSpan(p) {
           : p.in_flight ? today
           : new Date(p.last_updated);
   // Guarantee a visible span: never let the bar invert or vanish.
-  if (end <= start) end = new Date(start.getTime() + 7 * 864e5);
+  if (end <= start) {
+    if (p.status === 'shipped') start = new Date(end.getTime() - 7 * 864e5);
+    else end = new Date(start.getTime() + 7 * 864e5);
+  }
   return { start, end };
 }
 
