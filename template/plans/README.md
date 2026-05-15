@@ -79,6 +79,8 @@ type: feature             # plan | feature | bug | research | spike
 depends_on: []            # other plan filenames this is waiting on
 blocks: []                # other plan filenames waiting on this
 last_updated: 2026-05-04
+start_date: 2026-05-01    # Gantt bar start; /plans new defaults this to today
+eta: 2026-05-11           # target completion; omit if not yet estimated
 ---
 ```
 
