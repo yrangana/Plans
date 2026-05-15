@@ -1,6 +1,6 @@
 # Drift Detection Rules
 
-Run all 9 rules. Collect all findings before reporting.
+Run all 11 rules. Collect all findings before reporting.
 
 ## Rule 1: Missing frontmatter field
 
@@ -87,3 +87,23 @@ Do not auto-resolve.
 **Flag:** Print the cycle path (e.g. A → B → C → A).
 
 Cannot auto-resolve. User must break the cycle manually.
+
+---
+
+## Rule 10: Missing timeline data
+
+**Check:** An active plan has neither an `eta` (in frontmatter or banner) nor any dated phase line in the `## Status` banner. `start_date` alone does not satisfy this rule: a plan needs an end to draw a span.
+
+**Flag:** "No `eta` and no dated phases. The Gantt cannot draw a real span for this plan."
+
+Do not auto-resolve. The user sets an `eta` (a `/plans new`-style effort estimate) or adds phase dates. This is a warning, not an error: undated plans still render, just as a fallback span.
+
+---
+
+## Rule 11: Stale start_date on an unstarted plan
+
+**Check:** A plan with `status: active`, `in_flight: false`, and every phase still `Not started` has a `start_date` in the past. A `start_date` in the future is correct (the plan is scheduled to start later) and is left alone.
+
+**Propose:** Roll `start_date` forward to today. If the plan has an `eta`, slide it forward by the same delta (`eta += today - old start_date`) so the planned span length is preserved rather than shrunk. Apply only to `active` plans; leave `blocked` and `paused` plans untouched.
+
+This keeps the Gantt honest: an unstarted plan should not show a bar whose left edge is in the past. Propose the roll; the user confirms or declines.

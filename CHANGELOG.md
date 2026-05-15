@@ -12,6 +12,18 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.2.1
+
+Fixes the half-wired temporal data path. `roadmap.html` already consumed `start_date` and `eta`, and the schema already documented them, but nothing captured, derived, or enforced those fields. The result was a Gantt where every bar collapsed to a zero-width point on `last_updated`.
+
+- `/plans new`: added a Timeline step. `start_date` is captured (press enter for today) and written to frontmatter; effort is asked as a day count and resolved to an absolute `eta: YYYY-MM-DD`. Skipping the effort estimate omits the `eta` line, which a later `/plans sync` then flags.
+- `/plans sync`: `start_date` and `eta` are now explicitly derived during `plans.json` regeneration (`sync.md` Step 4) — frontmatter field first, then dated phase lines, then a documented fallback. The keys are always carried through, `null` when unresolved, so consumers can rely on their presence.
+- `/plans sync`: two new drift rules (now 11 total). Rule 10 flags an active plan with no `eta` and no dated phases (the Gantt cannot draw a real span). Rule 11 proposes rolling a past `start_date` forward to today on an unstarted `active` plan, sliding any `eta` by the same delta so the planned span length is preserved; future `start_date`s and `blocked`/`paused` plans are left alone.
+- `plans-json-schema.md`: `start_date` and `eta` source rows rewritten to spell out the full fallback chain.
+- `template/plans/roadmap.html`: `renderGantt` gained a `planSpan` helper that degrades gracefully when a plan has no dates — derives a span from phase dates, then status (`shipped` → `last_updated`, in-flight → today), and guarantees a minimum visible width so a bar never inverts or vanishes. Belt-and-suspenders alongside the skill-side fix, so plans created before this release still render sanely.
+- `template/plans/active/EXAMPLE_PLAN.md`: frontmatter gained `start_date` and `eta`, and the Phase 1 banner line carries an ETA, so a fresh install demonstrates the dated-plan convention and `/plans sync` reproduces the shipped `plans.json` dates.
+- `docs/reference.md`, `template/plans/README.md`: frontmatter spec, `plans.json` field reference, and the drift-rule table updated for the two date fields and Rules 10 and 11.
+
 ## v0.2.0
 
 - `VERSION` file added at the repo root: single source of truth for the released version, starting at `0.2.0`. `template/skills/plans/SKILL.md` carries a matching `version:` field so an installed skill is self-identifying.

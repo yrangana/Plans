@@ -39,6 +39,16 @@ Also ask: "Does anything block on this plan? Enter filenames, or press enter for
 
 "Who owns this plan? (your username or name)"
 
+**6. Timeline**
+
+"Start date? (YYYY-MM-DD, or press enter for today)"
+
+Empty input means today. Use the answer for `start_date`.
+
+Also ask: "Estimated effort in days? (a number, or press enter to skip)"
+
+If a number `N` is given, compute `eta = start_date + N days` and write the resolved date as `eta: YYYY-MM-DD`. The day count is input convenience only; the frontmatter always stores an absolute date. If skipped, omit the `eta` line entirely (a later `/plans sync` will flag the plan as undated).
+
 ---
 
 ## Generate the file
@@ -54,6 +64,8 @@ type: {feature|bug|research|spike|plan}
 depends_on: [{depends_on list, or []}]
 blocks: [{blocks list, or []}]
 last_updated: {today YYYY-MM-DD}
+start_date: {start_date YYYY-MM-DD}
+eta: {eta YYYY-MM-DD, or omit this line if effort was skipped}
 in_flight: false
 ---
 
@@ -97,7 +109,7 @@ in_flight: false
 {Implementation notes, open questions, links to relevant code or PRs}
 ```
 
-Fill in today's date for `last_updated`. Leave placeholder text in context/goals/phases for the user to fill in.
+Fill in today's date for `last_updated`. Fill `start_date` from the Timeline answer (today if it was empty). Include the `eta` line only if an effort estimate was given; otherwise drop the line. Leave placeholder text in context/goals/phases for the user to fill in.
 
 ---
 

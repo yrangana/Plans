@@ -92,7 +92,7 @@ For each active plan, parse:
 
 ## Step 2: Detect Drift
 
-Run all 9 rules from `drift-rules.md`. Collect every finding before reporting.
+Run all 11 rules from `drift-rules.md`. Collect every finding before reporting.
 
 ---
 
@@ -122,6 +122,13 @@ If nothing found: print `Everything is in sync.` and stop.
 
 Build new `plans.json` by extracting from all plan files (active + shipped). Superseded plans are excluded.
 Each entry follows the schema in `plans-json-schema.md`.
+
+**Deriving `start_date` and `eta`.** These drive the `roadmap.html` Gantt, so resolve them on every regeneration:
+
+- `start_date`: explicit frontmatter field if present; otherwise the earliest dated phase line in the banner; otherwise `last_updated`.
+- `eta`: explicit frontmatter field if present; otherwise the latest dated/ETA phase line in the banner; otherwise leave `null`.
+
+Do not invent dates that have no source. Plans with no `eta` and no dated phases are surfaced by Rule 10, not silently filled. Carry the keys through even when `null` so consumers can rely on their presence.
 
 Show a one-line diff summary: `plans.json: N plans, X changed, Y added, Z removed`
 

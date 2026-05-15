@@ -478,8 +478,26 @@ function renderMetrics(plans) {
   document.getElementById('c-shipped').textContent = shipped;
 }
 
+// Resolve a [start, end] span for a plan, degrading gracefully when dates are absent.
+// A plan with no start_date and no eta would otherwise collapse to a zero-width bar.
+function planSpan(p) {
+  const phaseDates = (p.phase_summary || [])
+    .map(ph => ph.date || ph.eta).filter(Boolean).map(d => new Date(d));
+  let start = p.start_date ? new Date(p.start_date)
+            : phaseDates.length ? new Date(Math.min(...phaseDates))
+            : new Date(p.last_updated);
+  let end = p.eta ? new Date(p.eta)
+          : phaseDates.length ? new Date(Math.max(...phaseDates))
+          : p.status === 'shipped' ? new Date(p.last_updated)
+          : p.in_flight ? today
+          : new Date(p.last_updated);
+  // Guarantee a visible span: never let the bar invert or vanish.
+  if (end <= start) end = new Date(start.getTime() + 7 * 864e5);
+  return { start, end };
+}
+
 function renderGantt(plans) {
-  const rows = plans.map(p => ({ plan: p, start: new Date(p.start_date || p.last_updated), end: new Date(p.eta || p.last_updated) }));
+  const rows = plans.map(p => ({ plan: p, ...planSpan(p) }));
   const allDates = rows.flatMap(r => [r.start, r.end]).concat([today]);
   let minD = new Date(Math.min(...allDates)); minD.setDate(minD.getDate() - 1);
   let maxD = new Date(Math.max(...allDates)); maxD.setDate(maxD.getDate() + 1);

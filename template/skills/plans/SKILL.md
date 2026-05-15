@@ -1,6 +1,6 @@
 ---
 name: plans
-version: 0.2.0
+version: 0.2.1
 description: Manage the plans/ spec-driven planning system. Use `/plans sync` to audit drift between plan files and git, regenerate plans.json and STATUS.md. Use `/plans new` to create a correctly structured plan file.
 ---
 

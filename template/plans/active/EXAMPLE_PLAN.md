@@ -6,6 +6,8 @@ type: feature
 depends_on: []
 blocks: []
 last_updated: 2026-01-01
+start_date: 2026-01-01
+eta: 2026-01-08
 in_flight: false
 ---
 
@@ -15,7 +17,7 @@ in_flight: false
 
 - **Overall:** In progress, Phase 1 of 2
 - **Phase 0 (Design):** Done (2026-01-01)
-- **Phase 1 (Build):** In progress
+- **Phase 1 (Build):** In progress (eta 2026-01-08)
 
 **Next action:** Replace this example with your real first plan.
 **Last updated:** 2026-01-01
