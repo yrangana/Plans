@@ -482,7 +482,10 @@ function renderMetrics(plans) {
 // A plan with no start_date and no eta would otherwise collapse to a zero-width bar.
 function planSpan(p) {
   const phaseDates = (p.phase_summary || [])
-    .map(ph => ph.date || ph.eta).filter(Boolean).map(d => new Date(d));
+    .map(ph => ph.date || ph.eta)
+    .filter(Boolean)
+    .map(d => new Date(d))
+    .filter(d => !Number.isNaN(d.getTime()));
   let start = p.start_date ? new Date(p.start_date)
             : phaseDates.length ? new Date(Math.min(...phaseDates))
             : new Date(p.last_updated);
