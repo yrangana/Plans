@@ -1,16 +1,18 @@
-# I Built a Lightweight Planning System for AI-Assisted Projects
+# I Gave Up On Jira For Personal Projects And Wrote A Markdown Spec Instead
 
-When you're building fast with AI assistance, the velocity is great. The visibility isn't.
+I had 38 `*_PLAN.md` files at the root of one of my repos. Some were active. Some had shipped. Some were half-done ideas from two months ago. A few contradicted each other. I had no idea which was which without opening each one.
 
-Features ship in hours. Plans multiply at the root of your repo. A week in, you can't answer "what's actually in flight right now?" without reading ten files. A month in, half those files are stale and you've forgotten which ones.
+That's the problem this system solves. It's called spec-driven planning, the primary audience is me, not my AI assistant, and the whole thing is a markdown convention plus a single HTML dashboard.
 
-I built a system to fix that. It's called spec-driven planning, and the primary audience is me, not my AI assistant.
+The AI-readability part, which everyone wants to talk about first, was a side effect. I'll come back to it.
 
 ## The Real Problem
 
-I had 38 `*_PLAN.md` files at the root of my repo. Some were active. Some had shipped. Some were half-done ideas from two months ago. Some contradicted each other.
+Every time I opened a new session with Claude, I'd spend 15 minutes explaining which plans were still relevant. But that wasn't the actual problem. The actual problem was that *I* didn't have a clear picture either. I was re-explaining context I shouldn't have needed to re-explain, because there was no single place to look. The AI just exposed the gap; the gap was mine.
 
-Every time I opened a new session with Claude, I'd spend 15 minutes explaining which ones were still relevant. But that wasn't actually the problem. The problem was that *I* didn't have a clear picture either. I was re-explaining context I shouldn't have needed to re-explain, because I had no single place to look.
+I tried Jira. Tried Linear. Tried Notion. Each one worked for the first week and then sat unused because the friction of "open browser, log in, navigate, click new task" was higher than the friction of writing one more loose markdown file at the repo root. The unused tool became a third source of state, not a single source.
+
+So I gave up on tools and wrote a convention instead. The constraint: it had to live inside the repo as plain text, no login, no service, no build step.
 
 ## The System
 
@@ -122,6 +124,16 @@ When the system itself improves (new dashboard features, fixed bugs), run `plans
 
 If you'd rather see what's happening underneath: it's just `mkdir`, a copy of the template directory, an entry in `.git/info/exclude`, and an append to your AI instruction file. Nothing magical.
 
-The full templates, reference spec, roadmap dashboard, and `/plans` skill are in the repo.
+The full templates, reference spec, roadmap dashboard, and `/plans` skill are in the [repo](https://github.com/yrangana/Plans).
 
-The insight that made it click: structure isn't overhead. When your intent is structured, you can reason about it, and so can your tools.
+## What I Learned
+
+Two things I didn't expect.
+
+**One: the structure was the point, not the format.** Markdown vs. JSON vs. YAML doesn't matter. What matters is that every plan has the same shape, so you can answer "what's in flight?" in one glance instead of ten reads. The relief of having one place to look is bigger than I thought it would be.
+
+**Two: the AI angle, the thing everyone asks about first, came for free.** I didn't design for AI readability. I designed for me. But because the format is plain markdown with predictable structure, Claude reads it natively. No integration, no plugin, no MCP server. When I open a session, Claude already knows what's in flight. That changed how I use AI tools, but it's a consequence of writing things down clearly, not a feature I built.
+
+The insight that made it click: structure isn't overhead. When your intent is structured, you can reason about it, and so can anything else that needs to.
+
+If any of this resonates, the repo is [github.com/yrangana/Plans](https://github.com/yrangana/Plans). It's MIT, ~300 lines, and the install is a single curl one-liner. Issues and skill ports to other assistants (Cline, Windsurf, aider) are particularly welcome.
