@@ -36,7 +36,7 @@ plans/
 │   ├── plans/                   # The directory adopters drop into their repo
 │   │   ├── README.md            # Onboarding for adopters
 │   │   ├── STATUS.md            # Empty front-door template
-│   │   ├── plans.json           # Empty starter
+│   │   ├── plans.json           # Empty starter ({ project, plans } shape; see docs/reference.md)
 │   │   ├── roadmap.html         # Interactive dashboard
 │   │   ├── active/              # With EXAMPLE_PLAN.md showing the format
 │   │   ├── shipped/

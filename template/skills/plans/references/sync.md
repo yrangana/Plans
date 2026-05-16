@@ -88,11 +88,13 @@ For each active plan, parse:
 - Optional frontmatter fields if present: `start_date`, `eta`, `in_flight`
 - `## Status` banner: Overall line, per-phase lines, Next action, Last updated
 
+From `plans/plans.json`, also read the existing `project` header (`name`, `description`, `repo`) if present. It will be preserved verbatim in Step 4. If absent (legacy array shape or missing entirely), record this so Step 4 can stub it.
+
 ---
 
 ## Step 2: Detect Drift
 
-Run all 11 rules from `drift-rules.md`. Collect every finding before reporting.
+Run all 13 rules from `drift-rules.md`. Collect every finding before reporting.
 
 ---
 
@@ -120,8 +122,11 @@ If nothing found: print `Everything is in sync.` and stop.
 
 ## Step 4: Regenerate plans.json
 
-Build new `plans.json` by extracting from all plan files (active + shipped). Superseded plans are excluded.
-Each entry follows the schema in `plans-json-schema.md`.
+Build new `plans.json` as a top-level object `{ project, plans }` per `plans-json-schema.md`.
+
+**Project header.** Preserve the existing `project` object verbatim from the current `plans.json` (read in Step 1). If the current file is missing the header (legacy array shape, missing object, or fresh project), create a stub `{"name": "", "description": "", "repo": ""}` and note it in the diff summary so the adopter sees it. Never overwrite non-empty project fields.
+
+**Plans array.** Extract from all plan files (active + shipped). Superseded plans are excluded. Each entry follows the schema in `plans-json-schema.md`.
 
 **Deriving `start_date` and `eta`.** These drive the `roadmap.html` Gantt, so resolve them on every regeneration:
 
@@ -130,7 +135,7 @@ Each entry follows the schema in `plans-json-schema.md`.
 
 Do not invent dates that have no source. Plans with no `eta` and no dated phases are surfaced by Rule 10, not silently filled. Carry the keys through even when `null` so consumers can rely on their presence.
 
-Show a one-line diff summary: `plans.json: N plans, X changed, Y added, Z removed`
+Show a one-line diff summary: `plans.json: N plans, X changed, Y added, Z removed` (append `, project header stubbed` if Rule 12 fired).
 
 ---
 
