@@ -1,6 +1,6 @@
 # Drift Detection Rules
 
-Run all 11 rules. Collect all findings before reporting.
+Run all 13 rules. Collect all findings before reporting.
 
 ## Rule 1: Missing frontmatter field
 
@@ -107,3 +107,21 @@ Do not auto-resolve. The user sets an `eta` (a `/plans new`-style effort estimat
 **Propose:** Roll `start_date` forward to today. If the plan has an `eta`, slide it forward by the same delta (`eta += today - old start_date`) so the planned span length is preserved rather than shrunk. Apply only to `active` plans; leave `blocked` and `paused` plans untouched.
 
 This keeps the Gantt honest: an unstarted plan should not show a bar whose left edge is in the past. Propose the roll; the user confirms or declines.
+
+---
+
+## Rule 12: Missing project header
+
+**Check:** `plans/plans.json` is either a top-level array (legacy shape) or an object without a `project` key.
+
+**Resolution:** Auto-create a stub `"project": {"name": "", "description": "", "repo": ""}` during regeneration in Step 4. Note it in the sync report so the adopter knows to fill it in. This is not an error: a fresh project or a legacy file is expected to hit this once.
+
+---
+
+## Rule 13: Empty project field
+
+**Check:** `project.name`, `project.description`, or `project.repo` is an empty string.
+
+**Flag:** "project.{field} is empty. Fill it in in plans/plans.json: it appears in roadmap.html and any centralised dashboard."
+
+Do not auto-resolve. Cannot infer a project name from context reliably; the adopter must provide it.

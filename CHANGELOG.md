@@ -12,6 +12,18 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.3.0
+
+Adds a `project` header to `plans.json` so each file is self-describing: a foundation for a future centralised dashboard that aggregates `plans.json` across multiple projects.
+
+- `plans.json` shape changes from a top-level array to a top-level object: `{ project, plans }`. The `project` header has three fields: `name`, `description`, `repo`. All three are required; empty strings are allowed as stubs.
+- `template/plans/plans.json` ships with an empty project stub so a fresh install has the right shape from day one.
+- `template/plans/roadmap.html`: reads the new shape, uses `project.name` for the page title, falls back to parsing `STATUS.md` only if `project.name` is empty. Renders `data.plans` instead of the top-level array.
+- `/plans sync`: two new drift rules (now 13 total). Rule 12 auto-creates a `{"name":"","description":"","repo":""}` stub when `plans.json` is missing the header (legacy array shape or fresh project). Rule 13 flags empty project fields so the adopter is reminded to fill them in. Step 1 reads the existing project header; Step 4 preserves it verbatim across regenerations and never overwrites non-empty values.
+- `plans-json-schema.md`, `sync.md`, `drift-rules.md`, `docs/reference.md`: schema and behaviour spec rewritten for the wrapper-object shape.
+- Migration for existing adopters: no manual step. Next `plans-update` brings in the new `roadmap.html` and skill; next `/plans sync` auto-stubs the project header and prints a note. Adopters then fill in the three fields in `plans.json` (or wait for sync to flag them via Rule 13).
+- `web/roadmap.html` (marketing snapshot) is intentionally unchanged for this release: it has no `plans.json` and uses an inline `PLANS` array. A future release may align its title bar to the project-name pattern.
+
 ## v0.2.2
 
 - `template/CLAUDE.md.snippet` restructured into a thin, load-bearing summary that defers to `plans/README.md` for the full convention. The snippet is pasted once into each adopter's CLAUDE.md and is not refreshed by `plans-update`, so it now carries only the rules an assistant could violate without having loaded `plans/README.md`: write plans only in `plans/active/`, never hand-edit `plans.json`, update plans before ending a session, audit drift with `/plans sync`. Frontmatter spec, two-source rule, lifecycle, and file moves are no longer duplicated in the snippet; they live in `plans/README.md`, which `plans-update` refreshes.
