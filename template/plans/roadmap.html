@@ -631,11 +631,14 @@ function render(plans) {
 }
 
 // ── Title helpers ───────────────────────────────────────────────
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 function applyTitle(name) {
   if (!name) return;
   document.title = `${name} · Roadmap`;
   document.getElementById('header-title').innerHTML =
-    `${name} <span class="sep">·</span> <span style="color: var(--ink-mute); font-weight: 500;">Roadmap</span>`;
+    `${escapeHtml(name)} <span class="sep">·</span> <span style="color: var(--ink-mute); font-weight: 500;">Roadmap</span>`;
 }
 
 function setTitleFromStatus() {
