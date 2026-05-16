@@ -4,7 +4,7 @@
 
 ![Plans demo](examples/demo.svg)
 
-> A lightweight intent layer for AI-assisted projects. Markdown + JSON, works with Claude Code, Antigravity, Cursor, or any AI coding assistant.
+> A markdown convention for tracking what you're building. Plain files in your repo, one source of truth for what's active, shipped, and next. AI assistants read it natively as a bonus.
 
 [Home](https://yrangana.github.io/Plans/) · [Roadmap demo](https://yrangana.github.io/Plans/roadmap.html) · [Status demo](https://yrangana.github.io/Plans/status.html) · [Slides](https://yrangana.github.io/Plans/presentation.html) · [Docs](https://yrangana.github.io/Plans/docs.html) · [Blog post](docs/blog-post.md) · [Reference spec](docs/reference.md)
 
@@ -12,9 +12,13 @@
 
 ## What this is
 
-A spec-driven planning convention. Every project feature is a markdown file with structured frontmatter and a status banner. One `STATUS.md` answers "what's in flight, what's next, what just shipped". A static `roadmap.html` renders an interactive Gantt + dependency graph from the same data.
+A planning convention for solo devs and small teams. Every feature is a markdown file with structured frontmatter and a status banner. One `STATUS.md` answers "what's in flight, what's next, what just shipped". A static `roadmap.html` renders an interactive Gantt and dependency graph from the same data.
 
-It works with any AI coding assistant. The data model is plain markdown and JSON. Only the instruction file (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`) changes per platform.
+The primary audience is **you**, the person doing the work. The structure exists so you stop losing track of what you've shipped vs. what's still in flight. The fact that AI coding assistants (Claude Code, Cursor, Antigravity, Windsurf) can read your roadmap natively, because it's plain markdown with predictable shape, is a side effect, and a useful one.
+
+The data model is plain markdown and JSON. Only the instruction file (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`) changes per platform.
+
+I built this for myself and use it daily across my own projects. It's MIT, ~300 lines total, and ships with everything you need including a CLI, a dashboard, and a `/plans sync` skill that audits your plans against your git log weekly.
 
 ## What you get
 
@@ -32,14 +36,16 @@ It works with any AI coding assistant. The data model is plain markdown and JSON
 
 ![Status page](examples/screenshot-status.png)
 
-## Is this for you?
+## Where it fits
 
-| Adopt when | Skip when |
-| --- | --- |
-| Solo dev or small team (1 to 3 people) | Team of 5+ (use a real PM tool) |
-| 3+ committed features in flight | Single-feature scope |
-| AI-assisted development | Regulated environments (need audit trail) |
-| Plans accumulating at repo root | Open source (use Issues) |
+Best fit:
+
+- Solo developers and small teams (1 to 4 people) juggling multiple features in parallel
+- Projects with 3+ ideas in flight where context-switching costs are real
+- AI-assisted workflows where you want your assistant to know what you've already shipped
+- Repos accumulating loose `*_PLAN.md` files at the root with no shared shape
+
+Less useful when: you already have a working Jira/Linear/Notion setup that fits your team, you're on a single-feature project, or you need a full audit trail for compliance.
 
 Full scope and audience details in [docs/reference.md](docs/reference.md).
 
@@ -194,14 +200,16 @@ Git log is the ground truth for what shipped. Plan files are the intent layer. T
 
 ---
 
-## The `/plans` Skill
+## The `/plans` Skill, drift detection between intent and reality
 
-A Claude Code slash command (and Antigravity skill, Cursor command) with two modes:
+The thing that makes this convention actually hold up over time: plans describe what you intended to do, git log records what actually happened. The two drift apart constantly. `/plans sync` reconciles them.
 
-- **`/plans sync`**: weekly audit. Reads plan frontmatter, runs `git log`, detects drift, regenerates `plans.json` and STATUS.md auto-sections, shows proposed changes before writing.
-- **`/plans new`**: guided creation of a new plan file with correct frontmatter and status banner.
+It's a Claude Code slash command (with Antigravity and Cursor ports) with two modes:
 
-Installed automatically by `plans-init`. See [docs/reference.md](docs/reference.md) for the full skill spec.
+- **`/plans sync`**: weekly audit. Reads every plan's frontmatter, runs `git log`, runs 13 drift rules (stale plans, missing ETAs, orphaned dependencies, frontmatter contradictions, project header gaps), and proposes fixes as a diff. You review and confirm in about 2 minutes. Regenerates `plans.json` and the auto-managed sections of `STATUS.md`.
+- **`/plans new`**: guided creation of a new plan file with correct frontmatter, status banner, and timeline.
+
+Installed automatically by `plans-init`. See [docs/reference.md](docs/reference.md) for the full drift-rule list.
 
 ---
 
@@ -220,13 +228,11 @@ The `plans/` directory is identical across all platforms.
 
 ## Contributing
 
-This is a small, opinionated convention. Issues and PRs welcome for:
+This is a small, opinionated convention. Issues and PRs welcome.
 
-- Bug fixes in `template/plans/roadmap.html`
-- Doc clarifications
-- Cross-platform skill ports (Cursor, Windsurf)
+Highest-leverage contributions: skill ports to other AI assistants (Cline, Windsurf, aider), `roadmap.html` improvements (Mermaid export, print stylesheet), bug fixes, doc clarifications.
 
-For substantive changes to the convention itself (frontmatter spec, lifecycle), open an issue first to discuss.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for specific asks, what to expect, and where the maintainer will push back. For substantive changes to the convention itself (frontmatter spec, lifecycle), open an issue first to discuss.
 
 ## License
 
