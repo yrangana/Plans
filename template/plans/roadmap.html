@@ -422,8 +422,8 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; letter-spacing: -0.022
       <div class="section-head">
         <h2>All plans</h2>
         <div class="ctrls">
-          <button class="chip active" data-filter="all">All <span class="count" id="c-all">0</span></button>
-          <button class="chip" data-filter="active">Active <span class="count" id="c-active">0</span></button>
+          <button class="chip" data-filter="all">All <span class="count" id="c-all">0</span></button>
+          <button class="chip active" data-filter="active">Active <span class="count" id="c-active">0</span></button>
           <button class="chip" data-filter="shipped">Shipped <span class="count" id="c-shipped">0</span></button>
         </div>
       </div>
@@ -502,14 +502,22 @@ function planSpan(p) {
   return { start, end };
 }
 
+// Rolling window: the Gantt focuses on near-term work. Active plans always
+// appear; shipped plans drop off once they shipped more than this many days
+// ago (they remain in the All-plans list under the Shipped filter).
+const GANTT_WINDOW_DAYS = 42;
 function renderGantt(plans) {
-  const rows = plans.map(p => ({ plan: p, ...planSpan(p) }));
+  const cutoff = new Date(today.getTime() - GANTT_WINDOW_DAYS * 864e5);
+  const rows = plans
+    .map(p => ({ plan: p, ...planSpan(p) }))
+    .filter(r => r.plan.status !== 'shipped' || r.end >= cutoff);
+  const container = document.getElementById('gantt');
+  if (!rows.length) { container.innerHTML = `<div class="dep-empty">No plans in the current window.</div>`; return; }
   const allDates = rows.flatMap(r => [r.start, r.end]).concat([today]);
   let minD = new Date(Math.min(...allDates)); minD.setDate(minD.getDate() - 1);
   let maxD = new Date(Math.max(...allDates)); maxD.setDate(maxD.getDate() + 1);
   const span = maxD - minD;
   const pct = d => ((new Date(d) - minD) / span * 100);
-  const container = document.getElementById('gantt');
   let html = '<div class="gantt-axis-row"><div class="gantt-axis">';
   const nTicks = 6;
   for (let i = 0; i < nTicks; i++) {
@@ -608,7 +616,7 @@ function render(plans) {
   renderMetrics(sorted);
   renderGantt(sorted);
   renderDeps(sorted);
-  renderPlans(sorted);
+  renderPlans(sorted.filter(p => p.status === 'active'));
 
   document.querySelectorAll('.chip').forEach(btn => {
     btn.addEventListener('click', () => {

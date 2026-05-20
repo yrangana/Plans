@@ -256,6 +256,15 @@ If a `plans.json` is missing the `project` header, `/plans sync` creates a stub 
 | `next_action` | status banner | Next concrete step |
 | `phase_summary` | status banner | Per-phase breakdown array |
 
+### Dashboard rendering (roadmap.html)
+
+`roadmap.html` reads `plans.json` and renders three panels. Two rules keep it readable as shipped history piles up:
+
+- **Timeline (Gantt):** shows every active plan plus any plan shipped within the last 6 weeks (42 days). Plans shipped earlier drop off the chart so the axis never stretches across a year of completed work. They stay reachable in the plan list under the Shipped filter.
+- **All plans list:** opens on the Active filter. The All and Shipped filters are one click away, and the filter counts always reflect the full set.
+
+Both behaviours are fixed (no config). Adopters who want a different cutoff fork `roadmap.html`.
+
 ---
 
 ## STATUS.md Spec
