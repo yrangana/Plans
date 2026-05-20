@@ -12,6 +12,16 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.3.1
+
+Keeps `roadmap.html` readable as shipped history accumulates. Previously the Gantt drew every plan ever recorded and the plan list rendered all of them on load, so a project a year in would show a year-wide axis with one row per shipped plan and dump the full set by default.
+
+- `template/plans/roadmap.html`: the Gantt now uses a 6-week rolling window (`GANTT_WINDOW_DAYS = 42`). Active plans always appear; plans shipped more than 6 weeks ago drop off the chart. They stay reachable in the plan list under the Shipped filter, and the filter counts still reflect the full set.
+- `template/plans/roadmap.html`: the "All plans" list now opens on the Active filter instead of All. The All and Shipped filters are one click away.
+- `docs/reference.md`: new "Dashboard rendering (roadmap.html)" subsection documenting both rules. Both behaviours are fixed (no config); adopters who want a different cutoff fork `roadmap.html`.
+- `web/roadmap.html` (marketing snapshot) is intentionally unchanged: its `today` is the real current date while its inline data is frozen, so a rolling window would empty the demo Gantt as wall-clock time advances past mid-June.
+- No schema or `plans.json` change. Adopters pick it up on the next `plans-update`; nothing to migrate.
+
 ## v0.3.0
 
 Adds a `project` header to `plans.json` so each file is self-describing: a foundation for a future centralised dashboard that aggregates `plans.json` across multiple projects.

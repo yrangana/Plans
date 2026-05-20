@@ -20,6 +20,8 @@ The data model is plain markdown and JSON. Only the instruction file (`CLAUDE.md
 
 I built this for myself and use it daily across my own projects. It's MIT, ~300 lines total, and ships with everything you need including a CLI, a dashboard, and a `/plans sync` skill that audits your plans against your git log weekly.
 
+**Where this sits in the wider trend:** AI-assisted development is shifting toward spec-driven workflows, where the spec is a first-class artifact your assistant reads and writes against. Tools like GitHub's Spec Kit handle the per-feature spec workflow. Plans is the portfolio layer that sits alongside: the multi-feature view of what's active, what shipped, what got abandoned, and what blocks what. Different layer, same shift.
+
 ## What you get
 
 - A single source of truth for "what's in flight, what's next, what just shipped"
