@@ -12,6 +12,15 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.3.3
+
+Makes `roadmap.html` order plans by recency, not priority. v0.3.2 used `last_updated` only as a tiebreaker *after* priority, so a recently shipped P1 still sank below older P0s and the Shipped filter did not read newest-first. This supersedes that ordering.
+
+- `template/plans/roadmap.html`: `sortPlans` drops priority as a sort key. Order is now in-flight first, then status (active, paused, blocked, shipped, superseded), then `last_updated` descending within each status group (missing dates last). Priority still shows on each card but no longer affects order.
+- Effect: the Shipped filter reads as a newest-first changelog (most recently shipped at the top), and a recent lower-priority plan is never buried under an older P0. Applies to both the plan list and the Gantt row order.
+- `docs/reference.md`: the "Dashboard rendering" subsection now documents the ordering rule.
+- No schema or `plans.json` change. Adopters pick it up on the next `plans-update`.
+
 ## v0.3.2
 
 Fixes plan ordering in `roadmap.html`. Plans that shared an `in_flight` state, status, and priority fell back to `plans.json` insertion order (effectively filename order), so within a bucket the plan list and Gantt rows ignored recency.
