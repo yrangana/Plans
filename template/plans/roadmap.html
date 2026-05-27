@@ -451,8 +451,13 @@ function sortPlans(arr) {
     if (a.in_flight !== b.in_flight) return a.in_flight ? -1 : 1;
     const s = (so[a.status] ?? 9) - (so[b.status] ?? 9);
     if (s !== 0) return s;
-    if (a.priority && b.priority) return a.priority.localeCompare(b.priority);
-    return 0;
+    if (a.priority && b.priority) {
+      const p = a.priority.localeCompare(b.priority);
+      if (p !== 0) return p;
+    }
+    // Tiebreaker: most recently updated first (last_updated is YYYY-MM-DD, so
+    // string compare is chronological). Missing dates sort last.
+    return (b.last_updated || '').localeCompare(a.last_updated || '');
   });
 }
 

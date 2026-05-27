@@ -12,6 +12,14 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.3.2
+
+Fixes plan ordering in `roadmap.html`. Plans that shared an `in_flight` state, status, and priority fell back to `plans.json` insertion order (effectively filename order), so within a bucket the plan list and Gantt rows ignored recency.
+
+- `template/plans/roadmap.html`: `sortPlans` now adds `last_updated` (descending, newest first) as the final tiebreaker, after `in_flight`, status, and priority. Plans with no `last_updated` sort last. Applies to both the plan list and the Gantt row order.
+- Priority still groups above recency within a status (all P0s before P1s, each group newest-first); recency only breaks ties inside a bucket.
+- No schema or `plans.json` change. Adopters pick it up on the next `plans-update`.
+
 ## v0.3.1
 
 Keeps `roadmap.html` readable as shipped history accumulates. Previously the Gantt drew every plan ever recorded and the plan list rendered all of them on load, so a project a year in would show a year-wide axis with one row per shipped plan and dump the full set by default.
