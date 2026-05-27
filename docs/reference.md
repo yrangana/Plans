@@ -258,12 +258,13 @@ If a `plans.json` is missing the `project` header, `/plans sync` creates a stub 
 
 ### Dashboard rendering (roadmap.html)
 
-`roadmap.html` reads `plans.json` and renders three panels. Two rules keep it readable as shipped history piles up:
+`roadmap.html` reads `plans.json` and renders three panels. A few rules keep it readable as shipped history piles up:
 
 - **Timeline (Gantt):** shows every active plan plus any plan shipped within the last 6 weeks (42 days). Plans shipped earlier drop off the chart so the axis never stretches across a year of completed work. They stay reachable in the plan list under the Shipped filter.
 - **All plans list:** opens on the Active filter. The All and Shipped filters are one click away, and the filter counts always reflect the full set.
+- **Ordering (plan list and Gantt rows):** in-flight plans first, then by status (active, paused, blocked, shipped, superseded), then most recently updated first within each status group (`last_updated` descending; missing dates last). Priority is shown on each card but does not affect order, so a recently shipped P1 is never buried under an older P0, and the Shipped filter reads as a newest-first changelog.
 
-Both behaviours are fixed (no config). Adopters who want a different cutoff fork `roadmap.html`.
+These behaviours are fixed (no config). Adopters who want different rules fork `roadmap.html`.
 
 ---
 
