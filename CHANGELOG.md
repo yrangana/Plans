@@ -12,6 +12,18 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.4.0
+
+Packages the `/plans` skill as a Claude Code plugin so it is discoverable through `/plugin` without cloning the repo first. This is a discovery entry point, not a second way to adopt the system: the plugin delivers the skill and nothing else, and `plans-init` remains the only path that creates `plans/`.
+
+- `.claude-plugin/plugin.json`: new. Exposes the skill via `"skills": "./template/skills/"`. That field adds to the default scan rather than replacing it, so the skill file stays at `template/skills/plans/` and `scripts/init.sh` is unchanged.
+- `.claude-plugin/marketplace.json`: new. Declares the `yrangana-plans` marketplace with the plugin sourced from the repo root, so `/plugin marketplace add yrangana/Plans` works directly against GitHub.
+- `template/skills/plans/references/new-plan.md`: adds the prerequisites block that `sync.md` already had. `/plans new` previously ran the full five-question flow in projects with no `plans/` directory, then failed at write time. It now checks for `plans/` and `plans/active/` first and stops with setup instructions.
+- `scripts/update.sh`: when no project-local skill is found, prints a note that a plugin-installed copy is managed by Claude Code and is not updated by `plans-update`. Previously reported "Nothing to update. You are current," which was wrong for plugin users.
+- `docs/reference.md`: documents the plugin install, and which of the two paths owns updates.
+- `CLAUDE.md`: release process now covers three version fields, and adds a warning about distributing the plugin from a local working tree.
+- Adopters on `plans-init` are unaffected. No schema, path, or `plans.json` change.
+
 ## v0.3.3
 
 Makes `roadmap.html` order plans by recency, not priority. v0.3.2 used `last_updated` only as a tiebreaker *after* priority, so a recently shipped P1 still sank below older P0s and the Shipped filter did not read newest-first. This supersedes that ordering.

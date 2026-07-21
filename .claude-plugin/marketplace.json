@@ -1,0 +1,21 @@
+{
+  "name": "yrangana-plans",
+  "owner": {
+    "name": "Yasiru Rangana"
+  },
+  "description": "A markdown convention for tracking multi-project development work.",
+  "plugins": [
+    {
+      "name": "plans",
+      "source": "./",
+      "description": "Manage the plans/ spec-driven planning system. Audit drift between plan files and git, regenerate plans.json and STATUS.md.",
+      "category": "productivity",
+      "keywords": [
+        "planning",
+        "project-management",
+        "markdown",
+        "spec-driven-development"
+      ]
+    }
+  ]
+}

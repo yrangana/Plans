@@ -1,0 +1,21 @@
+{
+  "name": "plans",
+  "displayName": "Plans",
+  "version": "0.4.0",
+  "description": "A markdown convention for tracking what you are building. Plain files in your repo, one source of truth for what is active, shipped, and next.",
+  "author": {
+    "name": "Yasiru Rangana",
+    "url": "https://github.com/yrangana"
+  },
+  "homepage": "https://yrangana.github.io/Plans/",
+  "repository": "https://github.com/yrangana/Plans",
+  "license": "MIT",
+  "keywords": [
+    "planning",
+    "project-management",
+    "markdown",
+    "spec-driven-development",
+    "roadmap"
+  ],
+  "skills": "./template/skills/"
+}

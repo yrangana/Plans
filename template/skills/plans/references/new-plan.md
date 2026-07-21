@@ -2,6 +2,33 @@
 
 Guided creation of a new plan file with correct structure. Guarantees format correctness so `/plans sync` does not immediately flag it.
 
+## Prerequisites
+
+**1. Check for `plans/`:**
+
+```text
+if plans/ does not exist in the project root:
+  print:
+    "No plans/ directory found in this project."
+    "Set it up with:"
+    ""
+    "  curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash"
+    "  plans-init"
+    ""
+    "Or visit https://github.com/yrangana/Plans for full instructions."
+  stop.
+```
+
+**2. Check the target directory:**
+
+```text
+if plans/active/ does not exist:
+  print: "plans/active/ not found. Re-run plans-init or check https://github.com/yrangana/Plans"
+  stop.
+```
+
+Run both checks before asking any questions below. Answering the full questionnaire and then failing to write the file wastes the user's time.
+
 ## Flow
 
 Ask these questions in order. Do not proceed to the next until the current is answered.

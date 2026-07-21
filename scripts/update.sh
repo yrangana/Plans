@@ -127,9 +127,24 @@ update_skill() {
 update_skill "$TARGET_DIR/.claude/skills/plans"
 update_skill "$TARGET_DIR/.agents/skills/plans"
 
+# No project-local skill found. The user may have it via the Claude Code plugin,
+# which lives outside this project and is updated by Claude Code, not by this script.
+NO_LOCAL_SKILL=0
+if [ ! -d "$TARGET_DIR/.claude/skills/plans" ] && [ ! -d "$TARGET_DIR/.agents/skills/plans" ]; then
+  NO_LOCAL_SKILL=1
+  echo ""
+  echo "Note: no project-local /plans skill found in this project."
+  echo "      If you installed it via the Claude Code plugin, that copy is managed"
+  echo "      by Claude Code and is not updated by plans-update. Use /plugin to update it."
+fi
+
 if [ "$HAS_CHANGES" = "0" ]; then
   echo ""
-  echo "Nothing to update. You are current."
+  if [ "$NO_LOCAL_SKILL" = "1" ]; then
+    echo "Nothing to update. System files are current (skill not checked, see note above)."
+  else
+    echo "Nothing to update. You are current."
+  fi
   exit 0
 fi
 
