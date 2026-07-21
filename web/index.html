@@ -688,10 +688,10 @@ section { padding-block: 120px; }
   <div class="container">
     <div class="install-hero">
       <p class="eyebrow" style="color:#0071e3;letter-spacing:0.08em;font-size:11.5px;text-transform:uppercase;font-family:var(--font-mono)">INSTALL</p>
-      <h2>One command. Then your AI knows.</h2>
+      <h2>Two paths in. Then your AI knows.</h2>
       <div class="install-notes">
         <span>Claude Code: install the plugin, run <code>/plans:plans init</code></span>
-        <span>Updates arrive through <code>/plugin</code>, no re-clone</span>
+        <span>Plugin path: project rules load automatically via a session hook, no CLAUDE.md edit</span>
         <span>Other assistants: one curl, then <code>plans-init</code></span>
         <span>Git-excluded by default, plans stay local</span>
       </div>
@@ -707,13 +707,13 @@ section { padding-block: 120px; }
       <ol class="install-steps-v">
         <li class="active" data-step="0">
           <div class="step-node">1</div>
-          <strong>Install the plugin</strong>
-          <p>In Claude Code: <code>/plugin marketplace add yrangana/Plans</code>, then <code>/plugin install plans@yrangana-plans</code>. Other assistants: <code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash</code>.</p>
+          <strong>Install Plans</strong>
+          <p>In Claude Code, run <code>/plugin marketplace add yrangana/Plans</code>, then <code>/plugin install plans@yrangana-plans</code>. Using Cursor, Antigravity, or Windsurf? Run <code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash</code> instead.</p>
         </li>
         <li data-step="1">
           <div class="step-node">2</div>
           <strong>Bootstrap a project</strong>
-          <p>Run <code>/plans:plans init</code> (plugin) or <code>plans-init /path/to/project</code> (CLI). Creates <code>plans/</code> and keeps it out of git by default.</p>
+          <p>Run <code>/plans:plans init</code> in Claude Code. On the CLI path, run <code>plans-init /path/to/project</code> instead. Either way it creates <code>plans/</code> and keeps it out of git by default.</p>
         </li>
         <li data-step="2">
           <div class="step-node">3</div>
@@ -723,7 +723,7 @@ section { padding-block: 120px; }
         <li data-step="3">
           <div class="step-node">4</div>
           <strong>Write your first plan</strong>
-          <p>Replace the example plan with a real one, or type <span class="ai-bubble">/plans new</span> in your AI assistant.</p>
+          <p>In Claude Code, type <span class="ai-bubble">/plans:plans new</span>. On the CLI path, replace the example plan in <code>plans/active/</code> with a real one.</p>
         </li>
       </ol>
       <div class="terminal" id="install-terminal">
@@ -945,18 +945,17 @@ roadmap.html</pre>
   if (!terminal || !body) return;
 
   var lines = [
-    { text: '# 1. install the CLI', cls: 'comment', step: 0 },
-    { text: 'curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash', cls: 'prompt-line', step: 0 },
-    { text: 'Plans system installer', cls: 'out', step: 0 },
-    { text: 'Cloning plans into ~/.local/share/plans...', cls: 'out', step: 0 },
-    { text: '✓ Installed to ~/.local/share/plans', cls: 'ok', step: 0 },
-    { text: '✓ Symlinks: ~/.local/bin/plans-init, plans-update', cls: 'ok', step: 0 },
+    { text: '# 1. install the plugin', cls: 'comment', step: 0 },
+    { text: '/plugin marketplace add yrangana/Plans', cls: 'ai-line', step: 0 },
+    { text: '✔ Successfully added marketplace: yrangana-plans', cls: 'ok', step: 0 },
+    { text: '/plugin install plans@yrangana-plans', cls: 'ai-line', step: 0 },
+    { text: '✔ Successfully installed plugin: plans@yrangana-plans (scope: user)', cls: 'ok', step: 0 },
     { text: '', cls: '', step: 0 },
     { text: '# 2. bootstrap your project', cls: 'comment', step: 1 },
-    { text: 'plans-init ~/code/your-app', cls: 'prompt-line', step: 1 },
-    { text: '→ created plans/active/, plans/shipped/, plans/superseded/', cls: 'out', step: 1 },
+    { text: '/plans:plans init', cls: 'ai-line', step: 1 },
+    { text: 'Track plans/ in git? [y/N] n', cls: 'out', step: 1 },
+    { text: '→ created plans/: README.md STATUS.md plans.json roadmap.html active/ shipped/ superseded/', cls: 'out', step: 1 },
     { text: '→ added plans/ to .git/info/exclude', cls: 'out', step: 1 },
-    { text: '→ detected CLAUDE.md — append planning section? [Y/n] y', cls: 'out', step: 1 },
     { text: '✓ All set. Open plans/STATUS.md.', cls: 'ok', step: 1 },
     { text: '', cls: '', step: 1 },
     { text: '# 3. start the dashboard', cls: 'comment', step: 2 },
@@ -965,7 +964,7 @@ roadmap.html</pre>
     { text: 'open http://localhost:3000/plans/roadmap.html', cls: 'prompt-line', step: 2 },
     { text: '', cls: '', step: 2 },
     { text: '# 4. write your first plan', cls: 'comment', step: 3 },
-    { text: '/plans new', cls: 'ai-line', step: 3 },
+    { text: '/plans:plans new', cls: 'ai-line', step: 3 },
     { text: '✓ Created plans/active/MY_FEATURE.md', cls: 'ok', step: 3 },
   ];
 
