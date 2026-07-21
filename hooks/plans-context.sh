@@ -14,13 +14,43 @@ set -u
 
 # Only inject the plans/ rules when this project has adopted the
 # convention. Guard on the project root, not the process cwd: a
-# SessionStart hook can run from any working directory, and
-# CLAUDE_PROJECT_DIR is the documented way to reference the project root
-# regardless of where the session started. Without this guard, a
-# subdirectory session would miss the rules, and an unrelated directory
-# that happens to contain a plans/ folder would get them injected, which
-# is the context pollution this guard exists to prevent.
-if [ ! -d "${CLAUDE_PROJECT_DIR:-.}/plans" ]; then
+# SessionStart hook can run from any working directory. The convention
+# always places plans/ at the repository root, so resolve that root by
+# trying three candidates in order, using the first one whose directory
+# actually contains plans/:
+#
+#   1. $CLAUDE_PROJECT_DIR, when it is set and non-empty. This is the
+#      documented way to reference the project root, but it is not
+#      reliably set to the repo root in every session shape.
+#   2. The git repository root (`git rev-parse --show-toplevel`), run
+#      from the current directory. This is the reliable case: adopters
+#      are in git repos, and the convention lives at that repo's root.
+#      Git's stderr is discarded and a nonzero exit (not a git repo, or
+#      git missing) is handled without failing the hook.
+#   3. The current directory, preserving the original behavior as a
+#      last resort for non-git projects.
+#
+# If none of the three yields a directory containing plans/, emit
+# nothing. An unrelated directory that happens to contain a plans/
+# folder only matches via step 3, same as before this fix.
+_root=""
+
+if [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -d "${CLAUDE_PROJECT_DIR}/plans" ]; then
+  _root="${CLAUDE_PROJECT_DIR}"
+fi
+
+if [ -z "${_root}" ]; then
+  _git_root=$(git rev-parse --show-toplevel 2>/dev/null) || _git_root=""
+  if [ -n "${_git_root}" ] && [ -d "${_git_root}/plans" ]; then
+    _root="${_git_root}"
+  fi
+fi
+
+if [ -z "${_root}" ] && [ -d "./plans" ]; then
+  _root="."
+fi
+
+if [ -z "${_root}" ]; then
   exit 0
 fi
 
