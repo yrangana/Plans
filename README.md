@@ -91,6 +91,17 @@ php -S localhost:8080        # PHP
 
 Open `plans/active/EXAMPLE_PLAN.md`, replace it with your real first plan, and add a row to `plans/STATUS.md`.
 
+### Just want to look at the skill first?
+
+The `/plans` skill is also a Claude Code plugin, so you can try it without cloning anything:
+
+```bash
+/plugin marketplace add yrangana/Plans
+/plugin install plans@yrangana-plans
+```
+
+This installs the skill only: no `plans/` directory, no dashboard, no `STATUS.md`. Running `/plans` in a project that has not been set up prints the instructions above and stops. Full setup is still steps 1 and 2.
+
 ---
 
 ## Updating

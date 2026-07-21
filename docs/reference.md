@@ -562,6 +562,24 @@ What it does:
 
 If you customize a system file (e.g., your own colour scheme in `roadmap.html`), expect updates to overwrite it. Restore from `<file>.bak` if needed, or run with `--no-pull` to inspect changes before they're fetched.
 
+### Claude Code plugin (skill only)
+
+The `/plans` skill is also published as a Claude Code plugin, so it can be found through `/plugin` discovery without cloning anything first:
+
+```bash
+/plugin marketplace add yrangana/Plans
+/plugin install plans@yrangana-plans
+```
+
+This is a discovery entry point, not a second way to adopt the system. It delivers the `/plans` skill and nothing else: no `plans/` directory, no `STATUS.md`, no `plans.json`, no dashboard. Running `/plans sync` or `/plans new` in a project with no `plans/` directory prints the setup instructions and stops.
+
+Full adoption still goes through the one-liner installer and `plans-init` above. The two paths differ in who owns updates:
+
+- Project-local skill (installed by `plans-init`): lives at `.claude/skills/plans/` or `.agents/skills/plans/`, updated by `plans-update`.
+- Plugin skill: lives in Claude Code's plugin cache, pinned to a commit SHA, updated by Claude Code via `/plugin`. `plans-update` cannot see or update it, and says so when no project-local copy is present.
+
+If both are installed, the project-local copy is the one `plans-update` manages. Prefer one or the other in a given project rather than both.
+
 ### Versioning
 
 The plans repo loosely follows [semantic versioning](https://semver.org/). See [CHANGELOG.md](../CHANGELOG.md) for what's changed between versions.

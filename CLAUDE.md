@@ -110,7 +110,12 @@ Run these from the repo root.
 ## Release process
 
 1. Make changes locally
-2. For a meaningful release, bump `VERSION` and the matching `version:` field in `template/skills/plans/SKILL.md` together. They must always agree: `VERSION` is what `/plans sync` fetches to detect a stale skill. Minor bump for new features, patch for fixes (see `CHANGELOG.md`).
+2. For a meaningful release, bump all three version fields together. They must always agree:
+   - `VERSION`, which is what `/plans sync` fetches to detect a stale skill
+   - the `version:` field in `template/skills/plans/SKILL.md`
+   - the `version` field in `.claude-plugin/plugin.json`
+
+   Minor bump for new features, patch for fixes (see `CHANGELOG.md`).
 3. Test as above
 4. Commit with a clear message (no `git mv` needed since `plans/` isn't excluded here)
 5. Push to `main`
@@ -118,6 +123,22 @@ Run these from the repo root.
 7. Verify: `https://yrangana.github.io/Plans/`
 
 If working with an AI assistant: the maintainer typically handles all `git commit` and `git push` operations themselves. Don't run them from the assistant unless explicitly asked.
+
+---
+
+## Plugin distribution safety
+
+The `/plans` skill ships as a Claude Code plugin (`.claude-plugin/`). Distribute it **only from the GitHub source**:
+
+```bash
+/plugin marketplace add yrangana/Plans
+```
+
+Never build a plugin `.zip`, serve `--plugin-url`, or run `claude plugin marketplace add <local path>` against a working clone that you intend to share. Those routes copy the working tree and **ignore `.gitignore` and `.git/info/exclude`**, so locally excluded files are packaged and distributed.
+
+Verified: a local-path install placed `CLAUDE.local.md`, `LINKEDIN-ARTICLE.md`, and `LINKEDIN-ARTICLE-READY.txt` into the plugin cache, all three of which are excluded and absent from GitHub. "Gitignored" does not mean "safe to package".
+
+Because the marketplace entry uses `"source": "./"`, the plugin ships the whole repo (about 1.3M, mostly `examples/`, `web/`, and screenshots) to deliver one skill. That is accepted deliberately: it is invisible to users and keeps `template/skills/plans/` as the single skill location that `scripts/init.sh` depends on.
 
 ---
 
