@@ -4,26 +4,32 @@ Audit `plans/` for drift, regenerate derived files, propose fixes. Never write w
 
 ## Prerequisites
 
-**1. Check for `plans/`:**
+**1. Check for `plans/`** (delivery per the delivery rule in SKILL.md):
 
-```
+```text
 if plans/ does not exist in the project root:
-  print:
-    "No plans/ directory found in this project."
-    "Set it up with:"
-    ""
-    "  curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash"
-    "  plans-init"
-    ""
-    "Or visit https://github.com/yrangana/Plans for full instructions."
+  if BUNDLED delivery:
+    print: "No plans/ directory found in this project. Run /plans:plans init to set it up."
+  else:
+    print:
+      "No plans/ directory found in this project."
+      "Set it up with:"
+      ""
+      "  curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash"
+      "  plans-init"
+      ""
+      "Or visit https://github.com/yrangana/Plans for full instructions."
   stop.
 ```
 
 **2. Check required files:**
 
-```
+```text
 if plans/STATUS.md is missing:
-  print: "plans/STATUS.md not found. Re-run plans-init or check https://github.com/yrangana/Plans"
+  print:
+    "plans/STATUS.md not found. It is user data, not a system file, so no command restores it."
+    "Recover it from version control, or recreate it using the structure at"
+    "https://github.com/yrangana/Plans"
   stop.
 
 if plans/active/ does not exist:
@@ -33,7 +39,7 @@ if plans/active/ does not exist:
 
 **3. Check for git:**
 
-```
+```text
 if git is not available or not a git repo:
   print: "Git not available. Skipping commit-based drift detection. Frontmatter validation will still run."
   proceed without git-based rules (Rules 3, 4, 5).
@@ -53,28 +59,39 @@ if git is not available or not a git repo:
 
 ---
 
-## Step 0: Version check
+## Step 0: Version and freshness check
 
-A best-effort check that the installed skill is current. This step must never block sync.
+Best-effort, delivery-aware (the delivery rule in SKILL.md). This step must never block sync.
+
+**BUNDLED delivery:**
+
+1. Skill updates are managed by Claude Code. Do not fetch VERSION from GitHub.
+2. Instead check system-file freshness: compare `plans/roadmap.html` and `plans/README.md` against `<plugin-root>/template/plans/`. If either differs, print one line and proceed:
+   ```text
+   Note: project system files differ from the installed plugin version.
+         Run /plans:plans update to refresh them.
+   ```
+
+**STANDALONE delivery:**
 
 1. Read the `version:` field from this skill's `SKILL.md` frontmatter (one directory up from this file).
 2. Fetch the latest published version: `https://raw.githubusercontent.com/yrangana/Plans/main/VERSION` (short timeout).
 3. Compare:
    - **Any failure** (offline, non-200, timeout, missing or unparseable version on either side): print nothing. Proceed to Step 1.
    - **Installed version is behind**: print one line, then proceed to Step 1:
-     ```
+     ```text
      Note: plans skill v{installed} is installed, v{latest} is available.
            Run plans-update to upgrade, then re-run /plans sync.
      ```
    - **Installed version is current or ahead**: print nothing. Proceed to Step 1.
 
-The check is informational only. It never aborts sync, never prompts, and never writes anything.
+The check is informational only. It never aborts sync, never prompts, and never writes anything. Sync never rewrites system files itself; it only suggests the update mode.
 
 ---
 
 ## Step 1: Read
 
-```
+```text
 plans/STATUS.md          (extract last-updated date from line 2: *Last updated: YYYY-MM-DD*)
 plans/active/*.md        (extract frontmatter + ## Status banner from each file)
 plans/shipped/*.md       (extract frontmatter only, for dependency validation)
@@ -100,7 +117,7 @@ Run all 13 rules from `drift-rules.md`. Collect every finding before reporting.
 
 ## Step 3: Report
 
-```
+```text
 === /plans sync findings ===
 
 ERRORS (must fix):
@@ -143,7 +160,7 @@ Show a one-line diff summary: `plans.json: N plans, X changed, Y added, Z remove
 
 Regenerate only the sections between the auto-generated markers:
 
-```
+```text
 <!-- AUTO-GENERATED from plans/plans.json -->
 ...
 <!-- END AUTO-GENERATED -->
@@ -165,7 +182,7 @@ Show a summary of what changed in each table.
 
 ## Step 6: Confirm and Apply
 
-```
+```text
 Apply these changes? (y/n/select)
   y      apply all
   n      apply nothing

@@ -16,9 +16,9 @@ A planning convention for solo devs and small teams. Every feature is a markdown
 
 The primary audience is **you**, the person doing the work. The structure exists so you stop losing track of what you've shipped vs. what's still in flight. The fact that AI coding assistants (Claude Code, Cursor, Antigravity, Windsurf) can read your roadmap natively, because it's plain markdown with predictable shape, is a side effect, and a useful one.
 
-The data model is plain markdown and JSON. Only the instruction file (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`) changes per platform.
+The data model is plain markdown and JSON. On the script path, the instruction file (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`) is how you tell your assistant the system exists, and it's the one thing that changes per platform. On the plugin path, no instruction-file change is needed at all, since the installed plugin is itself the assistant integration.
 
-I built this for myself and use it daily across my own projects. It's MIT, ~300 lines total, and ships with everything you need including a CLI, a dashboard, and a `/plans sync` skill that audits your plans against your git log weekly.
+I built this for myself and use it daily across my own projects. It's MIT, small and readable end to end, and ships with everything you need including a Claude Code plugin, a CLI, a dashboard, and a `/plans sync` skill that audits your plans against your git log weekly.
 
 **Where this sits in the wider trend:** AI-assisted development is shifting toward spec-driven workflows, where the spec is a first-class artifact your assistant reads and writes against. Tools like GitHub's Spec Kit handle the per-feature spec workflow. Plans is the portfolio layer that sits alongside: the multi-feature view of what's active, what shipped, what got abandoned, and what blocks what. Different layer, same shift.
 
@@ -55,31 +55,37 @@ Full scope and audience details in [docs/reference.md](docs/reference.md).
 
 ## Quick Start
 
-### 1. Install the plans CLI
+### Claude Code (plugin, recommended)
 
-One-liner (clones the repo to `~/.local/share/plans` and symlinks `plans-init` and `plans-update` to `~/.local/bin`):
-
-```bash
-curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+```text
+/plugin marketplace add yrangana/Plans
+/plugin install plans@yrangana-plans
+/plans:plans init
 ```
 
-Re-run any time to update the plans system itself.
+Three steps: add the marketplace, install the plugin, bootstrap your project. `init` creates `plans/`, asks whether to track it in git (default: keep it local), and points you at `/plans:plans new` for your first plan. Updates come through `/plugin`; refresh project system files any time with `/plans:plans update`.
 
-### 2. Bootstrap plans in your project
+### Other assistants and no-plugin setups
 
-```bash
-plans-init /path/to/your/project
-```
+Works with Cursor, Antigravity, Windsurf, or any setup where you prefer plain scripts.
 
-Or copy the `template/plans/` directory manually if you prefer.
+1. Install the CLI (clones to `~/.local/share/plans`, symlinks `plans-init` and `plans-update`):
 
-### 3. Tell your AI assistant about it
+   ```bash
+   curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+   ```
 
-Append the contents of [`template/CLAUDE.md.snippet`](template/CLAUDE.md.snippet) to your project's `CLAUDE.md` (or `AGENTS.md`, `.cursorrules`, etc.).
+2. Bootstrap your project:
 
-### 4. Open the dashboard
+   ```bash
+   plans-init /path/to/your/project
+   ```
 
-Start any local file server from your project root, then open `http://localhost:8080/plans/roadmap.html`:
+3. Tell your assistant about it: append [`template/CLAUDE.md.snippet`](template/CLAUDE.md.snippet) to your `CLAUDE.md`, `AGENTS.md`, or `.cursorrules` (`plans-init` offers this automatically).
+
+### Then, on either path
+
+Open the dashboard (any static file server from your project root, then `/plans/roadmap.html`):
 
 ```bash
 python -m http.server 8080   # Python 3
@@ -87,26 +93,21 @@ npx serve -l 8080            # Node.js
 php -S localhost:8080        # PHP
 ```
 
-### 5. Edit your first plan
-
-Open `plans/active/EXAMPLE_PLAN.md`, replace it with your real first plan, and add a row to `plans/STATUS.md`.
-
-### Just want to look at the skill first?
-
-The `/plans` skill is also a Claude Code plugin, so you can try it without cloning anything:
-
-```bash
-/plugin marketplace add yrangana/Plans
-/plugin install plans@yrangana-plans
-```
-
-This installs the skill only: no `plans/` directory, no dashboard, no `STATUS.md`. Running `/plans` in a project that has not been set up prints the instructions above and stops. Full setup is still steps 1 and 2.
+Edit your first plan: open `plans/active/EXAMPLE_PLAN.md`, replace it with your real first plan, and add a row to `plans/STATUS.md`.
 
 ---
 
 ## Updating
 
-The plans CLI updates itself and your project's system files separately.
+How you update depends on how you installed. Plugin installs update through `/plugin` and `/plans:plans update`; the plans CLI updates itself and your project's system files separately.
+
+### Update via the plugin
+
+Updates come through `/plugin`. Refresh your project's system files (`roadmap.html`, `plans/README.md`) any time with:
+
+```text
+/plans:plans update
+```
 
 ### Update the plans CLI
 
@@ -217,12 +218,14 @@ Git log is the ground truth for what shipped. Plan files are the intent layer. T
 
 The thing that makes this convention actually hold up over time: plans describe what you intended to do, git log records what actually happened. The two drift apart constantly. `/plans sync` reconciles them.
 
-It's a Claude Code slash command (with Antigravity and Cursor ports) with two modes:
+It's a Claude Code slash command (with Antigravity and Cursor ports) with four modes:
 
+- **`/plans init`**: bootstraps `plans/` in a project from the bundled template (plugin installs; `plans-init` covers this on the script path).
 - **`/plans sync`**: weekly audit. Reads every plan's frontmatter, runs `git log`, runs 13 drift rules (stale plans, missing ETAs, orphaned dependencies, frontmatter contradictions, project header gaps), and proposes fixes as a diff. You review and confirm in about 2 minutes. Regenerates `plans.json` and the auto-managed sections of `STATUS.md`.
 - **`/plans new`**: guided creation of a new plan file with correct frontmatter, status banner, and timeline.
+- **`/plans update`**: refreshes system files (`roadmap.html`, `plans/README.md`) from the installed skill version (plugin installs; `plans-update` covers this on the script path).
 
-Installed automatically by `plans-init`. See [docs/reference.md](docs/reference.md) for the full drift-rule list.
+`plans-init` installs the skill automatically, but `init` and `update` only run under a plugin install; on the script path, `plans-init` and `plans-update` cover those two jobs directly. See [docs/reference.md](docs/reference.md) for the full drift-rule list.
 
 ---
 

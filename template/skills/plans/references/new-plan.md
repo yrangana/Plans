@@ -4,18 +4,21 @@ Guided creation of a new plan file with correct structure. Guarantees format cor
 
 ## Prerequisites
 
-**1. Check for `plans/`:**
+**1. Check for `plans/`** (delivery per the delivery rule in SKILL.md):
 
 ```text
 if plans/ does not exist in the project root:
-  print:
-    "No plans/ directory found in this project."
-    "Set it up with:"
-    ""
-    "  curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash"
-    "  plans-init"
-    ""
-    "Or visit https://github.com/yrangana/Plans for full instructions."
+  if BUNDLED delivery:
+    print: "No plans/ directory found in this project. Run /plans:plans init to set it up."
+  else:
+    print:
+      "No plans/ directory found in this project."
+      "Set it up with:"
+      ""
+      "  curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash"
+      "  plans-init"
+      ""
+      "Or visit https://github.com/yrangana/Plans for full instructions."
   stop.
 ```
 
@@ -23,7 +26,7 @@ if plans/ does not exist in the project root:
 
 ```text
 if plans/active/ does not exist:
-  print: "plans/active/ not found. Re-run plans-init or check https://github.com/yrangana/Plans"
+  print: "plans/active/ not found. Create it with: mkdir -p plans/active"
   stop.
 ```
 

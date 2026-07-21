@@ -690,13 +690,13 @@ section { padding-block: 120px; }
       <p class="eyebrow" style="color:#0071e3;letter-spacing:0.08em;font-size:11.5px;text-transform:uppercase;font-family:var(--font-mono)">INSTALL</p>
       <h2>One command. Then your AI knows.</h2>
       <div class="install-notes">
-        <span>Clones to <code>~/.local/share/plans</code> — re-run any time to update</span>
-        <span>Run <code>plans-init</code> in any project to bootstrap</span>
-        <span>Auto-detects <code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>.cursorrules</code></span>
-        <span>Git-excluded by default — plans stay local</span>
+        <span>Claude Code: install the plugin, run <code>/plans:plans init</code></span>
+        <span>Updates arrive through <code>/plugin</code>, no re-clone</span>
+        <span>Other assistants: one curl, then <code>plans-init</code></span>
+        <span>Git-excluded by default, plans stay local</span>
       </div>
       <div class="install-cmd-block">
-        <code class="install-cmd-text">curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash</code>
+        <code class="install-cmd-text">/plugin marketplace add yrangana/Plans</code>
         <button class="copy-btn" id="copy-install-cmd" aria-label="Copy install command">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 9.5A1.5 1.5 0 0 0 2.5 11H4v1.5A1.5 1.5 0 0 0 5.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 12.5 4H11V2.5A1.5 1.5 0 0 0 9.5 1h-7A1.5 1.5 0 0 0 1 2.5v7zm4 1.5V4h5.5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V11h1.5zM2 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5V4H5.5A1.5 1.5 0 0 0 4 5.5V10H2.5a.5.5 0 0 1-.5-.5v-7z" fill="currentColor"></path></svg>
           <span class="copy-label">Copy</span>
@@ -707,13 +707,13 @@ section { padding-block: 120px; }
       <ol class="install-steps-v">
         <li class="active" data-step="0">
           <div class="step-node">1</div>
-          <strong>Install the CLI</strong>
-          <p>One curl. Re-run any time to update the system itself. Installs to <code>~/.local/share/plans</code>.</p>
+          <strong>Install the plugin</strong>
+          <p>In Claude Code: <code>/plugin marketplace add yrangana/Plans</code>, then <code>/plugin install plans@yrangana-plans</code>. Other assistants: <code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash</code>.</p>
         </li>
         <li data-step="1">
           <div class="step-node">2</div>
           <strong>Bootstrap a project</strong>
-          <p>Run <code>plans-init /path/to/project</code>. Creates <code>plans/</code>, excludes it from git, wires up your assistant.</p>
+          <p>Run <code>/plans:plans init</code> (plugin) or <code>plans-init /path/to/project</code> (CLI). Creates <code>plans/</code> and keeps it out of git by default.</p>
         </li>
         <li data-step="2">
           <div class="step-node">3</div>
@@ -923,7 +923,7 @@ roadmap.html</pre>
 (function () {
   var btn = document.getElementById('copy-install-cmd');
   if (!btn) return;
-  var cmd = 'curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash';
+  var cmd = '/plugin marketplace add yrangana/Plans';
   btn.addEventListener('click', function () {
     navigator.clipboard.writeText(cmd).then(function () {
       btn.classList.add('copied');
