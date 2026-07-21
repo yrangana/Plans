@@ -55,31 +55,37 @@ Full scope and audience details in [docs/reference.md](docs/reference.md).
 
 ## Quick Start
 
-### 1. Install the plans CLI
-
-One-liner (clones the repo to `~/.local/share/plans` and symlinks `plans-init` and `plans-update` to `~/.local/bin`):
+### Claude Code (plugin, recommended)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+/plugin marketplace add yrangana/Plans
+/plugin install plans@yrangana-plans
+/plans:plans init
 ```
 
-Re-run any time to update the plans system itself.
+Three steps: add the marketplace, install the plugin, bootstrap your project. `init` creates `plans/`, asks whether to track it in git (default: keep it local), and points you at `/plans:plans new` for your first plan. Updates come through `/plugin`; refresh project system files any time with `/plans:plans update`.
 
-### 2. Bootstrap plans in your project
+### Other assistants and no-plugin setups
 
-```bash
-plans-init /path/to/your/project
-```
+Works with Cursor, Antigravity, Windsurf, or any setup where you prefer plain scripts.
 
-Or copy the `template/plans/` directory manually if you prefer.
+1. Install the CLI (clones to `~/.local/share/plans`, symlinks `plans-init` and `plans-update`):
 
-### 3. Tell your AI assistant about it
+   ```bash
+   curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+   ```
 
-Append the contents of [`template/CLAUDE.md.snippet`](template/CLAUDE.md.snippet) to your project's `CLAUDE.md` (or `AGENTS.md`, `.cursorrules`, etc.).
+2. Bootstrap your project:
 
-### 4. Open the dashboard
+   ```bash
+   plans-init /path/to/your/project
+   ```
 
-Start any local file server from your project root, then open `http://localhost:8080/plans/roadmap.html`:
+3. Tell your assistant about it: append [`template/CLAUDE.md.snippet`](template/CLAUDE.md.snippet) to your `CLAUDE.md`, `AGENTS.md`, or `.cursorrules` (`plans-init` offers this automatically).
+
+### Then, on either path
+
+Open the dashboard (any static file server from your project root, then `/plans/roadmap.html`):
 
 ```bash
 python -m http.server 8080   # Python 3
@@ -87,20 +93,7 @@ npx serve -l 8080            # Node.js
 php -S localhost:8080        # PHP
 ```
 
-### 5. Edit your first plan
-
-Open `plans/active/EXAMPLE_PLAN.md`, replace it with your real first plan, and add a row to `plans/STATUS.md`.
-
-### Just want to look at the skill first?
-
-The `/plans` skill is also a Claude Code plugin, so you can try it without cloning anything:
-
-```bash
-/plugin marketplace add yrangana/Plans
-/plugin install plans@yrangana-plans
-```
-
-This installs the skill only: no `plans/` directory, no dashboard, no `STATUS.md`. Running `/plans` in a project that has not been set up prints the instructions above and stops. Full setup is still steps 1 and 2.
+Edit your first plan: open `plans/active/EXAMPLE_PLAN.md`, replace it with your real first plan, and add a row to `plans/STATUS.md`.
 
 ---
 
