@@ -4,18 +4,21 @@ Audit `plans/` for drift, regenerate derived files, propose fixes. Never write w
 
 ## Prerequisites
 
-**1. Check for `plans/`:**
+**1. Check for `plans/`** (delivery per the delivery rule in SKILL.md):
 
-```
+```text
 if plans/ does not exist in the project root:
-  print:
-    "No plans/ directory found in this project."
-    "Set it up with:"
-    ""
-    "  curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash"
-    "  plans-init"
-    ""
-    "Or visit https://github.com/yrangana/Plans for full instructions."
+  if PLUGIN delivery:
+    print: "No plans/ directory found in this project. Run /plans:plans init to set it up."
+  else:
+    print:
+      "No plans/ directory found in this project."
+      "Set it up with:"
+      ""
+      "  curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash"
+      "  plans-init"
+      ""
+      "Or visit https://github.com/yrangana/Plans for full instructions."
   stop.
 ```
 
@@ -53,22 +56,33 @@ if git is not available or not a git repo:
 
 ---
 
-## Step 0: Version check
+## Step 0: Version and freshness check
 
-A best-effort check that the installed skill is current. This step must never block sync.
+Best-effort, delivery-aware (the delivery rule in SKILL.md). This step must never block sync.
+
+**Plugin delivery:**
+
+1. Skill updates are managed by Claude Code. Do not fetch VERSION from GitHub.
+2. Instead check system-file freshness: compare `plans/roadmap.html` and `plans/README.md` against `<plugin-root>/template/plans/`. If either differs, print one line and proceed:
+   ```text
+   Note: project system files differ from the installed plugin version.
+         Run /plans:plans update to refresh them.
+   ```
+
+**Project-local delivery:**
 
 1. Read the `version:` field from this skill's `SKILL.md` frontmatter (one directory up from this file).
 2. Fetch the latest published version: `https://raw.githubusercontent.com/yrangana/Plans/main/VERSION` (short timeout).
 3. Compare:
    - **Any failure** (offline, non-200, timeout, missing or unparseable version on either side): print nothing. Proceed to Step 1.
    - **Installed version is behind**: print one line, then proceed to Step 1:
-     ```
+     ```text
      Note: plans skill v{installed} is installed, v{latest} is available.
            Run plans-update to upgrade, then re-run /plans sync.
      ```
    - **Installed version is current or ahead**: print nothing. Proceed to Step 1.
 
-The check is informational only. It never aborts sync, never prompts, and never writes anything.
+The check is informational only. It never aborts sync, never prompts, and never writes anything. Sync never rewrites system files itself; it only suggests the update mode.
 
 ---
 
