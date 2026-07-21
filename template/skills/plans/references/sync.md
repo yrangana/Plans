@@ -26,7 +26,10 @@ if plans/ does not exist in the project root:
 
 ```
 if plans/STATUS.md is missing:
-  print: "plans/STATUS.md not found. Re-run plans-init or check https://github.com/yrangana/Plans"
+  print:
+    "plans/STATUS.md not found. It is user data, not a system file, so no command restores it."
+    "Recover it from version control, or recreate it using the structure at"
+    "https://github.com/yrangana/Plans"
   stop.
 
 if plans/active/ does not exist:
