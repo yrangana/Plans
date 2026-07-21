@@ -26,10 +26,7 @@ if plans/ does not exist in the project root:
 
 ```text
 if plans/active/ does not exist:
-  if PLUGIN delivery:
-    print: "plans/active/ not found. Run /plans:plans init (or /plans:plans update to restore system files)."
-  else:
-    print: "plans/active/ not found. Re-run plans-init or check https://github.com/yrangana/Plans"
+  print: "plans/active/ not found. Create it with: mkdir -p plans/active"
   stop.
 ```
 
