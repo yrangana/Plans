@@ -50,7 +50,20 @@ Copy every file as-is. Do not edit, fill in, or personalize any of them.
 "Track plans/ in git, or keep it local to this machine? (default: local)"
 ```
 
-- **Local** (default): append the line `plans/` to `.git/info/exclude`. Create the file if missing. Skip the append if the line is already present.
+- **Local** (default):
+  1. Attempt to append the line `plans/` to `.git/info/exclude`. Create the file if missing. Skip the append if the line is already present.
+  2. Read `.git/info/exclude` back and confirm a line `plans/` is present.
+  3. If confirmed, say so plainly: "plans/ is excluded via .git/info/exclude."
+  4. If NOT confirmed (the write was blocked, deferred, or only printed for the user to run), do not claim success. Print a warning that cannot be mistaken for a completed action, for example:
+     ```text
+     WARNING: plans/ is NOT yet excluded from git.
+     The write to .git/info/exclude did not go through.
+     Run this yourself before committing anything in plans/:
+
+       echo "plans/" >> .git/info/exclude
+
+     Until you run it, plans/ will be picked up by git add / git commit.
+     ```
 - **Tracked**: change nothing. Confirm: "plans/ will be tracked in git."
 
 If the project is not a git repository: skip the question, note "Not a git repository: skipped git exclusion."

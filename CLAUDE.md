@@ -49,6 +49,7 @@ plans/
 ├── scripts/
 │   ├── init.sh                  # Bootstraps plans/ and installs skill in a target project
 │   └── update.sh                # Updates system files (roadmap.html, README.md, skill)
+├── .claude-plugin/              # Claude Code plugin manifest, delivers /plans as the primary path
 ├── web/                         # GitHub Pages site (deployed by .github/workflows)
 │   ├── index.html               # Landing page
 │   ├── roadmap.html             # Live roadmap demo (inline data)
@@ -182,7 +183,7 @@ Either choice is valid. Decide deliberately, document the decision.
 
 ## What this repo is not
 
-- Not a CLI tool (init.sh is a 30-line bash script, not a Node/Python package)
+- Not a CLI tool (init.sh is a ~150-line bash script, not a Node/Python package)
 - Not a GitHub action or hook (could be added if requested)
 - Not opinionated about your AI assistant choice (works with any)
 - Not a replacement for project management tools (see scope in `README.md`)

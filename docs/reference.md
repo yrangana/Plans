@@ -593,7 +593,7 @@ Update ownership differs by path:
 - Plugin skill: lives in Claude Code's plugin cache, updated via `/plugin`. Project system files are refreshed by `/plans:plans update`, which sources the installed version.
 - Project-local skill (installed by `plans-init`): lives at `.claude/skills/plans/` or `.agents/skills/plans/`, updated by `plans-update` along with system files.
 
-Prefer one path per project, not both.
+Tested on a clean install: `/plans` resolves to the project-local copy at `.claude/skills/plans/SKILL.md`, and `/plans:plans` resolves to the bundled plugin copy. The two are separate commands, not competitors for one name, so having both installed is harmless. It does mean two copies to keep in sync, and `plans-update` only manages the project-local one.
 
 ### Versioning
 
