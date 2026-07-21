@@ -273,7 +273,7 @@ section { padding-block: 120px; }
 .install { background: var(--bg); }
 .install-hero { margin-block-end: 64px; }
 .install-notes { margin: 0 0 32px; display: flex; flex-direction: column; gap: 10px; padding-inline-start: 18px; }
-.install-notes span { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-mute); line-height: 1.5; }
+.install-notes span { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 14px; color: var(--ink-mute); line-height: 1.5; }
 .install-notes span::before { content: ""; display: inline-block; width: 2px; height: 12px; background: var(--accent); border-radius: 1px; flex-shrink: 0; }
 .install-notes code { font-family: var(--font-mono); font-size: 12px; color: var(--ink); background: var(--surface); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; }
 .install-hero .eyebrow { margin-block-end: 14px; }
@@ -297,7 +297,7 @@ section { padding-block: 120px; }
 .copy-btn:hover { background: rgba(255,255,255,0.14); }
 .copy-btn.copied { background: rgba(52,199,123,0.14); color: #34c77b; border-color: rgba(52,199,123,0.3); }
 .copy-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
-.install-grid { display: grid; grid-template-columns: 1fr 1.12fr; gap: 56px; align-items: start; }
+.install-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr); gap: 56px; align-items: start; }
 .install-steps-v { margin: 0; padding: 0; list-style: none; }
 .install-steps-v li { position: relative; padding-block: 0 28px; padding-inline-start: 46px; }
 .install-steps-v li:last-child { padding-block-end: 0; }
@@ -396,7 +396,7 @@ section { padding-block: 120px; }
   .pipe-line-wrap { flex: 0 0 auto; align-self: center; }
   .pipe-line { height: 1px; width: 0%; flex: 0 0 56px; }
   .pipeline-connector.pipe-active .pipe-line { width: 56px; }
-  .install-grid { grid-template-columns: 1fr; gap: 32px; }
+  .install-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .terminal { position: static; }
   .demo-window iframe { height: 540px; }
   .nav-links { display: none; }
