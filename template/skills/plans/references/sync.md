@@ -8,7 +8,7 @@ Audit `plans/` for drift, regenerate derived files, propose fixes. Never write w
 
 ```text
 if plans/ does not exist in the project root:
-  if PLUGIN delivery:
+  if BUNDLED delivery:
     print: "No plans/ directory found in this project. Run /plans:plans init to set it up."
   else:
     print:
@@ -63,7 +63,7 @@ if git is not available or not a git repo:
 
 Best-effort, delivery-aware (the delivery rule in SKILL.md). This step must never block sync.
 
-**Plugin delivery:**
+**BUNDLED delivery:**
 
 1. Skill updates are managed by Claude Code. Do not fetch VERSION from GitHub.
 2. Instead check system-file freshness: compare `plans/roadmap.html` and `plans/README.md` against `<plugin-root>/template/plans/`. If either differs, print one line and proceed:
@@ -72,7 +72,7 @@ Best-effort, delivery-aware (the delivery rule in SKILL.md). This step must neve
          Run /plans:plans update to refresh them.
    ```
 
-**Project-local delivery:**
+**STANDALONE delivery:**
 
 1. Read the `version:` field from this skill's `SKILL.md` frontmatter (one directory up from this file).
 2. Fetch the latest published version: `https://raw.githubusercontent.com/yrangana/Plans/main/VERSION` (short timeout).

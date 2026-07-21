@@ -7,7 +7,7 @@ Bootstrap `plans/` in the current project from the template bundled with the plu
 **1. Delivery check** (the delivery rule in SKILL.md):
 
 ```text
-if PROJECT-LOCAL delivery:
+if STANDALONE delivery:
   print:
     "This skill copy has no bundled template. Bootstrap with the CLI instead:"
     ""
@@ -68,7 +68,7 @@ Next steps:
      /plans/roadmap.html
 ```
 
-where `{invocation}` is the spelling from the delivery rule (`/plans:plans` here, since this mode only runs plugin-delivered).
+where `{invocation}` is the spelling from the delivery rule (`/plans:plans` here, since this mode only runs under BUNDLED delivery).
 
 ## Behaviour contract
 

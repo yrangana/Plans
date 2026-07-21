@@ -7,7 +7,7 @@ Refresh project system files from the template bundled with the installed plugin
 **1. Delivery check** (the delivery rule in SKILL.md):
 
 ```text
-if PROJECT-LOCAL delivery:
+if STANDALONE delivery:
   print: "This skill copy has no bundled template. Use the plans-update script instead."
   stop.
 ```

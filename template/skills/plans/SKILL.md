@@ -19,10 +19,13 @@ If invoked with no argument or an unrecognized one, list the four modes and ask 
 
 ## Delivery detection
 
-Every mode needs to know how this skill was delivered. Determine it once, from the absolute path of this SKILL.md:
+Every mode needs to know whether a bundled template is reachable, not merely which directory this skill copy lives in. Determine it once, from the absolute path of this SKILL.md:
 
-- Path contains `/plugins/cache/`: **plugin** delivery. The plugin root is the ancestor directory that directly contains `template/`. The bundled template is at `<plugin-root>/template/plans/`. Invocation spelling for messages: `/plans:plans`.
-- Otherwise (under `.claude/skills/` or `.agents/skills/` in a project): **project-local** delivery. There is no bundled template. Invocation spelling for messages: `/plans`.
+1. Resolve the plugin root: walk up from this file's directory until an ancestor directory directly contains a `template/` subdirectory. That ancestor is the plugin root.
+2. Check whether `<plugin-root>/template/plans/` exists.
+
+- Found: **BUNDLED** delivery. The bundled template is at `<plugin-root>/template/plans/`. This covers both a real marketplace install (the plugin root sits under `.../plugins/cache/...`) and a local checkout loaded with `claude --plugin-dir <path>` (the plugin root is the checkout itself). Invocation spelling for messages: `/plans:plans`.
+- Not found (no ancestor contains `template/`, as when the skill was copied into a project by `scripts/init.sh` and sits at `.claude/skills/plans/` or `.agents/skills/plans/`): **STANDALONE** delivery. There is no bundled template. Invocation spelling for messages: `/plans`.
 
 ## init
 

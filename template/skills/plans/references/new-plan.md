@@ -8,7 +8,7 @@ Guided creation of a new plan file with correct structure. Guarantees format cor
 
 ```text
 if plans/ does not exist in the project root:
-  if PLUGIN delivery:
+  if BUNDLED delivery:
     print: "No plans/ directory found in this project. Run /plans:plans init to set it up."
   else:
     print:
