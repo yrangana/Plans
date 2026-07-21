@@ -13,6 +13,7 @@ A shareable spec-driven planning convention. The repo contains:
 - **Documentation** explaining the system (`README.md`, `docs/`)
 - **A drop-in template** users copy into their own projects (`template/plans/`)
 - **A bootstrap script** that automates the copy (`scripts/init.sh`)
+- **A Claude Code plugin** (`.claude-plugin/`) that delivers the `/plans` skill as the primary adoption path; the scripts remain the fallback for other assistants
 - **A static site** rendered by GitHub Pages from `web/` (landing page, live roadmap demo, status demo, slides, docs)
 - **Static assets** used by the README (`examples/demo.svg`, screenshots)
 
@@ -97,13 +98,22 @@ Run these from the repo root.
    # verify plans/ exists, .git/info/exclude has plans/, roadmap.html opens
    ```
 
-2. **Test the demo locally:**
+2. **Smoke the plugin skill:**
+   ```bash
+   cd /tmp && rm -rf plugin-smoke && mkdir plugin-smoke && cd plugin-smoke && git init
+   claude --plugin-dir /path/to/plans-repo --add-dir /path/to/plans-repo -p "/plans:plans init"
+   # --add-dir is required: the skill reads its reference files from the plugin directory,
+   # which sits outside the test project's working directory, and without it the read is blocked
+   # expect: template copied or the one git question asked; no instruction-file writes
+   ```
+
+3. **Test the demo locally:**
    ```bash
    (cd web && python -m http.server 8080)
    # open http://localhost:8080/ and verify the landing page, roadmap, status, slides, and docs render
    ```
 
-3. **Lint check:** open the changed `.md` files in VSCode and confirm no warnings in the Problems panel.
+4. **Lint check:** open the changed `.md` files in VSCode and confirm no warnings in the Problems panel.
 
 ---
 
