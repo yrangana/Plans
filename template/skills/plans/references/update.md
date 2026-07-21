@@ -35,7 +35,7 @@ if plans/ does not exist in the project root:
 - Different: report `~ plans/<file> (update available)` and show a short summary of what changed (first ~40 lines of a unified diff is enough).
 - Missing from the project: report `+ plans/<file> (missing, will be restored)`.
 
-**2. Confirm per file.** For each file with a change: ask "Update plans/<file>? (y/n)". Never batch-apply without asking.
+**2. Confirm per file.** For each file that is different or missing: ask "Update plans/<file>? (y/n)". Never batch-apply without asking.
 
 **3. Apply.** For each confirmed file: copy the existing project file to `plans/<file>.bak` (skip the backup if the project file is missing), then copy the template file over it. Report each write.
 
