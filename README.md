@@ -18,7 +18,7 @@ The primary audience is **you**, the person doing the work. The structure exists
 
 The data model is plain markdown and JSON. On the script path, the instruction file (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`) is how you tell your assistant the system exists, and it's the one thing that changes per platform. On the plugin path, no instruction-file change is needed at all, since the installed plugin is itself the assistant integration.
 
-I built this for myself and use it daily across my own projects. It's MIT, ~300 lines total, and ships with everything you need including a Claude Code plugin, a CLI, a dashboard, and a `/plans sync` skill that audits your plans against your git log weekly.
+I built this for myself and use it daily across my own projects. It's MIT, small and readable end to end, and ships with everything you need including a Claude Code plugin, a CLI, a dashboard, and a `/plans sync` skill that audits your plans against your git log weekly.
 
 **Where this sits in the wider trend:** AI-assisted development is shifting toward spec-driven workflows, where the spec is a first-class artifact your assistant reads and writes against. Tools like GitHub's Spec Kit handle the per-feature spec workflow. Plans is the portfolio layer that sits alongside: the multi-feature view of what's active, what shipped, what got abandoned, and what blocks what. Different layer, same shift.
 
@@ -57,7 +57,7 @@ Full scope and audience details in [docs/reference.md](docs/reference.md).
 
 ### Claude Code (plugin, recommended)
 
-```bash
+```text
 /plugin marketplace add yrangana/Plans
 /plugin install plans@yrangana-plans
 /plans:plans init
@@ -105,7 +105,7 @@ How you update depends on how you installed. Plugin installs update through `/pl
 
 Updates come through `/plugin`. Refresh your project's system files (`roadmap.html`, `plans/README.md`) any time with:
 
-```bash
+```text
 /plans:plans update
 ```
 
@@ -220,12 +220,12 @@ The thing that makes this convention actually hold up over time: plans describe 
 
 It's a Claude Code slash command (with Antigravity and Cursor ports) with four modes:
 
-- **`/plans init`**: bootstraps `plans/` in a project from the bundled template.
+- **`/plans init`**: bootstraps `plans/` in a project from the bundled template (plugin installs; `plans-init` covers this on the script path).
 - **`/plans sync`**: weekly audit. Reads every plan's frontmatter, runs `git log`, runs 13 drift rules (stale plans, missing ETAs, orphaned dependencies, frontmatter contradictions, project header gaps), and proposes fixes as a diff. You review and confirm in about 2 minutes. Regenerates `plans.json` and the auto-managed sections of `STATUS.md`.
 - **`/plans new`**: guided creation of a new plan file with correct frontmatter, status banner, and timeline.
-- **`/plans update`**: refreshes system files (`roadmap.html`, `plans/README.md`) from the installed skill version.
+- **`/plans update`**: refreshes system files (`roadmap.html`, `plans/README.md`) from the installed skill version (plugin installs; `plans-update` covers this on the script path).
 
-Installed automatically by `plans-init`. See [docs/reference.md](docs/reference.md) for the full drift-rule list.
+`plans-init` installs the skill automatically, but `init` and `update` only run under a plugin install; on the script path, `plans-init` and `plans-update` cover those two jobs directly. See [docs/reference.md](docs/reference.md) for the full drift-rule list.
 
 ---
 

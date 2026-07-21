@@ -24,7 +24,7 @@ if plans/ does not exist in the project root:
 
 **2. Check required files:**
 
-```
+```text
 if plans/STATUS.md is missing:
   print:
     "plans/STATUS.md not found. It is user data, not a system file, so no command restores it."
@@ -39,7 +39,7 @@ if plans/active/ does not exist:
 
 **3. Check for git:**
 
-```
+```text
 if git is not available or not a git repo:
   print: "Git not available. Skipping commit-based drift detection. Frontmatter validation will still run."
   proceed without git-based rules (Rules 3, 4, 5).
@@ -91,7 +91,7 @@ The check is informational only. It never aborts sync, never prompts, and never 
 
 ## Step 1: Read
 
-```
+```text
 plans/STATUS.md          (extract last-updated date from line 2: *Last updated: YYYY-MM-DD*)
 plans/active/*.md        (extract frontmatter + ## Status banner from each file)
 plans/shipped/*.md       (extract frontmatter only, for dependency validation)
@@ -117,7 +117,7 @@ Run all 13 rules from `drift-rules.md`. Collect every finding before reporting.
 
 ## Step 3: Report
 
-```
+```text
 === /plans sync findings ===
 
 ERRORS (must fix):
@@ -160,7 +160,7 @@ Show a one-line diff summary: `plans.json: N plans, X changed, Y added, Z remove
 
 Regenerate only the sections between the auto-generated markers:
 
-```
+```text
 <!-- AUTO-GENERATED from plans/plans.json -->
 ...
 <!-- END AUTO-GENERATED -->
@@ -182,7 +182,7 @@ Show a summary of what changed in each table.
 
 ## Step 6: Confirm and Apply
 
-```
+```text
 Apply these changes? (y/n/select)
   y      apply all
   n      apply nothing

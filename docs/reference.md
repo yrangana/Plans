@@ -423,7 +423,7 @@ new      guided creation of a new plan file with correct structure
 update   refresh system files from the installed version (plugin installs only)
 ```
 
-The skill detects its own delivery (plugin cache path vs project-local path) and adapts: modes that need the bundled template stop with instructions on project-local copies, where `plans-init` and `plans-update` cover the same jobs.
+The skill detects whether a bundled template is reachable, not merely which directory this skill copy lives in, and adapts: modes that need the bundled template stop with instructions when none is found, where `plans-init` and `plans-update` cover the same jobs.
 
 ### /plans sync
 
@@ -578,7 +578,7 @@ If you customize a system file (e.g., your own colour scheme in `roadmap.html`),
 
 The plugin is the primary way to adopt Plans on Claude Code:
 
-```bash
+```text
 /plugin marketplace add yrangana/Plans
 /plugin install plans@yrangana-plans
 /plans:plans init

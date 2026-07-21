@@ -25,7 +25,7 @@ Every mode needs to know whether a bundled template is reachable, not merely whi
 2. Check whether `<plugin-root>/template/plans/` exists.
 
 - Found: **BUNDLED** delivery. The bundled template is at `<plugin-root>/template/plans/`. This covers both a real marketplace install (the plugin root sits under `.../plugins/cache/...`) and a local checkout loaded with `claude --plugin-dir <path>` (the plugin root is the checkout itself). Invocation spelling for messages: `/plans:plans`.
-- Not found (no ancestor contains `template/`, as when the skill was copied into a project by `scripts/init.sh` and sits at `.claude/skills/plans/` or `.agents/skills/plans/`): **STANDALONE** delivery. There is no bundled template. Invocation spelling for messages: `/plans`.
+- Not found (`<plugin-root>/template/plans/` does not exist, whether because no ancestor contains a `template/` directory at all, or an ancestor's `template/` exists but has no `plans/` subdirectory, as can happen when a project-local skill copied by `scripts/init.sh` sits inside a project that itself has its own unrelated `template/` directory): **STANDALONE** delivery. There is no bundled template. Invocation spelling for messages: `/plans`.
 
 ## init
 

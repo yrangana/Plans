@@ -68,7 +68,25 @@ Copy every file as-is. Do not edit, fill in, or personalize any of them.
 
 If the project is not a git repository: skip the question, note "Not a git repository: skipped git exclusion."
 
-**3. Finish.** Print:
+**3. Finish.**
+
+If Local was chosen in Step 2 and the exclusion was NOT confirmed: do not print an unqualified success line. Lead with the unresolved warning, then the same next steps:
+
+```text
+WARNING: plans/ is NOT yet excluded from git. Run this before committing
+anything in plans/:
+
+  echo "plans/" >> .git/info/exclude
+
+Next steps:
+  1. Read plans/README.md
+  2. Run {invocation} new to create your first plan
+     (or edit plans/active/EXAMPLE_PLAN.md directly)
+  3. Dashboard: run any static file server from the project root and open
+     /plans/roadmap.html
+```
+
+Otherwise (exclusion confirmed, Tracked was chosen, or the project is not a git repository), print:
 
 ```text
 plans/ is ready.
