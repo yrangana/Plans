@@ -574,16 +574,22 @@ Create a plan: /plans new</code></pre>
     <!-- 11. Closing — single clear call to action -->
     <section class="title-slide deck">
       <div class="brand-mark"><span class="dot"></span> Plans</div>
-      <h1>Two commands.<br>Try it on your current project.</h1>
-      <pre style="max-width:640px; margin:24px auto 0; text-align:left"><code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+      <h1>A couple of minutes.<br>Try it on your current project.</h1>
+      <pre style="max-width:640px; margin:24px auto 0; text-align:left"><code># Claude Code
+/plugin marketplace add yrangana/Plans
+/plugin install plans@yrangana-plans
+/plans:plans init
+
+# Cursor, Antigravity, Windsurf
+curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
 plans-init /path/to/your/project</code></pre>
       <div class="closing-grid">
         <div class="panel">
-          <h4>Live demo — dashboard</h4>
+          <h4>Live demo: dashboard</h4>
           <p><a href="roadmap.html" target="_blank">yrangana.github.io/Plans/roadmap.html</a></p>
         </div>
         <div class="panel">
-          <h4>Live demo — STATUS.md</h4>
+          <h4>Live demo: STATUS.md</h4>
           <p><a href="status.html" target="_blank">yrangana.github.io/Plans/status.html</a></p>
         </div>
         <div class="panel">
