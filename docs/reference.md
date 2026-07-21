@@ -414,12 +414,16 @@ To create a new plan file with correct structure, run `/plans new`.
 
 ## /plans Skill Spec
 
-A slash command (Claude Code) or equivalent skill (Antigravity, Cursor) with two modes.
+A slash command (Claude Code) or equivalent skill (Antigravity, Cursor) with four modes. Plugin installs are invoked `/plans:plans <mode>` (Claude Code namespaces plugin skills as `plugin:skill`); project-local installs are invoked `/plans <mode>`. Same skill, same modes, both spellings below refer to the same thing.
 
+```text
+init     bootstrap plans/ from the bundled template (plugin installs only)
+sync     audit plans/ for drift, regenerate derived files, propose fixes
+new      guided creation of a new plan file with correct structure
+update   refresh system files from the installed version (plugin installs only)
 ```
-/plans sync   audit plans/ for drift, regenerate derived files, propose fixes
-/plans new    guided creation of a new plan file with correct structure
-```
+
+The skill detects its own delivery (plugin cache path vs project-local path) and adapts: modes that need the bundled template stop with instructions on project-local copies, where `plans-init` and `plans-update` cover the same jobs.
 
 ### /plans sync
 
@@ -479,6 +483,14 @@ When regenerating `plans.json`, `/plans sync` preserves the existing `project` h
 
 Guided creation of a new plan file. Asks: name, type, priority, depends_on, blocks, owner, timeline (start date and an effort estimate in days). Writes `plans/active/NAME.md` with correct frontmatter and status banner template, including `start_date` and a resolved `eta`. Reminds the user to add a row to `plans/STATUS.md`. Does not set `in_flight: true`.
 
+### /plans init
+
+Plugin installs only. Copies the bundled `template/plans/` into the project root, asks one question (track `plans/` in git or keep it local, default local, written to `.git/info/exclude`), and points at `new`. Never overwrites an existing `plans/` and never appends to instruction files: the installed plugin is the assistant integration. Project-local copies print the `plans-init` instructions instead.
+
+### /plans update
+
+Plugin installs only. Diffs `plans/roadmap.html` and `plans/README.md` against the bundled template, prompts per file, writes `<file>.bak` before overwriting. Never touches user data (`STATUS.md`, `plans.json`, `active/`, `shipped/`, `superseded/`). Updates to exactly the installed plugin version, never from the network. Project-local copies print the `plans-update` instructions instead. `sync` suggests this mode when system files are stale, but never runs it.
+
 ---
 
 ## Platform Portability
@@ -488,7 +500,7 @@ Guided creation of a new plan file. Asks: name, type, priority, depends_on, bloc
 | Component | Claude Code | Antigravity | Cursor |
 |---|---|---|---|
 | Instruction file | `CLAUDE.md` | `AGENTS.md` | `.cursorrules` |
-| Skill location | `.claude/skills/plans/` | `.agents/skills/plans/` | Custom commands |
+| Skill location | Plugin cache (via /plugin) or .claude/skills/plans/ | `.agents/skills/plans/` | Custom commands |
 | `plans/` directory | Identical | Identical | Identical |
 | `plans.json` | Identical | Identical | Identical |
 | `roadmap.html` | Identical | Identical | Identical |
@@ -562,23 +574,26 @@ What it does:
 
 If you customize a system file (e.g., your own colour scheme in `roadmap.html`), expect updates to overwrite it. Restore from `<file>.bak` if needed, or run with `--no-pull` to inspect changes before they're fetched.
 
-### Claude Code plugin (skill only)
+### Claude Code plugin (primary path)
 
-The `/plans` skill is also published as a Claude Code plugin, so it can be found through `/plugin` discovery without cloning anything first:
+The plugin is the primary way to adopt Plans on Claude Code:
 
 ```bash
 /plugin marketplace add yrangana/Plans
 /plugin install plans@yrangana-plans
+/plans:plans init
 ```
 
-This is a discovery entry point, not a second way to adopt the system. It delivers the `/plans` skill and nothing else: no `plans/` directory, no `STATUS.md`, no `plans.json`, no dashboard. Running `/plans sync` or `/plans new` in a project with no `plans/` directory prints the setup instructions and stops.
+Three steps: add the marketplace, install, bootstrap. `init` copies the bundled template into your project and asks whether to track `plans/` in git (default: keep it local). No CLI, no clone, no instruction-file edits.
 
-Full adoption still goes through the one-liner installer and `plans-init` above. The two paths differ in who owns updates:
+Note on first use: the skill reads its reference files from the plugin cache, so Claude Code asks for permission to read that directory the first time a mode runs. Approve it once per project.
 
-- Project-local skill (installed by `plans-init`): lives at `.claude/skills/plans/` or `.agents/skills/plans/`, updated by `plans-update`.
-- Plugin skill: lives in Claude Code's plugin cache, pinned to a commit SHA, updated by Claude Code via `/plugin`. `plans-update` cannot see or update it, and says so when no project-local copy is present.
+Update ownership differs by path:
 
-If both are installed, the project-local copy is the one `plans-update` manages. Prefer one or the other in a given project rather than both.
+- Plugin skill: lives in Claude Code's plugin cache, updated via `/plugin`. Project system files are refreshed by `/plans:plans update`, which sources the installed version.
+- Project-local skill (installed by `plans-init`): lives at `.claude/skills/plans/` or `.agents/skills/plans/`, updated by `plans-update` along with system files.
+
+Prefer one path per project, not both.
 
 ### Versioning
 
