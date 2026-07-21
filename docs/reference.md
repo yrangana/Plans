@@ -588,6 +588,8 @@ Three steps: add the marketplace, install, bootstrap. `init` copies the bundled 
 
 Note on first use: the skill reads its reference files from the plugin cache, so Claude Code asks for permission to read that directory the first time a mode runs. Approve it once per project.
 
+The plugin also ships a `SessionStart` hook (`hooks/plans-context.sh`, registered in `hooks/hooks.json`) that injects the same non-deferrable operational rules the script path gets from `template/CLAUDE.md.snippet`: read `plans/STATUS.md` at session start, write plans only into `plans/active/`, never hand-edit `plans/plans.json`, and update a plan's `## Status` banner and `last_updated` before ending a session that touched its code. The hook only emits this context when the current directory contains a `plans/` directory; in any other project it prints nothing, so unrelated sessions are unaffected. This is a plugin-only mechanism: it relies on `hookSpecificOutput.additionalContext` reaching the model's context, which is not clearly documented by Claude Code's official docs but was verified by manual test before shipping. Script-path users do not get this hook; they get the equivalent rules because `scripts/init.sh` appends `template/CLAUDE.md.snippet` directly to their CLAUDE.md.
+
 Update ownership differs by path:
 
 - Plugin skill: lives in Claude Code's plugin cache, updated via `/plugin`. Project system files are refreshed by `/plans:plans update`, which sources the installed version.

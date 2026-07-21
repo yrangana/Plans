@@ -12,6 +12,17 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.6.0
+
+Closes a gap between the two adoption paths. On the script path, `scripts/init.sh` appends `template/CLAUDE.md.snippet` to the user's CLAUDE.md, and that snippet carries ambient operational rules (write plans only into `plans/active/`, never hand-edit `plans/plans.json`, update a plan's status banner before ending a session that touched its code, read `plans/STATUS.md` at session start) that apply even when the skill is never invoked. The plugin path had no equivalent: skills only load on invocation, so plugin users silently lost all of those rules unless they happened to run `/plans:plans`.
+
+- `hooks/plans-context.sh`: new. A `SessionStart` hook that prints `{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"..."}}` on stdout, carrying a condensed version of the snippet's non-deferrable rules. Guarded on the current directory containing a `plans/` directory: without that guard, every session in every unrelated project would get these rules injected, which is context pollution. Exits 0 always, emits nothing when the guard fails, never prompts or writes.
+- `hooks/hooks.json`: new. Registers the hook for `SessionStart` with matcher `startup`, invoked via `$CLAUDE_PLUGIN_ROOT/hooks/plans-context.sh`.
+- `.claude-plugin/plugin.json`: adds `"hooks": "./hooks/hooks.json"`.
+- The mechanism (`hookSpecificOutput.additionalContext` reaching the model's context) is not clearly documented by Claude Code's official docs. Verified by manual test on a clean VM before implementing: a hook emitting a made-up marker in `additionalContext` caused the model to report that marker back. Treat this behavior as verified-by-test rather than a documented guarantee.
+- Script path unchanged: `scripts/init.sh`, `scripts/update.sh`, and `template/CLAUDE.md.snippet` are untouched. Script-path adopters keep getting the equivalent rules through the snippet already appended to their CLAUDE.md.
+- `docs/reference.md`: documents the hook in the plugin section, what it injects, the `plans/`-presence guard, and the script-path equivalent.
+
 ## v0.5.0
 
 Makes the Claude Code plugin the primary, self-sufficient adoption path. The skill gains `init` and `update` modes, so a plugin install alone now delivers a working system. v0.4.0 shipped the plugin as a pointer to the CLI; this release removes that dependency. Scripts remain the documented fallback for Cursor, Antigravity, Windsurf, and no-plugin setups.
