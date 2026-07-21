@@ -273,12 +273,23 @@ section { padding-block: 120px; }
 .install { background: var(--bg); }
 .install-hero { margin-block-end: 64px; }
 .install-notes { margin: 0 0 32px; display: flex; flex-direction: column; gap: 10px; padding-inline-start: 18px; }
-.install-notes span { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-mute); line-height: 1.5; }
+.install-notes span { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 14px; color: var(--ink-mute); line-height: 1.5; }
 .install-notes span::before { content: ""; display: inline-block; width: 2px; height: 12px; background: var(--accent); border-radius: 1px; flex-shrink: 0; }
 .install-notes code { font-family: var(--font-mono); font-size: 12px; color: var(--ink); background: var(--surface); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; }
 .install-hero .eyebrow { margin-block-end: 14px; }
 .install-hero h2 { font-size: clamp(34px, 4vw, 48px); font-weight: 600; letter-spacing: -0.022em; line-height: 1.06; margin: 0 0 10px; }
 .install-hero p { font-size: 19px; color: var(--ink-mute); letter-spacing: -0.018em; line-height: 1.5; margin: 0 0 32px; max-width: 54ch; }
+.install-tabs { position: relative; display: inline-flex; gap: 2px; padding: 3px; margin: 4px 0 26px; background: rgba(0,0,0,0.045); border: 1px solid var(--border); border-radius: 10px; }
+.install-tabs-thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); background: var(--surface); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.14), 0 1px 1px rgba(0,0,0,0.05); transition: transform 220ms cubic-bezier(0.4,0,0.2,1); }
+.install-tabs.is-cli .install-tabs-thumb { transform: translateX(100%); }
+.install-tab { position: relative; z-index: 1; appearance: none; border: none; background: transparent; font-family: var(--font-body); font-size: 13px; font-weight: 500; letter-spacing: -0.012em; color: var(--ink-mute); padding: 7px 18px; border-radius: 8px; cursor: pointer; transition: color 160ms ease; }
+.install-tab:hover { color: var(--ink); }
+.install-tab[aria-selected="true"] { color: var(--ink); }
+.install-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.install-track[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .install-tabs-thumb { transition: none; }
+}
 .install-cmd-block { position: relative; background: var(--dark-surface); border: 1px solid var(--dark-border); border-radius: 12px; padding: 20px 20px 20px 24px; display: flex; align-items: center; gap: 16px; }
 .install-cmd-block code { font-family: var(--font-mono); font-size: 13.5px; color: var(--dark-ink); letter-spacing: -0.005em; flex: 1; word-break: break-all; }
 .install-cmd-block code .cmd-prefix { color: var(--dark-ink-mute); user-select: none; margin-inline-end: 8px; }
@@ -286,7 +297,7 @@ section { padding-block: 120px; }
 .copy-btn:hover { background: rgba(255,255,255,0.14); }
 .copy-btn.copied { background: rgba(52,199,123,0.14); color: #34c77b; border-color: rgba(52,199,123,0.3); }
 .copy-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
-.install-grid { display: grid; grid-template-columns: 1fr 1.12fr; gap: 56px; align-items: start; }
+.install-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr); gap: 56px; align-items: start; }
 .install-steps-v { margin: 0; padding: 0; list-style: none; }
 .install-steps-v li { position: relative; padding-block: 0 28px; padding-inline-start: 46px; }
 .install-steps-v li:last-child { padding-block-end: 0; }
@@ -300,7 +311,7 @@ section { padding-block: 120px; }
 .step-title { font-family: var(--font-display); font-size: 16px; font-weight: 500; letter-spacing: -0.018em; color: var(--ink); margin: 0 0 4px; padding-block-start: 3px; }
 .install-steps-v li strong { display: block; font-family: var(--font-display); font-size: 15px; font-weight: 500; letter-spacing: -0.018em; color: var(--ink); margin: 0 0 4px; padding-block-start: 3px; }
 .install-steps-v li p { font-size: 14px; color: var(--ink-mute); line-height: 1.55; margin: 0; }
-.install-steps-v li p code { font-family: var(--font-mono); font-size: 12.5px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+.install-steps-v li p code { font-family: var(--font-mono); font-size: 12.5px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; overflow-wrap: anywhere; }
 .step-desc { font-size: 14px; color: var(--ink-mute); letter-spacing: -0.012em; line-height: 1.5; margin: 0; }
 .step-desc code { font-family: var(--font-mono); font-size: 12px; background: var(--surface); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
 .terminal { background: var(--dark-surface); border-radius: 14px; border: 1px solid var(--dark-border); overflow: hidden; font-family: var(--font-mono); font-size: 13px; color: var(--dark-ink); line-height: 1.7; position: sticky; top: 70px; }
@@ -385,7 +396,7 @@ section { padding-block: 120px; }
   .pipe-line-wrap { flex: 0 0 auto; align-self: center; }
   .pipe-line { height: 1px; width: 0%; flex: 0 0 56px; }
   .pipeline-connector.pipe-active .pipe-line { width: 56px; }
-  .install-grid { grid-template-columns: 1fr; gap: 32px; }
+  .install-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .terminal { position: static; }
   .demo-window iframe { height: 540px; }
   .nav-links { display: none; }
@@ -688,15 +699,14 @@ section { padding-block: 120px; }
   <div class="container">
     <div class="install-hero">
       <p class="eyebrow" style="color:#0071e3;letter-spacing:0.08em;font-size:11.5px;text-transform:uppercase;font-family:var(--font-mono)">INSTALL</p>
-      <h2>One command. Then your AI knows.</h2>
-      <div class="install-notes">
-        <span>Claude Code: install the plugin, run <code>/plans:plans init</code></span>
-        <span>Updates arrive through <code>/plugin</code>, no re-clone</span>
-        <span>Other assistants: one curl, then <code>plans-init</code></span>
-        <span>Git-excluded by default, plans stay local</span>
+      <h2>Two paths in. Then your AI knows.</h2>
+      <div class="install-tabs" role="tablist" aria-label="Installation method">
+        <span class="install-tabs-thumb" aria-hidden="true"></span>
+        <button type="button" class="install-tab" role="tab" id="tab-claude" aria-selected="true" aria-controls="panel-claude" tabindex="0" data-track="claude">Claude Code</button>
+        <button type="button" class="install-tab" role="tab" id="tab-cli" aria-selected="false" aria-controls="panel-cli" tabindex="-1" data-track="cli">Other assistants</button>
       </div>
       <div class="install-cmd-block">
-        <code class="install-cmd-text">/plugin marketplace add yrangana/Plans</code>
+        <code class="install-cmd-text" id="install-cmd-text">/plugin marketplace add yrangana/Plans</code>
         <button class="copy-btn" id="copy-install-cmd" aria-label="Copy install command">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 9.5A1.5 1.5 0 0 0 2.5 11H4v1.5A1.5 1.5 0 0 0 5.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 12.5 4H11V2.5A1.5 1.5 0 0 0 9.5 1h-7A1.5 1.5 0 0 0 1 2.5v7zm4 1.5V4h5.5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V11h1.5zM2 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5V4H5.5A1.5 1.5 0 0 0 4 5.5V10H2.5a.5.5 0 0 1-.5-.5v-7z" fill="currentColor"></path></svg>
           <span class="copy-label">Copy</span>
@@ -704,37 +714,73 @@ section { padding-block: 120px; }
       </div>
     </div>
     <div class="install-grid">
-      <ol class="install-steps-v">
-        <li class="active" data-step="0">
-          <div class="step-node">1</div>
-          <strong>Install the plugin</strong>
-          <p>In Claude Code: <code>/plugin marketplace add yrangana/Plans</code>, then <code>/plugin install plans@yrangana-plans</code>. Other assistants: <code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash</code>.</p>
-        </li>
-        <li data-step="1">
-          <div class="step-node">2</div>
-          <strong>Bootstrap a project</strong>
-          <p>Run <code>/plans:plans init</code> (plugin) or <code>plans-init /path/to/project</code> (CLI). Creates <code>plans/</code> and keeps it out of git by default.</p>
-        </li>
-        <li data-step="2">
-          <div class="step-node">3</div>
-          <strong>Open the dashboard</strong>
-          <p>Run <code>npx serve .</code> in your project root, then open <code>localhost:3000/plans/roadmap.html</code>.</p>
-        </li>
-        <li data-step="3">
-          <div class="step-node">4</div>
-          <strong>Write your first plan</strong>
-          <p>Replace the example plan with a real one, or type <span class="ai-bubble">/plans new</span> in your AI assistant.</p>
-        </li>
-      </ol>
+      <div class="install-track" id="panel-claude" role="tabpanel" aria-labelledby="tab-claude">
+        <div class="install-notes">
+          <span>Install the plugin, run <code>/plans:plans init</code></span>
+          <span>Project rules load automatically via a session hook, no CLAUDE.md edit</span>
+          <span>Git-excluded by default, plans stay local</span>
+        </div>
+        <ol class="install-steps-v" data-track="claude">
+          <li class="active" data-step="0">
+            <div class="step-node">1</div>
+            <strong>Install Plans</strong>
+            <p>In Claude Code, run <code>/plugin marketplace add yrangana/Plans</code>, then <code>/plugin install plans@yrangana-plans</code>.</p>
+          </li>
+          <li data-step="1">
+            <div class="step-node">2</div>
+            <strong>Bootstrap a project</strong>
+            <p>Run <code>/plans:plans init</code>. Creates <code>plans/</code> and keeps it out of git by default.</p>
+          </li>
+          <li data-step="2">
+            <div class="step-node">3</div>
+            <strong>Open the dashboard</strong>
+            <p>Run <code>npx serve .</code> in your project root, then open <code>localhost:3000/plans/roadmap.html</code>.</p>
+          </li>
+          <li data-step="3">
+            <div class="step-node">4</div>
+            <strong>Write your first plan</strong>
+            <p>Type <span class="ai-bubble">/plans:plans new</span> in Claude Code.</p>
+          </li>
+        </ol>
+      </div>
+      <div class="install-track" id="panel-cli" role="tabpanel" aria-labelledby="tab-cli" hidden>
+        <div class="install-notes">
+          <span>One curl, then <code>plans-init</code></span>
+          <span><code>plans-init</code> offers to append a planning section to <code>CLAUDE.md</code>, <code>AGENTS.md</code>, or <code>.cursorrules</code></span>
+          <span>Git-excluded by default, plans stay local</span>
+        </div>
+        <ol class="install-steps-v" data-track="cli">
+          <li class="active" data-step="0">
+            <div class="step-node">1</div>
+            <strong>Install the CLI</strong>
+            <p>Run <code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash</code>.</p>
+          </li>
+          <li data-step="1">
+            <div class="step-node">2</div>
+            <strong>Bootstrap a project</strong>
+            <p>Run <code>plans-init ~/code/your-app</code>. Creates <code>plans/</code> and keeps it out of git by default.</p>
+          </li>
+          <li data-step="2">
+            <div class="step-node">3</div>
+            <strong>Open the dashboard</strong>
+            <p>Run <code>npx serve .</code> in your project root, then open <code>localhost:3000/plans/roadmap.html</code>.</p>
+          </li>
+          <li data-step="3">
+            <div class="step-node">4</div>
+            <strong>Write your first plan</strong>
+            <p>Replace the example plan in <code>plans/active/</code> with a real one, or run <code>/plans new</code> in your AI assistant.</p>
+          </li>
+        </ol>
+      </div>
       <div class="terminal" id="install-terminal">
         <div class="window-bar">
           <span class="window-dots"><i></i><i></i><i></i></span>
-          <span class="window-url">~ — bash</span>
+          <span class="window-url">~ · bash</span>
         </div>
         <pre class="terminal-body" id="terminal-body"><span class="terminal-cursor" id="terminal-cursor"></span></pre>
       </div>
       <div class="install-done" id="install-done" style="display:none; margin-top: 20px; padding: 14px 18px; background: rgba(52,199,123,0.08); border: 1px solid rgba(52,199,123,0.25); border-radius: 10px; font-family: var(--font-mono); font-size: 13px; color: var(--status-shipped); letter-spacing: -0.01em;">
-        ✓ &nbsp;You're set — open <strong>STATUS.md</strong> to see what's in flight.
+        ✓ &nbsp;You're set, open <strong>STATUS.md</strong> to see what's in flight.
       </div>
     </div>
   </div>
@@ -919,62 +965,92 @@ roadmap.html</pre>
   nodes.forEach(function (n) { io.observe(n); });
 })();
 
-// Copy install command
-(function () {
-  var btn = document.getElementById('copy-install-cmd');
-  if (!btn) return;
-  var cmd = '/plugin marketplace add yrangana/Plans';
-  btn.addEventListener('click', function () {
-    navigator.clipboard.writeText(cmd).then(function () {
-      btn.classList.add('copied');
-      btn.querySelector('.copy-label').textContent = 'Copied!';
-      setTimeout(function () {
-        btn.classList.remove('copied');
-        btn.querySelector('.copy-label').textContent = 'Copy';
-      }, 2000);
-    });
-  });
-})();
-
-// Typewriter terminal animation
+// Install tabs: copy command sync + typewriter terminal, both keyed off the active track
 (function () {
   var terminal = document.getElementById('install-terminal');
   var body = document.getElementById('terminal-body');
   var cursor = document.getElementById('terminal-cursor');
-  var steps = document.querySelectorAll('.install-steps-v li');
-  if (!terminal || !body) return;
+  var copyBtn = document.getElementById('copy-install-cmd');
+  var cmdTextEl = document.getElementById('install-cmd-text');
+  var tabsEl = document.querySelector('.install-tabs');
+  var tabs = document.querySelectorAll('.install-tab');
+  if (!terminal || !body || !tabsEl || !tabs.length) return;
 
-  var lines = [
-    { text: '# 1. install the CLI', cls: 'comment', step: 0 },
-    { text: 'curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash', cls: 'prompt-line', step: 0 },
-    { text: 'Plans system installer', cls: 'out', step: 0 },
-    { text: 'Cloning plans into ~/.local/share/plans...', cls: 'out', step: 0 },
-    { text: '✓ Installed to ~/.local/share/plans', cls: 'ok', step: 0 },
-    { text: '✓ Symlinks: ~/.local/bin/plans-init, plans-update', cls: 'ok', step: 0 },
-    { text: '', cls: '', step: 0 },
-    { text: '# 2. bootstrap your project', cls: 'comment', step: 1 },
-    { text: 'plans-init ~/code/your-app', cls: 'prompt-line', step: 1 },
-    { text: '→ created plans/active/, plans/shipped/, plans/superseded/', cls: 'out', step: 1 },
-    { text: '→ added plans/ to .git/info/exclude', cls: 'out', step: 1 },
-    { text: '→ detected CLAUDE.md — append planning section? [Y/n] y', cls: 'out', step: 1 },
-    { text: '✓ All set. Open plans/STATUS.md.', cls: 'ok', step: 1 },
-    { text: '', cls: '', step: 1 },
-    { text: '# 3. start the dashboard', cls: 'comment', step: 2 },
-    { text: 'npx serve .', cls: 'prompt-line', step: 2 },
-    { text: 'Serving! http://localhost:3000', cls: 'out', step: 2 },
-    { text: 'open http://localhost:3000/plans/roadmap.html', cls: 'prompt-line', step: 2 },
-    { text: '', cls: '', step: 2 },
-    { text: '# 4. write your first plan', cls: 'comment', step: 3 },
-    { text: '/plans new', cls: 'ai-line', step: 3 },
-    { text: '✓ Created plans/active/MY_FEATURE.md', cls: 'ok', step: 3 },
-  ];
+  var COMMANDS = {
+    claude: '/plugin marketplace add yrangana/Plans',
+    cli: 'curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash'
+  };
 
+  var LINES = {
+    claude: [
+      { text: '# 1. install the plugin', cls: 'comment', step: 0 },
+      { text: '/plugin marketplace add yrangana/Plans', cls: 'ai-line', step: 0 },
+      { text: '✔ Successfully added marketplace: yrangana-plans', cls: 'ok', step: 0 },
+      { text: '/plugin install plans@yrangana-plans', cls: 'ai-line', step: 0 },
+      { text: '✔ Successfully installed plugin: plans@yrangana-plans (scope: user)', cls: 'ok', step: 0 },
+      { text: '', cls: '', step: 0 },
+      { text: '# 2. bootstrap your project', cls: 'comment', step: 1 },
+      { text: '/plans:plans init', cls: 'ai-line', step: 1 },
+      { text: 'Track plans/ in git? [y/N] n', cls: 'out', step: 1 },
+      { text: '→ created plans/: README.md STATUS.md plans.json roadmap.html active/ shipped/ superseded/', cls: 'out', step: 1 },
+      { text: '→ added plans/ to .git/info/exclude', cls: 'out', step: 1 },
+      { text: '✓ All set. Open plans/STATUS.md.', cls: 'ok', step: 1 },
+      { text: '', cls: '', step: 1 },
+      { text: '# 3. start the dashboard', cls: 'comment', step: 2 },
+      { text: 'npx serve .', cls: 'prompt-line', step: 2 },
+      { text: 'Serving! http://localhost:3000', cls: 'out', step: 2 },
+      { text: 'open http://localhost:3000/plans/roadmap.html', cls: 'prompt-line', step: 2 },
+      { text: '', cls: '', step: 2 },
+      { text: '# 4. write your first plan', cls: 'comment', step: 3 },
+      { text: '/plans:plans new', cls: 'ai-line', step: 3 },
+      { text: '✓ Created plans/active/MY_FEATURE.md', cls: 'ok', step: 3 },
+    ],
+    cli: [
+      { text: '# 1. install the CLI', cls: 'comment', step: 0 },
+      { text: 'curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash', cls: 'prompt-line', step: 0 },
+      { text: 'Plans system installer', cls: 'out', step: 0 },
+      { text: 'Cloning plans into ~/.local/share/plans...', cls: 'out', step: 0 },
+      { text: '✓ Installed to ~/.local/share/plans', cls: 'ok', step: 0 },
+      { text: '✓ Symlinks: ~/.local/bin/plans-init, plans-update', cls: 'ok', step: 0 },
+      { text: '', cls: '', step: 0 },
+      { text: '# 2. bootstrap your project', cls: 'comment', step: 1 },
+      { text: 'plans-init ~/code/your-app', cls: 'prompt-line', step: 1 },
+      { text: '→ created plans/active/, plans/shipped/, plans/superseded/', cls: 'out', step: 1 },
+      { text: '→ added plans/ to .git/info/exclude', cls: 'out', step: 1 },
+      { text: '→ detected CLAUDE.md, append planning section? [Y/n] y', cls: 'out', step: 1 },
+      { text: '✓ All set. Open plans/STATUS.md.', cls: 'ok', step: 1 },
+      { text: '', cls: '', step: 1 },
+      { text: '# 3. start the dashboard', cls: 'comment', step: 2 },
+      { text: 'npx serve .', cls: 'prompt-line', step: 2 },
+      { text: 'Serving! http://localhost:3000', cls: 'out', step: 2 },
+      { text: 'open http://localhost:3000/plans/roadmap.html', cls: 'prompt-line', step: 2 },
+      { text: '', cls: '', step: 2 },
+      { text: '# 4. write your first plan', cls: 'comment', step: 3 },
+      { text: '/plans new', cls: 'ai-line', step: 3 },
+      { text: '✓ Created plans/active/MY_FEATURE.md', cls: 'ok', step: 3 },
+    ]
+  };
+
+  var currentTrack = 'claude';
   var started = false;
+  // Bumped on every track switch. Any in-flight setTimeout callback checks its
+  // captured run id against this before touching the DOM, so a stale timer
+  // from the previous track can never append or interleave a line.
+  var currentRun = 0;
 
-  function setActiveStep(idx) {
-    steps.forEach(function (s, i) {
+  function setActiveStep(track, idx) {
+    var list = document.querySelector('.install-steps-v[data-track="' + track + '"]');
+    if (!list) return;
+    var items = list.querySelectorAll('li');
+    items.forEach(function (s, i) {
       s.classList.toggle('active', i === idx);
     });
+  }
+
+  function clearTerminal() {
+    while (body.firstChild && body.firstChild !== cursor) {
+      body.removeChild(body.firstChild);
+    }
   }
 
   function appendLine(text, cls) {
@@ -986,7 +1062,7 @@ roadmap.html</pre>
     body.insertBefore(br, cursor);
   }
 
-  function typewriterLine(text, cls, callback) {
+  function typewriterLine(text, cls, myRun, callback) {
     var span = document.createElement('span');
     if (cls) span.className = cls;
     body.insertBefore(span, cursor);
@@ -995,43 +1071,116 @@ roadmap.html</pre>
     var i = 0;
     var delay = (cls === 'prompt-line' || cls === 'ai-line') ? 28 : 10;
     function tick() {
+      if (myRun !== currentRun) return;
       if (i < text.length) {
         span.textContent += text[i++];
         terminal.scrollTop = terminal.scrollHeight;
         setTimeout(tick, delay + Math.random() * 10);
       } else {
-        setTimeout(callback, (cls === 'prompt-line' || cls === 'ai-line') ? 180 : 60);
+        setTimeout(function () { if (myRun === currentRun) callback(); }, (cls === 'prompt-line' || cls === 'ai-line') ? 180 : 60);
       }
     }
     tick();
   }
 
-  function run() {
-    if (started) return;
-    started = true;
-    setActiveStep(0);
+  function runTrack(track) {
+    currentRun++;
+    var myRun = currentRun;
+    clearTerminal();
+    var done = document.getElementById('install-done');
+    if (done) { done.style.display = 'none'; }
+    var lines = LINES[track] || LINES.claude;
+    setActiveStep(track, 0);
     var i = 0;
     function next() {
+      if (myRun !== currentRun) return;
       if (i >= lines.length) {
-        var done = document.getElementById('install-done');
         if (done) { done.style.display = 'block'; }
         return;
       }
       var line = lines[i++];
-      setActiveStep(line.step);
+      setActiveStep(track, line.step);
       if (!line.text) {
         appendLine('', '');
-        setTimeout(next, 80);
+        setTimeout(function () { if (myRun === currentRun) next(); }, 80);
       } else {
-        typewriterLine(line.text, line.cls, next);
+        typewriterLine(line.text, line.cls, myRun, next);
       }
     }
-    setTimeout(next, 400);
+    setTimeout(function () { if (myRun === currentRun) next(); }, 400);
   }
 
-  if (!('IntersectionObserver' in window)) { run(); return; }
+  function ensureStarted() {
+    if (started) return;
+    started = true;
+    runTrack(currentTrack);
+  }
+
+  function updateCmdBlock(track) {
+    var cmd = COMMANDS[track] || COMMANDS.claude;
+    if (cmdTextEl) cmdTextEl.textContent = cmd;
+    // Read back from the DOM so the copy button can never drift from what's displayed.
+    copyBtn.dataset.cmd = cmd;
+  }
+
+  function selectTrack(track, opts) {
+    var moveFocus = opts && opts.focus;
+    if (track === currentTrack) {
+      if (moveFocus) {
+        var activeTab = document.getElementById(track === 'cli' ? 'tab-cli' : 'tab-claude');
+        if (activeTab) activeTab.focus();
+      }
+      return;
+    }
+    currentTrack = track;
+    tabs.forEach(function (t) {
+      var isActive = t.dataset.track === track;
+      t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      t.tabIndex = isActive ? 0 : -1;
+      if (isActive && moveFocus) t.focus();
+    });
+    tabsEl.classList.toggle('is-cli', track === 'cli');
+    var panelClaude = document.getElementById('panel-claude');
+    var panelCli = document.getElementById('panel-cli');
+    if (panelClaude) panelClaude.hidden = track !== 'claude';
+    if (panelCli) panelCli.hidden = track !== 'cli';
+    updateCmdBlock(track);
+    if (started) runTrack(track);
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      selectTrack(tab.dataset.track, { focus: false });
+    });
+    tab.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      var order = ['claude', 'cli'];
+      var idx = order.indexOf(currentTrack);
+      var next = e.key === 'ArrowRight' ? (idx + 1) % order.length : (idx - 1 + order.length) % order.length;
+      selectTrack(order[next], { focus: true });
+    });
+  });
+
+  updateCmdBlock(currentTrack);
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      var cmd = copyBtn.dataset.cmd || COMMANDS[currentTrack];
+      navigator.clipboard.writeText(cmd).then(function () {
+        copyBtn.classList.add('copied');
+        copyBtn.querySelector('.copy-label').textContent = 'Copied!';
+        setTimeout(function () {
+          copyBtn.classList.remove('copied');
+          copyBtn.querySelector('.copy-label').textContent = 'Copy';
+        }, 2000);
+      });
+    });
+  }
+
+  if (!('IntersectionObserver' in window)) { ensureStarted(); return; }
   var io = new IntersectionObserver(function (entries) {
-    if (entries[0].isIntersecting) { run(); io.disconnect(); }
+    if (entries[0].isIntersecting) { ensureStarted(); io.disconnect(); }
   }, { threshold: 0.3 });
   io.observe(terminal);
 })();
