@@ -365,42 +365,27 @@
       </div>
     </section>
 
-    <!-- 5. Setup — two commands -->
+    <!-- 5. Setup: plugin and fallback -->
     <section class="deck">
       <span class="eyebrow">Setup</span>
-      <h2>Two commands. Under two minutes. Nothing to maintain.</h2>
-      <pre style="margin-top:14px"><code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+      <h2>Under two minutes to set up. Plugin first, scripts as a fallback.</h2>
+      <div class="grid-2" style="margin-top:18px">
+        <div class="panel tinted-indigo">
+          <div class="label-row"><span class="pill indigo">Claude Code</span><span class="pill outline">Recommended</span></div>
+          <h3>Plugin</h3>
+          <pre style="margin-top:8px"><code>/plugin marketplace add yrangana/Plans
+/plugin install plans@yrangana-plans
+/plans:plans init</code></pre>
+          <div class="step-note">Creates <code>plans/</code> and points you at <code>/plans:plans new</code>. A session hook supplies the operational rules automatically. No <code>CLAUDE.md</code> edit needed.</div>
+        </div>
+        <div class="panel">
+          <h3 style="color:var(--ink-soft)">Cursor, Antigravity, Windsurf, or scripts</h3>
+          <pre style="margin-top:8px"><code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
 plans-init /path/to/your/project</code></pre>
-      <div style="margin-top:16px">
-        <div class="step-row">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-title">Install once</div>
-            <div class="step-note">Clones the repo, symlinks <code>plans-init</code> and <code>plans-update</code> to <code>~/.local/bin/</code>.</div>
-          </div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-title">Bootstrap your project</div>
-            <div class="step-note">Scaffolds <code>plans/</code>, adds it to <code>.git/info/exclude</code>, detects your AI instruction file and offers to append the planning snippet. Nothing happens without confirmation.</div>
-          </div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <div class="step-title">Run /plans new</div>
-            <div class="step-note">Five questions. Writes your first plan file with correct structure. Add a row to STATUS.md. You're done.</div>
-          </div>
-        </div>
-        <div class="step-row">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <div class="step-title">Stay current with plans-update</div>
-            <div class="step-note">Pulls dashboard improvements and skill updates without touching your data. Backups go to <code>.bak</code>.</div>
-          </div>
+          <div class="step-note">Scaffolds <code>plans/</code> and offers to append the planning snippet to your <code>CLAUDE.md</code>, <code>AGENTS.md</code>, or <code>.cursorrules</code>. Nothing happens without confirmation.</div>
         </div>
       </div>
+      <p class="footnote" style="margin-top:16px">Either path: run <code>/plans:plans new</code> (plugin) or <code>/plans new</code> (fallback) for your first plan, then open <code>roadmap.html</code>.</p>
     </section>
 
     <!-- 6. The plan file — what you actually write -->
@@ -443,7 +428,7 @@ in_flight: true
     <section class="deck">
       <span class="eyebrow">/plans new</span>
       <h2>Never write a plan from scratch. Five questions, one correct file.</h2>
-      <p class="lede">A guided command installed by <code>plans-init</code>. It asks five questions and writes a correctly structured plan file — correct frontmatter, correct banner template, correct filename.</p>
+      <p class="lede">A guided command. On the plugin path it ships with the plugin (<code>/plans:plans new</code>); on the fallback path <code>plans-init</code> installs it as a skill (<code>/plans new</code>). It asks five questions and writes a correctly structured plan file: correct frontmatter, correct banner template, correct filename.</p>
       <div class="grid-2" style="margin-top:14px">
         <div>
           <div class="label-row"><span class="pill indigo">Five questions</span></div>
@@ -546,10 +531,10 @@ Next steps:
     <section class="deck">
       <span class="eyebrow">AI integration</span>
       <h2>Your AI reads the same files. Sessions start in two messages.</h2>
-      <p class="lede"><code>plans-init</code> appends a snippet to your <code>CLAUDE.md</code>, <code>AGENTS.md</code>, or <code>.cursorrules</code>. The AI reads it at session start. No re-explaining required.</p>
+      <p class="lede">On the plugin path, a session hook supplies these rules automatically, scoped to projects that contain a <code>plans/</code> directory, no file to edit, and it uninstalls with the plugin. On the fallback path, <code>plans-init</code> appends the same rules as a snippet to your <code>CLAUDE.md</code>, <code>AGENTS.md</code>, or <code>.cursorrules</code>. Either way, the AI reads them at session start. No re-explaining required.</p>
       <div class="grid-2" style="margin-top:14px">
         <div>
-          <div class="label-row"><span class="pill indigo">What goes in CLAUDE.md</span></div>
+          <div class="label-row"><span class="pill indigo">The operational rules</span><span style="font-size:0.5em;color:var(--ink-mute)">hook-injected on the plugin path, pasted on the fallback</span></div>
           <pre><code>Read plans/STATUS.md at session start.
 Active plans in plans/active/,
 completed in plans/shipped/,
