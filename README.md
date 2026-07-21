@@ -63,7 +63,7 @@ Full scope and audience details in [docs/reference.md](docs/reference.md).
 /plans:plans init
 ```
 
-Three steps: add the marketplace, install the plugin, bootstrap your project. `init` creates `plans/`, asks whether to track it in git (default: keep it local), and points you at `/plans:plans new` for your first plan. Updates come through `/plugin`; refresh project system files any time with `/plans:plans update`.
+Three steps: add the marketplace, install the plugin, bootstrap your project. `init` creates `plans/`, asks whether to track it in git (default: keep it local), and points you at `/plans:plans new` for your first plan. Updates come through `/plugin`; refresh project system files any time with `/plans:plans update`. The plugin also supplies the project's operational rules (where to write plans, when to update status) automatically via a session hook, no CLAUDE.md edit needed.
 
 ### Other assistants and no-plugin setups
 

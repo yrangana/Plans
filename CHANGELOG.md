@@ -12,6 +12,17 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.6.0
+
+Closes a gap between the two adoption paths. On the script path, `scripts/init.sh` appends `template/CLAUDE.md.snippet` to the user's CLAUDE.md, and that snippet carries ambient operational rules (write plans only into `plans/active/`, never hand-edit `plans/plans.json`, update a plan's status banner before ending a session that touched its code, read `plans/STATUS.md` at session start) that apply even when the skill is never invoked. The plugin path had no equivalent: skills only load on invocation, so plugin users silently lost all of those rules unless they happened to run `/plans:plans`.
+
+- `hooks/plans-context.sh`: new. A `SessionStart` hook that prints `{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"..."}}` on stdout, carrying a condensed version of the snippet's non-deferrable rules (including the drift-audit rule, so the hook payload and the snippet carry the same four rules). Guarded on `${CLAUDE_PROJECT_DIR:-.}/plans` rather than the process working directory, since a `SessionStart` hook can run from any cwd: without that guard, a subdirectory session would silently lose the rules, and an unrelated directory that happens to contain a `plans/` folder would get them injected, which is the context pollution the guard exists to prevent. Exits 0 always, emits nothing when the guard fails, never prompts or writes. Shebang is `#!/bin/sh`; the script is POSIX-clean and needs nothing from bash.
+- `hooks/hooks.json`: new. Registers the hook for `SessionStart` with matcher `"startup|resume|clear|compact"`, so the rules are injected on a fresh session, on `--resume`/`--continue`/`/resume`, on `/clear`, and on both manual and automatic compaction. Invoked via `"\"${CLAUDE_PLUGIN_ROOT}\"/hooks/plans-context.sh"` (quoted, matching the official docs, so a plugin cache path containing a space does not break the command).
+- `.claude-plugin/plugin.json`: adds `"hooks": "./hooks/hooks.json"`.
+- `hookSpecificOutput.additionalContext` is a documented, supported mechanism: Claude Code's official hooks reference states the string is wrapped in a system reminder and inserted into the model's context at the point the hook fires, capped at 10,000 characters. The current payload is about 760 characters, well within that cap.
+- Script path unchanged: `scripts/init.sh`, `scripts/update.sh`, and `template/CLAUDE.md.snippet` are untouched. Script-path adopters keep getting the equivalent rules through the snippet already appended to their CLAUDE.md.
+- `docs/reference.md`: documents the hook in the plugin section, what it injects, the project-root guard, the four matchers, and the script-path equivalent, plus the both-installed case (plugin hook and script-path snippet both present: duplicated but consistent, and harmless).
+
 ## v0.5.0
 
 Makes the Claude Code plugin the primary, self-sufficient adoption path. The skill gains `init` and `update` modes, so a plugin install alone now delivers a working system. v0.4.0 shipped the plugin as a pointer to the CLI; this release removes that dependency. Scripts remain the documented fallback for Cursor, Antigravity, Windsurf, and no-plugin setups.
