@@ -12,6 +12,19 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.6.2
+
+Removes the piped-shell install command from the skill's instructions, after the skills.sh listing published a failing Snyk audit against it.
+
+- `template/skills/plans/references/init.md`, `sync.md`, `new-plan.md`: the STANDALONE messages no longer print `curl -sSL .../install.sh | bash`. They point at `https://github.com/yrangana/Plans#quick-start` instead. Snyk flagged the piped form as **E005, CRITICAL** ("suspicious download URL detected in skill instructions"), and the finding is fair: instructing a user to pipe a remote script straight into a shell is a poor pattern regardless of the audit. `install.sh` itself is unchanged and still supported; only the skill's recommendation of the piped invocation is gone.
+- `template/skills/plans/references/init.md`: the STANDALONE message now checks whether `/plans:plans` is present among the session's available skills and, if so, says to run `/plans:plans init` rather than installing anything. Found by running the v0.6.1 message on a machine that had both a plugin copy and a skills.sh copy installed: the old text told the user to install a plugin that was already there.
+
+Known and accepted: Snyk also reports **W011, MEDIUM** (indirect prompt injection) because the skill reads `plans/STATUS.md` and `plans/active/*.md` into context. That is inherent to what the skill does and is not being changed. `sync.md` still fetches `VERSION` from `raw.githubusercontent.com` for the staleness check; it is a plain-text read rather than a piped script, and it remains disclosed in the privacy policy.
+
+Neither update path is affected. `update.md` never referenced the install script, and `scripts/update.sh` copies the skill directory wholesale without parsing message text, so script-path adopters receive the corrected instructions on their next `plans-update`.
+
+---
+
 ## v0.6.1
 
 Fixes install advice given to users who are not on Claude Code. The skill is installable via `npx skills add yrangana/Plans`, which serves roughly 70 assistants and delivers the skill without the bundled template, so it lands in STANDALONE mode. Two messages on that path were wrong: one recommended a Claude Code command to everyone, and all three recommended a remedy that silently produces a duplicate skill copy.
