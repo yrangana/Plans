@@ -1,24 +1,18 @@
 # /plans update
 
-Refresh project system files from the template bundled with the installed plugin, so they always match the plugin version. Same contract as the `plans-update` script: system files only, prompt before writing, back up first.
+Refresh project system files from this skill's bundled template, so they always match the installed skill version. Works on every delivery. Same contract as the `plans-update` script: system files only, prompt before writing, back up first.
 
 ## Prerequisites
 
-**1. Delivery check** (the delivery rule in SKILL.md):
-
-```text
-if STANDALONE delivery:
-  print: "This skill copy has no bundled template. Use the plans-update script instead."
-  stop.
-```
-
-**2. Installation check:**
+**Installation check:**
 
 ```text
 if plans/ does not exist in the project root:
-  print: "No plans/ directory found. Run /plans:plans init first."
+  print: "No plans/ directory found. Run {invocation} init first."
   stop.
 ```
+
+where `{invocation}` is the spelling from the delivery rule in SKILL.md.
 
 ## System files vs user data
 
@@ -29,7 +23,7 @@ if plans/ does not exist in the project root:
 
 ## Steps
 
-**1. Diff.** For each system file, compare the project copy against `<plugin-root>/template/plans/<file>`:
+**1. Diff.** For each system file, compare the project copy against `<this skill's directory>/template/plans/<file>`:
 
 - Identical: report `= plans/<file> (already up to date)`.
 - Different: report `~ plans/<file> (update available)` and show a short summary of what changed (first ~40 lines of a unified diff is enough).
@@ -46,4 +40,4 @@ if plans/ does not exist in the project root:
 - Never touches user data (the table above is exhaustive).
 - Never writes without per-file confirmation.
 - Always writes a `.bak` before overwriting an existing file.
-- Updates to exactly the installed plugin's version, never from the network.
+- Updates to exactly the installed skill's version, never from the network.

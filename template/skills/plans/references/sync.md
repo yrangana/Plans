@@ -4,23 +4,15 @@ Audit `plans/` for drift, regenerate derived files, propose fixes. Never write w
 
 ## Prerequisites
 
-**1. Check for `plans/`** (delivery per the delivery rule in SKILL.md):
+**1. Check for `plans/`:**
 
 ```text
 if plans/ does not exist in the project root:
-  if BUNDLED delivery:
-    print: "No plans/ directory found in this project. Run /plans:plans init to set it up."
-  else:
-    print:
-      "No plans/ directory found in this project."
-      "Set it up by following the install steps at:"
-      ""
-      "  https://github.com/yrangana/Plans#quick-start"
-      ""
-      "(That path runs plans-init, which installs its own copy of this skill. If"
-      " you added this one with npx skills, run npx skills remove plans first.)"
+  print: "No plans/ directory found in this project. Run {invocation} init to set it up."
   stop.
 ```
+
+where `{invocation}` is the spelling from the delivery rule in SKILL.md.
 
 **2. Check required files:**
 
@@ -49,7 +41,7 @@ if git is not available or not a git repo:
 
 ## Run Order
 
-0. Version check: nudge if the skill is outdated (never blocks)
+0. Freshness check: nudge if system files are stale (never blocks, no network)
 1. Read: collect current state from all sources
 2. Detect: run all drift rules
 3. Report: print findings grouped by severity
@@ -59,31 +51,16 @@ if git is not available or not a git repo:
 
 ---
 
-## Step 0: Version and freshness check
+## Step 0: Freshness check
 
-Best-effort, delivery-aware (the delivery rule in SKILL.md). This step must never block sync.
+Best-effort. This step never blocks sync and never touches the network.
 
-**BUNDLED delivery:**
-
-1. Skill updates are managed by Claude Code. Do not fetch VERSION from GitHub.
-2. Instead check system-file freshness: compare `plans/roadmap.html` and `plans/README.md` against `<plugin-root>/template/plans/`. If either differs, print one line and proceed:
+1. Compare `plans/roadmap.html` and `plans/README.md` against the bundled copies at `<this skill's directory>/template/plans/`. If either differs, print one line and proceed:
    ```text
-   Note: project system files differ from the installed plugin version.
-         Run /plans:plans update to refresh them.
+   Note: project system files differ from this skill's bundled version.
+         Run {invocation} update to refresh them.
    ```
-
-**STANDALONE delivery:**
-
-1. Read the `version:` field from this skill's `SKILL.md` frontmatter (one directory up from this file).
-2. Fetch the latest published version: `https://raw.githubusercontent.com/yrangana/Plans/main/VERSION` (short timeout).
-3. Compare:
-   - **Any failure** (offline, non-200, timeout, missing or unparseable version on either side): print nothing. Proceed to Step 1.
-   - **Installed version is behind**: print one line, then proceed to Step 1:
-     ```text
-     Note: plans skill v{installed} is installed, v{latest} is available.
-           Run plans-update to upgrade, then re-run /plans sync.
-     ```
-   - **Installed version is current or ahead**: print nothing. Proceed to Step 1.
+2. Do not fetch anything to check whether the skill itself is current. If the user asks: the plugin delivery updates through `/plugin`; project-local copies update with `npx skills update`, or `plans-update` if the scripts installed them.
 
 The check is informational only. It never aborts sync, never prompts, and never writes anything. Sync never rewrites system files itself; it only suggests the update mode.
 

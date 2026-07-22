@@ -165,14 +165,14 @@ At the start of every session, Claude reads `STATUS.md` and relevant plan files.
 
 ## The `/plans` Skill
 
-Four modes that extend your AI assistant (invoked `/plans:plans <mode>` when installed as a Claude Code plugin, `/plans <mode>` when installed by `plans-init`):
+Four modes that extend your AI assistant (invoked `/plans:plans <mode>` when installed as a Claude Code plugin, `/plans <mode>` when installed project-locally by `plans-init` or `npx skills add yrangana/Plans`):
 
 - **`sync`**: weekly audit. Reads plan files and git log, detects drift, regenerates `plans.json` and `STATUS.md` auto-sections, proposes all changes before writing anything.
 - **`new`**: guided creation of a new plan file with correct frontmatter and status banner.
-- **`init`**: bootstraps `plans/` in a project (plugin installs; `plans-init` covers this on the script path).
-- **`update`**: refreshes `roadmap.html` and this README from the installed version (plugin installs; `plans-update` covers this on the script path).
+- **`init`**: bootstraps `plans/` in a project, on every install path.
+- **`update`**: refreshes `roadmap.html` and this README from the installed skill version.
 
-Get the skill via the Claude Code plugin (`/plugin marketplace add yrangana/Plans`) or with `plans-init` (installed automatically). See [github.com/yrangana/Plans](https://github.com/yrangana/Plans).
+Get the skill via the Claude Code plugin (`/plugin marketplace add yrangana/Plans`), with `npx skills add yrangana/Plans`, or with `plans-init` (installed automatically). See [github.com/yrangana/Plans](https://github.com/yrangana/Plans).
 
 ---
 

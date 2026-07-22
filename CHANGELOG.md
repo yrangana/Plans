@@ -12,6 +12,22 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.7.0
+
+Makes the skill package self-sufficient. The project template and the instruction-file snippet now ship inside the skill directory (`template/skills/plans/template/`), so every delivery can bootstrap a project: the Claude Code plugin, the scripts, and `npx skills add yrangana/Plans`, which installs the skill on roughly 70 assistants and previously could not create `plans/` at all.
+
+- Template moved: `template/plans/` and `template/CLAUDE.md.snippet` now live under `template/skills/plans/template/`. The old locations are deleted. Both scripts repoint; `scripts/init.sh` decouples its skill-source path from its template-source path, which the naive repoint would have silently broken.
+- Delivery detection rewritten: the walk-up rule and the BUNDLED/STANDALONE distinction are deleted. The template location is a constant relative to SKILL.md. The remaining plugin versus project-local test is precedence-ordered so a project shipping its own plugin cannot misclassify a project-local copy.
+- `init` works on every delivery and, on project-local deliveries only, offers to append the rules snippet to a detected instruction file (explicit per-file consent, marker guard against double appends, skip is the default when the plugin is also installed). The plugin delivery still never touches instruction files.
+- `sync` Step 0 no longer fetches VERSION from raw.githubusercontent.com. Every delivery compares system files against the bundled template instead. The skill now makes zero runtime network requests on every path.
+- `update` works on every delivery; its STANDALONE refusal is deleted.
+- README, docs/reference.md, and the website lead the non-Claude-Code path with `npx skills add`; the curl scripts remain supported as a fallback, including the inspect-first variant.
+- web/privacy.html covers three install paths and drops the sync version-check disclosure, because the check no longer exists.
+- New maintenance invariant in CLAUDE.md: files under `template/skills/plans/` are add-only across releases, because `update_skill`'s copy-over cannot delete orphans in adopter projects.
+- Both roadmap.html copies now escape every plan-data field they interpolate into HTML. Previously a plan title containing markup would execute in the dashboard's origin, which matters when plans/ is git-tracked with multiple contributors.
+
+---
+
 ## v0.6.3
 
 Presentation fixes prompted by the skill's page going live on skills.sh, which renders SKILL.md to browsers rather than only to models.

@@ -485,11 +485,11 @@ Guided creation of a new plan file. Asks: name, type, priority, depends_on, bloc
 
 ### /plans init
 
-Plugin installs only. Copies the bundled `template/plans/` into the project root, asks one question (track `plans/` in git or keep it local, default local, written to `.git/info/exclude`), and points at `new`. Never overwrites an existing `plans/` and never appends to instruction files: the installed plugin is the assistant integration. Project-local copies print the `plans-init` instructions instead.
+Works on every delivery. Copies the bundled `template/plans/` (shipped inside the skill directory) into the project root, asks one question (track `plans/` in git or keep it local, default local, written to `.git/info/exclude`), and on project-local deliveries offers to append the planning rules snippet to a detected instruction file, with explicit per-file consent and a marker guard against double appends. On the plugin delivery it never touches instruction files: the SessionStart hook supplies the rules. Never overwrites an existing `plans/`.
 
 ### /plans update
 
-Plugin installs only. Diffs `plans/roadmap.html` and `plans/README.md` against the bundled template, prompts per file, writes `<file>.bak` before overwriting. Never touches user data (`STATUS.md`, `plans.json`, `active/`, `shipped/`, `superseded/`). Updates to exactly the installed plugin version, never from the network. Project-local copies print the `plans-update` instructions instead. `sync` suggests this mode when system files are stale, but never runs it.
+Works on every delivery. Diffs `plans/roadmap.html` and `plans/README.md` against the bundled template, prompts per file, writes `<file>.bak` before overwriting. Never touches user data (`STATUS.md`, `plans.json`, `active/`, `shipped/`, `superseded/`). Updates to exactly the installed skill version, never from the network. `sync` suggests this mode when system files are stale, but never runs it.
 
 ---
 
@@ -506,6 +506,20 @@ Plugin installs only. Diffs `plans/roadmap.html` and `plans/README.md` against t
 | `roadmap.html` | Identical | Identical | Identical |
 
 `plans-init` detects which platform is in use and installs the skill to the correct location automatically. `plans-update` checks both locations.
+
+---
+
+## Delivery paths
+
+Three ways to install, one skill:
+
+| Path | Install | Invocation | Ambient rules | Updates |
+| --- | --- | --- | --- | --- |
+| Claude Code plugin | `/plugin marketplace add yrangana/Plans` | `/plans:plans <mode>` | SessionStart hook | `/plugin` |
+| Community skills CLI | `npx skills add yrangana/Plans` | `/plans <mode>` | `init` offers the snippet | `npx skills update` |
+| Scripts | `install.sh`, then `plans-init` | `/plans <mode>` | `plans-init` offers the snippet | `plans-update` |
+
+Every path delivers the same self-sufficient skill package: the project template and the rules snippet ship inside the skill directory, so `init`, `sync`, `new`, and `update` work identically everywhere, with zero network requests at runtime.
 
 ---
 
@@ -540,9 +554,9 @@ plans-init -h                 # show usage
 
 What it does:
 
-1. Copies `template/plans/` into the target directory.
+1. Copies the bundled `template/skills/plans/template/plans/` into the target directory.
 2. Adds `plans/` to `.git/info/exclude` (local git ignore, never committed).
-3. Detects AI instruction files in this order: `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.windsurfrules`. For each detected file, prompts before appending the planning section from `template/CLAUDE.md.snippet`.
+3. Detects AI instruction files in this order: `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.windsurfrules`. For each detected file, prompts before appending the planning section from `template/skills/plans/template/CLAUDE.md.snippet`.
 4. Installs the `/plans` skill to the matching platform directory: `.claude/skills/plans/` for Claude Code / Cursor / Windsurf, `.agents/skills/plans/` for Antigravity.
 5. Idempotent: if a detected file already contains the snippet's marker heading (`## Project Status & Plan Management`), it skips that file.
 6. Aborts if `plans/` already exists in the target. Use `plans-update` to refresh existing installations.
@@ -588,7 +602,7 @@ Three steps: add the marketplace, install, bootstrap. `init` copies the bundled 
 
 Note on first use: the skill reads its reference files from the plugin cache, so Claude Code asks for permission to read that directory the first time a mode runs. Approve it once per project.
 
-The plugin also ships a `SessionStart` hook (`hooks/plans-context.sh`, registered in `hooks/hooks.json`) that injects the same non-deferrable operational rules the script path gets from `template/CLAUDE.md.snippet`: read `plans/STATUS.md` at session start, write plans only into `plans/active/`, never hand-edit `plans/plans.json`, update a plan's `## Status` banner and `last_updated` before ending a session that touched its code, and audit drift periodically with `/plans:plans sync`. The hook fires on all four `SessionStart` matchers (`startup`, `resume`, `clear`, `compact`), so the rules survive `/clear`, manual and automatic compaction, and `--resume`/`--continue`, not just a fresh session start. It emits this context only when it can resolve the project root to a directory containing `plans/`, trying `$CLAUDE_PROJECT_DIR`, then the git repository root (`git rev-parse --show-toplevel`), then the current directory in that order, so the check gives the right answer regardless of the directory the session started from; in any other project it prints nothing, so unrelated sessions are unaffected. This is a plugin-only mechanism: it relies on `hookSpecificOutput.additionalContext`, which is a documented, supported field in Claude Code's official hooks reference. The string is wrapped in a system reminder and inserted into the model's context at the point the hook fires, capped at 10,000 characters; the current payload is about 760 characters. Script-path users do not get this hook; they get the equivalent rules because `scripts/init.sh` appends `template/CLAUDE.md.snippet` directly to their CLAUDE.md.
+The plugin also ships a `SessionStart` hook (`hooks/plans-context.sh`, registered in `hooks/hooks.json`) that injects the same non-deferrable operational rules the script path gets from `template/skills/plans/template/CLAUDE.md.snippet`: read `plans/STATUS.md` at session start, write plans only into `plans/active/`, never hand-edit `plans/plans.json`, update a plan's `## Status` banner and `last_updated` before ending a session that touched its code, and audit drift periodically with `/plans:plans sync`. The hook fires on all four `SessionStart` matchers (`startup`, `resume`, `clear`, `compact`), so the rules survive `/clear`, manual and automatic compaction, and `--resume`/`--continue`, not just a fresh session start. It emits this context only when it can resolve the project root to a directory containing `plans/`, trying `$CLAUDE_PROJECT_DIR`, then the git repository root (`git rev-parse --show-toplevel`), then the current directory in that order, so the check gives the right answer regardless of the directory the session started from; in any other project it prints nothing, so unrelated sessions are unaffected. This is a plugin-only mechanism: it relies on `hookSpecificOutput.additionalContext`, which is a documented, supported field in Claude Code's official hooks reference. The string is wrapped in a system reminder and inserted into the model's context at the point the hook fires, capped at 10,000 characters; the current payload is about 760 characters. Script-path users do not get this hook; they get the equivalent rules because `scripts/init.sh` appends `template/skills/plans/template/CLAUDE.md.snippet` directly to their CLAUDE.md; npx-installed copies get them because `/plans init` offers the same append.
 
 A user who has both installed (ran `scripts/init.sh` in the past and later installed the plugin) gets the rules twice: once from the snippet in their CLAUDE.md, once from the hook's `additionalContext` on each session start. The two are duplicated but consistent, so this is harmless. A user who wants only one copy can either skip the snippet on the script path (`plans-init --no-snippet`) or remove the "Project Status & Plan Management" section from their CLAUDE.md.
 

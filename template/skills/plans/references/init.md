@@ -1,34 +1,10 @@
 # /plans init
 
-Bootstrap `plans/` in the current project from the template bundled with the plugin, at `<plugin-root>/template/plans/`.
+Bootstrap `plans/` in the current project from the bundled template at `<this skill's directory>/template/plans/`. Works on every delivery.
 
 ## Prerequisites
 
-**1. Delivery check** (the delivery rule in SKILL.md):
-
-```text
-if STANDALONE delivery:
-  print:
-    "This skill copy has no bundled template, so it cannot create plans/ here."
-    ""
-    if /plans:plans is listed among the available skills in this session:
-      "A plugin copy is already installed here. Run /plans:plans init instead."
-      ""
-    "In Claude Code, install the plugin:"
-    ""
-    "  /plugin marketplace add yrangana/Plans"
-    ""
-    "In any other assistant, follow the install steps at:"
-    ""
-    "  https://github.com/yrangana/Plans#quick-start"
-    ""
-    "Note: that path runs plans-init, which installs its own copy of this skill."
-    "If you added this one with npx skills, run npx skills remove plans first, so"
-    "you do not keep two copies that update separately."
-  stop.
-```
-
-**2. Existing installation check:**
+**Existing installation check:**
 
 ```text
 if plans/ exists in the project root:
@@ -39,7 +15,7 @@ if plans/ exists in the project root:
 
 ## Steps
 
-**1. Copy the template.** Copy `<plugin-root>/template/plans/` to `./plans/` in the project root, preserving the directory structure exactly:
+**1. Copy the template.** Copy `<this skill's directory>/template/plans/` to `./plans/` in the project root, preserving the directory structure exactly:
 
 ```text
 plans/
@@ -78,7 +54,39 @@ Copy every file as-is. Do not edit, fill in, or personalize any of them.
 
 If the project is not a git repository: skip the question, note "Not a git repository: skipped git exclusion."
 
-**3. Finish.**
+**3. Instruction-file snippet (project-local deliveries only).** On the plugin delivery, skip this step entirely: the plugin's SessionStart hook already supplies these rules, and the plugin never edits instruction files.
+
+```text
+candidates = the files among CLAUDE.md, AGENTS.md, .cursorrules, .windsurfrules
+             that exist in the project root
+
+if no candidate exists:
+  print:
+    "No AI instruction file found. The plans rules snippet is bundled at:"
+    "  <this skill's directory>/template/CLAUDE.md.snippet"
+    "Append its body to your instruction file when you create one."
+  continue to Step 4.
+
+for each candidate file:
+  if the file already contains the line "## Project Status & Plan Management":
+    report "<file> already has the plans section." and continue to the next file.
+  if /plans:plans is listed among the available skills in this session:
+    ask: "Append the plans rules to <file>? The installed plugin already supplies
+          these rules through its session hook, so skipping is fine. (y/N)"
+  else:
+    ask: "Append the plans rules section to <file>? (y/N)"
+  on yes:
+    append the snippet body to the end of the file: everything from the first
+    "## " heading onward, skipping the leading HTML comment (the same rule
+    scripts/init.sh uses). Then confirm the marker line is present in the file
+    and report "Appended plans section to <file>."
+  on no, or no clear answer:
+    report "Skipped <file>."
+```
+
+Decline is the default. Never append without an explicit yes, and never append twice (the marker check guarantees this).
+
+**4. Finish.**
 
 If Local was chosen in Step 2 and the exclusion was NOT confirmed: do not print an unqualified success line. Lead with the unresolved warning, then the same next steps:
 
@@ -109,11 +117,12 @@ Next steps:
      /plans/roadmap.html
 ```
 
-where `{invocation}` is the spelling from the delivery rule (`/plans:plans` here, since this mode only runs under BUNDLED delivery).
+where `{invocation}` is the spelling from the delivery rule in SKILL.md.
 
 ## Behaviour contract
 
 - Never overwrites an existing `plans/`.
-- Never appends to instruction files (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`): the plugin itself is the assistant integration.
-- Asks exactly one question, only in a git repository.
+- Instruction files: on the plugin delivery, never touched. On project-local deliveries, appended only with explicit per-file consent, and never twice (marker guard).
+- Asks at most one git question, only in a git repository.
 - Copies the template verbatim; templates start empty by design.
+- Makes no network requests.

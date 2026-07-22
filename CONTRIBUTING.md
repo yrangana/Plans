@@ -20,7 +20,7 @@ Concrete asks:
 
 ### Roadmap dashboard improvements
 
-[template/plans/roadmap.html](template/plans/roadmap.html) is the dashboard adopters get. It reads `plans.json` and renders a Gantt + dependency graph + filterable cards. It's one self-contained HTML file with no build step, that's a hard constraint, don't add bundlers or npm.
+[template/skills/plans/template/plans/roadmap.html](template/skills/plans/template/plans/roadmap.html) is the dashboard adopters get. It reads `plans.json` and renders a Gantt + dependency graph + filterable cards. It's one self-contained HTML file with no build step, that's a hard constraint, don't add bundlers or npm.
 
 Open ideas:
 

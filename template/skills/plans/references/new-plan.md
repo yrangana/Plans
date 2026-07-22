@@ -4,23 +4,15 @@ Guided creation of a new plan file with correct structure. Guarantees format cor
 
 ## Prerequisites
 
-**1. Check for `plans/`** (delivery per the delivery rule in SKILL.md):
+**1. Check for `plans/`:**
 
 ```text
 if plans/ does not exist in the project root:
-  if BUNDLED delivery:
-    print: "No plans/ directory found in this project. Run /plans:plans init to set it up."
-  else:
-    print:
-      "No plans/ directory found in this project."
-      "Set it up by following the install steps at:"
-      ""
-      "  https://github.com/yrangana/Plans#quick-start"
-      ""
-      "(That path runs plans-init, which installs its own copy of this skill. If"
-      " you added this one with npx skills, run npx skills remove plans first.)"
+  print: "No plans/ directory found in this project. Run {invocation} init to set it up."
   stop.
 ```
+
+where `{invocation}` is the spelling from the delivery rule in SKILL.md.
 
 **2. Check the target directory:**
 

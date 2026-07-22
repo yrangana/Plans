@@ -33,7 +33,7 @@ for arg in "$@"; do
   esac
 done
 TARGET_DIR="${TARGET_DIR:-$(pwd)}"
-SOURCE="$REPO_DIR/template"
+SOURCE="$REPO_DIR/template/skills/plans/template"
 
 # Auto-pull from origin if this is a git clone (and not --no-pull)
 if [ "$PULL" = "1" ] && [ -d "$REPO_DIR/.git" ]; then

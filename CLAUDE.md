@@ -11,7 +11,7 @@ Maintainers may keep additional personal context in a `CLAUDE.local.md` next to 
 A shareable spec-driven planning convention. The repo contains:
 
 - **Documentation** explaining the system (`README.md`, `docs/`)
-- **A drop-in template** users copy into their own projects (`template/plans/`)
+- **A drop-in template** users copy into their own projects, bundled inside the skill (`template/skills/plans/template/plans/`)
 - **A bootstrap script** that automates the copy (`scripts/init.sh`)
 - **A Claude Code plugin** (`.claude-plugin/`) that delivers the `/plans` skill as the primary adoption path; the scripts remain the fallback for other assistants
 - **A static site** rendered by GitHub Pages from `web/` (landing page, live roadmap demo, status demo, slides, docs)
@@ -33,19 +33,20 @@ plans/
 │   ├── blog-post.md             # Narrative explanation
 │   └── presentation.html        # Slideshow
 ├── template/                    # What users copy into their projects
-│   ├── CLAUDE.md.snippet        # Section adopters paste into their CLAUDE.md
-│   ├── plans/                   # The directory adopters drop into their repo
-│   │   ├── README.md            # Onboarding for adopters
-│   │   ├── STATUS.md            # Empty front-door template
-│   │   ├── plans.json           # Empty starter ({ project, plans } shape; see docs/reference.md)
-│   │   ├── roadmap.html         # Interactive dashboard
-│   │   ├── active/              # With EXAMPLE_PLAN.md showing the format
-│   │   ├── shipped/
-│   │   └── superseded/
 │   └── skills/
-│       └── plans/               # /plans skill (sync + new modes)
+│       └── plans/               # The /plans skill (self-sufficient package)
 │           ├── SKILL.md
-│           └── references/
+│           ├── references/      # Per-mode logic loaded on demand
+│           └── template/        # Bundled project template
+│               ├── CLAUDE.md.snippet   # Section adopters paste into their CLAUDE.md (skills/plans/template)
+│               └── plans/              # The directory adopters drop into their repo
+│                   ├── README.md       # Onboarding for adopters
+│                   ├── STATUS.md       # Empty front-door template
+│                   ├── plans.json      # Empty starter ({ project, plans } shape; see docs/reference.md)
+│                   ├── roadmap.html    # Interactive dashboard
+│                   ├── active/         # With EXAMPLE_PLAN.md showing the format
+│                   ├── shipped/
+│                   └── superseded/
 ├── scripts/
 │   ├── init.sh                  # Bootstraps plans/ and installs skill in a target project
 │   └── update.sh                # Updates system files (roadmap.html, README.md, skill)
@@ -70,7 +71,7 @@ GitHub Pages publishes the `web/` directory to the `gh-pages` branch via `.githu
 
 `web/roadmap.html` embeds demo data inline (`const PLANS = [...]`), so it ships as a single file with no `plans.json` fetch. This is intentional and lets the deployed demo stay self-contained.
 
-`template/plans/roadmap.html` is the version adopters get in their own project. It fetches `plans.json` at runtime so adopters can edit their plans and re-render. The two files are **not** mirrors any more, they have diverged on purpose. Style or behaviour fixes that should appear in both have to be applied to each one separately.
+`template/skills/plans/template/plans/roadmap.html` is the version adopters get in their own project. It fetches `plans.json` at runtime so adopters can edit their plans and re-render. The two files are **not** mirrors any more, they have diverged on purpose. Style or behaviour fixes that should appear in both have to be applied to each one separately.
 
 ---
 
@@ -159,6 +160,7 @@ Because the marketplace entry uses `"source": "./"`, the plugin ships the whole 
 - **Don't add config flags.** If users want different behaviour, they fork. The 7-field frontmatter is fixed; the lifecycle is fixed.
 - **Optional > required.** New features (skills, scripts, exports) should be additive and skippable.
 - **Backwards compatibility for adopters.** Don't rename existing fields or change existing file paths once published. New fields are fine.
+- **Skill files are add-only across releases.** Never rename or delete a file under `template/skills/plans/`. `scripts/update.sh` refreshes project-local skill copies with a copy-over that cannot remove files, so a renamed or deleted file leaves an orphan in every adopter project and a permanent "update available" diff. Add or edit only. Revisit if update_skill ever gains remove-then-copy semantics.
 - **Docs are first-class.** Every behavioural change updates `docs/reference.md` in the same commit.
 
 ---
