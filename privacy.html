@@ -97,7 +97,7 @@ a:hover { text-decoration: underline; }
 
   <p class="eyebrow">Privacy</p>
   <h1>Privacy policy</h1>
-  <p class="updated">Last updated: 2026-07-22</p>
+  <p class="updated">Last updated: 2026-07-23</p>
 
   <div class="callout">
     <p><strong>In short:</strong> Plans collects nothing. There are no accounts, no telemetry, and no analytics. Your plan files stay in your repository on your machine. Nothing you write is transmitted to the maintainer or to any third party.</p>
@@ -115,11 +115,13 @@ a:hover { text-decoration: underline; }
 
   <h2>Network activity</h2>
 
-  <p>This differs between the two ways Plans can be installed, so both are described precisely.</p>
+  <p>This differs between the three ways Plans can be installed, so each is described precisely.</p>
 
   <p><strong>Claude Code plugin.</strong> The plugin makes no network requests while running. Its <code>init</code> and <code>update</code> modes copy files from the plugin's own bundled template. Its <code>sync</code> mode compares your plan files against your local git history and deliberately does not contact any server. Installing and updating the plugin itself is handled by Claude Code, not by Plans.</p>
 
-  <p><strong>Command line scripts.</strong> The installer clones this project's public GitHub repository, and <code>plans-update</code> runs <code>git pull</code> against it. On this path only, <code>/plans sync</code> also performs a version check by requesting a single published version file from <code>raw.githubusercontent.com</code> so it can tell you when your copy is out of date. That request sends nothing about you or your project beyond what any ordinary HTTP request to GitHub reveals, and it is subject to <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>. If it fails, it is skipped silently.</p>
+  <p><strong>Community skills CLI.</strong> Installing with <code>npx skills add</code> uses Vercel's skills CLI, a third-party tool with its own anonymous install telemetry, governed by <a href="https://vercel.com/legal/privacy-policy">Vercel's privacy policy</a>. The skill it installs is this same project: at runtime it makes no network requests, and every mode works entirely from files bundled with the skill.</p>
+
+  <p><strong>Command line scripts.</strong> The installer clones this project's public GitHub repository, and <code>plans-update</code> runs <code>git pull</code> against it. Those git operations are the only network activity on this path, and they are subject to <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>.</p>
 
   <h2>The session hook</h2>
 

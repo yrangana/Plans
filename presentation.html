@@ -368,7 +368,7 @@
     <!-- 5. Setup: plugin and fallback -->
     <section class="deck">
       <span class="eyebrow">Setup</span>
-      <h2>Under two minutes to set up. Plugin first, scripts as a fallback.</h2>
+      <h2>Under two minutes to set up. Plugin first, one command everywhere else.</h2>
       <div class="grid-2" style="margin-top:18px">
         <div class="panel tinted-indigo">
           <div class="label-row"><span class="pill indigo">Claude Code</span><span class="pill outline">Recommended</span></div>
@@ -380,9 +380,10 @@
         </div>
         <div class="panel">
           <h3 style="color:var(--ink-soft)">Cursor, Antigravity, Windsurf, or scripts</h3>
-          <pre style="margin-top:8px"><code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
-plans-init /path/to/your/project</code></pre>
+          <pre style="margin-top:8px"><code>npx skills add yrangana/Plans
+/plans init</code></pre>
           <div class="step-note">Scaffolds <code>plans/</code> and offers to append the planning snippet to your <code>CLAUDE.md</code>, <code>AGENTS.md</code>, or <code>.cursorrules</code>. Nothing happens without confirmation.</div>
+          <p class="footnote">or: <code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash</code></p>
         </div>
       </div>
       <p class="footnote" style="margin-top:16px">Either path: run <code>/plans:plans new</code> (plugin) or <code>/plans new</code> (fallback) for your first plan, then open <code>roadmap.html</code>.</p>
@@ -581,8 +582,9 @@ Create a plan: /plans new</code></pre>
 /plans:plans init
 
 # Cursor, Antigravity, Windsurf
-curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
-plans-init /path/to/your/project</code></pre>
+npx skills add yrangana/Plans
+/plans init</code></pre>
+      <p class="footnote">or: <code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash</code></p>
       <div class="closing-grid">
         <div class="panel">
           <h4>Live demo: dashboard</h4>
