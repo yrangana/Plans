@@ -504,6 +504,10 @@ const today = new Date('2026-05-07');
 const fmtDay = d => new Date(d).toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
 const fmtFull = d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
+function escapeHtml(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function sortPlans(arr) {
   const so = { active: 0, paused: 1, blocked: 2, shipped: 3, superseded: 4 };
   return [...arr].sort((a, b) => {
@@ -557,9 +561,9 @@ function renderGantt(plans) {
     const width = Math.max(pct(r.end) - left, 1.5);
     const pri = (r.plan.priority || '').toLowerCase();
     const range = `${fmtDay(r.start)} – ${fmtDay(r.end)}`;
-    html += `<div class="gantt-row" data-id="${r.plan.file}">
-      <div class="gantt-label"><span class="pri ${pri}">${r.plan.priority || '—'}</span><span class="name">${r.plan.title}</span></div>
-      <div class="gantt-track"><div class="gantt-bar ${status}" style="left: ${left.toFixed(2)}%; width: ${width.toFixed(2)}%;" title="${r.plan.title} · ${range}">${range}${r.plan.owner ? ' · ' + r.plan.owner : ''}</div></div>
+    html += `<div class="gantt-row" data-id="${escapeHtml(r.plan.file)}">
+      <div class="gantt-label"><span class="pri ${escapeHtml(pri)}">${escapeHtml(r.plan.priority || '—')}</span><span class="name">${escapeHtml(r.plan.title)}</span></div>
+      <div class="gantt-track"><div class="gantt-bar ${status}" style="left: ${left.toFixed(2)}%; width: ${width.toFixed(2)}%;" title="${escapeHtml(r.plan.title)} · ${range}">${range}${r.plan.owner ? ' · ' + escapeHtml(r.plan.owner) : ''}</div></div>
     </div>`;
   });
   if (today >= minD && today <= maxD) {
@@ -592,7 +596,7 @@ function renderDeps(plans) {
       const cls = p.in_flight ? 'in-flight' : p.status === 'shipped' ? 'shipped' : chain.length === 1 ? 'standalone' : '';
       const phase = (p.phase_summary || []).find(ph => ph.status === 'in_progress');
       const phaseLabel = phase ? `Phase ${phase.phase + 1} of ${p.phase_summary.length}` : p.in_flight ? 'in flight' : p.status === 'shipped' ? 'shipped' : 'queued';
-      html += `<div class="dep-node ${cls}"><span class="id">${id}</span><span class="ttl">${p.title}</span><span class="row"><span>${p.priority || '—'}</span><span>·</span><span>${p.owner || '—'}</span><span>·</span><span>${phaseLabel}</span></span></div>`;
+      html += `<div class="dep-node ${cls}"><span class="id">${escapeHtml(id)}</span><span class="ttl">${escapeHtml(p.title)}</span><span class="row"><span>${escapeHtml(p.priority || '—')}</span><span>·</span><span>${escapeHtml(p.owner || '—')}</span><span>·</span><span>${escapeHtml(phaseLabel)}</span></span></div>`;
       if (i < chain.length - 1) html += `<div class="dep-blocks">blocks<div class="dep-arrow"></div></div>`;
     });
     if (chain.length === 1 && !chain[0].blocks?.length && !chain[0].depends_on?.length)
@@ -621,13 +625,13 @@ function renderPlans(plans) {
     const pri = (p.priority || '').toLowerCase();
     const phasesHtml = (p.phase_summary || []).map(ph => {
       const date = ph.status === 'shipped' ? ph.date : ph.eta;
-      return `<div class="ph ${ph.status}"><span class="dot"></span><span class="nm">${ph.name}</span><span class="when">${date ? fmtDay(date) : '—'}</span></div>`;
+      return `<div class="ph ${escapeHtml(ph.status)}"><span class="dot"></span><span class="nm">${escapeHtml(ph.name)}</span><span class="when">${date ? fmtDay(date) : '—'}</span></div>`;
     }).join('');
-    return `<article class="plan" data-status="${p.status}">
+    return `<article class="plan" data-status="${escapeHtml(p.status)}">
       <div class="plan-main">
-        <div class="plan-head"><span class="plan-title">${p.title}</span><span class="plan-id">${p.file}</span><span class="pill ${s.cls}">${s.label}</span></div>
-        <div class="plan-meta"><span class="pri-tag ${pri}">${p.priority || '—'}</span><span>· ${p.type}</span><span>· owner ${p.owner}</span>${p.eta ? `<span>· eta ${fmtFull(p.eta)}</span>` : ''}</div>
-        ${p.next_action ? `<div class="plan-next">${p.next_action}</div>` : ''}
+        <div class="plan-head"><span class="plan-title">${escapeHtml(p.title)}</span><span class="plan-id">${escapeHtml(p.file)}</span><span class="pill ${s.cls}">${s.label}</span></div>
+        <div class="plan-meta"><span class="pri-tag ${escapeHtml(pri)}">${escapeHtml(p.priority || '—')}</span><span>· ${escapeHtml(p.type)}</span><span>· owner ${escapeHtml(p.owner)}</span>${p.eta ? `<span>· eta ${fmtFull(p.eta)}</span>` : ''}</div>
+        ${p.next_action ? `<div class="plan-next">${escapeHtml(p.next_action)}</div>` : ''}
       </div>
       <div class="plan-progress"><div class="pct"><span>Progress</span><span>${pct}%</span></div><div class="progress"><div class="progress-fill ${pct === 0 ? 'zero' : ''}" style="width:${pct}%"></div></div></div>
       <div class="plan-phases">${phasesHtml}</div>

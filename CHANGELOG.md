@@ -24,6 +24,7 @@ Makes the skill package self-sufficient. The project template and the instructio
 - README, docs/reference.md, and the website lead the non-Claude-Code path with `npx skills add`; the curl scripts remain supported as a fallback, including the inspect-first variant.
 - web/privacy.html covers three install paths and drops the sync version-check disclosure, because the check no longer exists.
 - New maintenance invariant in CLAUDE.md: files under `template/skills/plans/` are add-only across releases, because `update_skill`'s copy-over cannot delete orphans in adopter projects.
+- Both roadmap.html copies now escape every plan-data field they interpolate into HTML. Previously a plan title containing markup would execute in the dashboard's origin, which matters when plans/ is git-tracked with multiple contributors.
 
 ---
 
