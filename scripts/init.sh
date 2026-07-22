@@ -27,12 +27,12 @@ for arg in "$@"; do
 done
 TARGET_DIR="${TARGET_DIR:-$(pwd)}"
 
-if [ ! -d "$SCRIPT_DIR/../template/plans" ]; then
-  echo "Error: cannot find template at $SCRIPT_DIR/../template/plans"
+if [ ! -d "$SCRIPT_DIR/../template/skills/plans/template/plans" ]; then
+  echo "Error: cannot find template at $SCRIPT_DIR/../template/skills/plans/template/plans"
   exit 1
 fi
 
-SOURCE="$(cd "$SCRIPT_DIR/../template" && pwd)"
+SOURCE="$(cd "$SCRIPT_DIR/../template/skills/plans/template" && pwd)"
 
 if [ -d "$TARGET_DIR/plans" ]; then
   echo "Error: $TARGET_DIR/plans already exists. Aborting."
@@ -103,7 +103,7 @@ else
 fi
 
 # Install the /plans skill (location depends on detected AI platform)
-SKILL_SRC="$SOURCE/skills/plans"
+SKILL_SRC="$SCRIPT_DIR/../template/skills/plans"
 
 install_skill() {
   local dest="$1"
