@@ -18,6 +18,9 @@ if plans/ does not exist in the project root:
       "  curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash"
       "  plans-init"
       ""
+      "(plans-init installs its own copy of this skill. If you added this one with"
+      " npx skills, run npx skills remove plans first.)"
+      ""
       "Or visit https://github.com/yrangana/Plans for full instructions."
   stop.
 ```

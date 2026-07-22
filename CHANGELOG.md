@@ -12,6 +12,17 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.6.1
+
+Fixes install advice given to users who are not on Claude Code. The skill is installable via `npx skills add yrangana/Plans`, which serves roughly 70 assistants and delivers the skill without the bundled template, so it lands in STANDALONE mode. Two messages on that path were wrong: one recommended a Claude Code command to everyone, and all three recommended a remedy that silently produces a duplicate skill copy.
+
+- `template/skills/plans/references/init.md`: the STANDALONE message now branches on the assistant rather than presenting `/plugin marketplace add` as an afterthought to every user. `/plugin marketplace add yrangana/Plans` is labelled as the Claude Code route; the install script is labelled as the route for every other assistant. Previously a Cursor or Windsurf user was shown a command that does not exist in their editor.
+- `template/skills/plans/references/init.md`, `sync.md`, `new-plan.md`: all three recommend `plans-init` to STANDALONE users, and `plans-init` installs its own copy of the skill alongside the one already present. That leaves two copies with separate update paths, which is the outcome the skills.sh delivery decision was meant to avoid. Each message now says so and points at `npx skills remove plans` as the way to avoid it.
+
+No logic, modes, or file layout changed. Adopters on the plugin and script paths are unaffected: both are BUNDLED, and none of these messages fire for them.
+
+---
+
 ## v0.6.0
 
 Closes a gap between the two adoption paths. On the script path, `scripts/init.sh` appends `template/CLAUDE.md.snippet` to the user's CLAUDE.md, and that snippet carries ambient operational rules (write plans only into `plans/active/`, never hand-edit `plans/plans.json`, update a plan's status banner before ending a session that touched its code, read `plans/STATUS.md` at session start) that apply even when the skill is never invoked. The plugin path had no equivalent: skills only load on invocation, so plugin users silently lost all of those rules unless they happened to run `/plans:plans`.
