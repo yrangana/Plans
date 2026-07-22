@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plans · Privacy</title>
+<meta name="description" content="Privacy policy for the Plans planning convention, its Claude Code plugin, and its CLI." />
+<style>
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --ink: #1d1d1f;
+  --ink-mute: #6e6e73;
+  --ink-faint: #86868b;
+  --border: #d2d2d7;
+  --accent: #0071e3;
+  --link: #0066cc;
+  --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+  --font-body: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 720px; margin: 0 auto; padding: 64px 24px 80px; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 14px;
+}
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
+  margin: 0 0 10px;
+}
+.updated { color: var(--ink-faint); font-size: 14px; margin: 0 0 40px; }
+h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  margin: 40px 0 12px;
+}
+p { margin: 0 0 14px; color: var(--ink-mute); }
+ul { margin: 0 0 14px; padding-inline-start: 22px; color: var(--ink-mute); }
+li { margin-bottom: 8px; }
+strong { color: var(--ink); font-weight: 600; }
+code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.callout {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin: 0 0 32px;
+}
+.callout p:last-child { margin-bottom: 0; }
+.footer {
+  border-top: 1px solid var(--border);
+  margin-top: 56px;
+  padding-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: var(--ink-faint);
+}
+.footer-links { display: flex; flex-wrap: wrap; gap: 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Privacy</p>
+  <h1>Privacy policy</h1>
+  <p class="updated">Last updated: 2026-07-22</p>
+
+  <div class="callout">
+    <p><strong>In short:</strong> Plans collects nothing. There are no accounts, no telemetry, and no analytics. Your plan files stay in your repository on your machine. Nothing you write is transmitted to the maintainer or to any third party.</p>
+  </div>
+
+  <p>This policy covers the Plans convention, its Claude Code plugin, its <code>/plans</code> skill, and its command line scripts. Plans is an open source project released under the MIT licence. The source is at <a href="https://github.com/yrangana/Plans">github.com/yrangana/Plans</a>, so every claim below can be verified by reading it.</p>
+
+  <h2>What Plans stores, and where</h2>
+
+  <p>Plans creates a <code>plans/</code> directory inside your own project. It holds markdown plan files, a <code>STATUS.md</code>, a <code>plans.json</code>, and a <code>roadmap.html</code> dashboard. These are ordinary files on your filesystem, under your control, and they are yours.</p>
+
+  <p>By default the bootstrap step adds <code>plans/</code> to your repository's local git exclude list, so plan files are not committed unless you choose to track them. Nothing is written outside your project directory, with one exception noted below.</p>
+
+  <h2>Network activity</h2>
+
+  <p>This differs between the two ways Plans can be installed, so both are described precisely.</p>
+
+  <p><strong>Claude Code plugin.</strong> The plugin makes no network requests while running. Its <code>init</code> and <code>update</code> modes copy files from the plugin's own bundled template. Its <code>sync</code> mode compares your plan files against your local git history and deliberately does not contact any server. Installing and updating the plugin itself is handled by Claude Code, not by Plans.</p>
+
+  <p><strong>Command line scripts.</strong> The installer clones this project's public GitHub repository, and <code>plans-update</code> runs <code>git pull</code> against it. On this path only, <code>/plans sync</code> also performs a version check by requesting a single published version file from <code>raw.githubusercontent.com</code> so it can tell you when your copy is out of date. That request sends nothing about you or your project beyond what any ordinary HTTP request to GitHub reveals, and it is subject to <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>. If it fails, it is skipped silently.</p>
+
+  <h2>The session hook</h2>
+
+  <p>The plugin ships a <code>SessionStart</code> hook. It exists to tell your assistant the project's conventions, for example that plan files belong in <code>plans/active/</code>. Because a hook runs automatically, its behaviour is worth stating exactly:</p>
+
+  <ul>
+    <li>It reads none of your files, and receives no input.</li>
+    <li>It checks only whether a <code>plans/</code> directory exists in your project. If not, it outputs nothing at all.</li>
+    <li>When it does run, it emits a fixed block of text that is identical for every user. Nothing about your project is interpolated into it.</li>
+    <li>It makes no network requests and writes nothing to disk.</li>
+    <li>It is removed when you uninstall the plugin.</li>
+  </ul>
+
+  <h2>The dashboard</h2>
+
+  <p>The <code>roadmap.html</code> dashboard runs entirely in your browser from your own filesystem or local server. It reads only <code>./STATUS.md</code> and <code>./plans.json</code> from the same directory. It loads no external fonts, scripts, or images, contains no analytics or tracking of any kind, and sends your plan data nowhere.</p>
+
+  <h2>Your AI assistant</h2>
+
+  <p>Plans is a file convention. When you use it with Claude Code, Cursor, or a similar tool, that assistant reads your plan files in the same way it reads any other file in your project, and its own privacy policy governs what it does with them. Plans neither adds to nor changes that relationship, and has no visibility into it.</p>
+
+  <h2>This website</h2>
+
+  <p>These pages are served by GitHub Pages. They set no cookies and run no analytics. GitHub may log requests as part of operating its service, which is covered by <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a> rather than by this project.</p>
+
+  <h2>Children</h2>
+
+  <p>Plans is a developer tool and is not directed at children. It collects no personal information from anyone, including children.</p>
+
+  <h2>Changes</h2>
+
+  <p>If this policy changes, the date at the top of this page changes with it, and the revision is visible in this project's public git history.</p>
+
+  <h2>Contact</h2>
+
+  <p>Questions about this policy, or about anything Plans does with your data, can be raised as an issue at <a href="https://github.com/yrangana/Plans/issues">github.com/yrangana/Plans/issues</a>.</p>
+
+  <div class="footer">
+    <span>Plans · MIT · plain markdown + json</span>
+    <div class="footer-links">
+      <a href="index.html">Site</a>
+      <a href="docs.html">Spec</a>
+      <a href="roadmap.html">Demo</a>
+      <a href="https://github.com/yrangana/Plans">GitHub</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
