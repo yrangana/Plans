@@ -75,6 +75,13 @@ Works with Cursor, Antigravity, Windsurf, or any setup where you prefer plain sc
    curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
    ```
 
+   Prefer to read it before running it:
+
+   ```bash
+   curl -sSLO https://raw.githubusercontent.com/yrangana/Plans/main/install.sh
+   less install.sh && bash install.sh
+   ```
+
 2. Bootstrap your project:
 
    ```bash

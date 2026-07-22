@@ -1,10 +1,12 @@
 ---
 name: plans
-version: 0.6.2
+version: 0.6.3
 description: Manage the plans/ spec-driven planning system. Use `init` to bootstrap plans/ in a project, `sync` to audit drift between plan files and git, `new` to create a plan file, `update` to refresh system files. Invoked as /plans:plans (plugin) or /plans (project-local).
 ---
 
 # /plans
+
+Plans tracks what you are building in plain markdown: one file per feature with a seven-field spec, a `STATUS.md` front door, and a static `roadmap.html` that renders a Gantt chart and dependency graph with no server and no build step. Everything lives in your repo, so your assistant reads it like any other file.
 
 Four modes. Invoke as `/plans:plans <mode>` (plugin install) or `/plans <mode>` (project-local install).
 

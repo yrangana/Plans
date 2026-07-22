@@ -12,6 +12,17 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.6.3
+
+Presentation fixes prompted by the skill's page going live on skills.sh, which renders SKILL.md to browsers rather than only to models.
+
+- `template/skills/plans/SKILL.md`: adds a two-sentence opening after the `# /plans` heading describing what Plans actually is. The visible portion of the skills.sh page previously ran straight from the install command into "Four modes" and then the delivery-detection algorithm, so a human visitor read invocation syntax and directory-walking logic without ever learning what the skill is for. The `description:` frontmatter carries that explanation but appears only as a search blurb and meta tag, not in the page body. Costs roughly 60 tokens per invocation and grounds the domain before the modes are listed.
+- `README.md`: adds a download-and-read alternative beside the piped installer under Quick Start. v0.6.2 redirected the skill's STANDALONE messages here rather than printing `curl ... | bash` themselves, so this is where that chain now terminates; it should not terminate in piping an unread script. The one-liner is unchanged and still first.
+
+Deliberately unchanged: the `description:` frontmatter, which exists to tell a model when to invoke the skill and should not be rewritten as directory copy. Also unchanged are the piped-install commands in `web/index.html`, `web/presentation.html`, `docs/blog-post.md`, and `docs/reference.md`. Those are read by humans who choose whether to run them, which is the pattern rustup, Homebrew, and bun all ship; the audit finding was specifically about instructions an agent can execute unattended.
+
+---
+
 ## v0.6.2
 
 Removes the piped-shell install command from the skill's instructions, after the skills.sh listing published a failing Snyk audit against it.
