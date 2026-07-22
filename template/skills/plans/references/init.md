@@ -9,12 +9,20 @@ Bootstrap `plans/` in the current project from the template bundled with the plu
 ```text
 if STANDALONE delivery:
   print:
-    "This skill copy has no bundled template. Bootstrap with the CLI instead:"
+    "This skill copy has no bundled template, so it cannot create plans/ here."
+    ""
+    "In Claude Code, install the plugin:"
+    ""
+    "  /plugin marketplace add yrangana/Plans"
+    ""
+    "In any other assistant, use the install script:"
     ""
     "  curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash"
     "  plans-init"
     ""
-    "Or install the plugin: /plugin marketplace add yrangana/Plans"
+    "Note: plans-init installs its own copy of this skill. If you added this one"
+    "with npx skills, run npx skills remove plans first, so you do not keep two"
+    "copies that update separately."
   stop.
 ```
 
