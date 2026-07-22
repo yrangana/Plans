@@ -109,7 +109,9 @@ a:hover { text-decoration: underline; }
 
   <p>Plans creates a <code>plans/</code> directory inside your own project. It holds markdown plan files, a <code>STATUS.md</code>, a <code>plans.json</code>, and a <code>roadmap.html</code> dashboard. These are ordinary files on your filesystem, under your control, and they are yours.</p>
 
-  <p>By default the bootstrap step adds <code>plans/</code> to your repository's local git exclude list, so plan files are not committed unless you choose to track them. Nothing is written outside your project directory, with one exception noted below.</p>
+  <p>By default the bootstrap step adds <code>plans/</code> to your repository's local git exclude list, so plan files are not committed unless you choose to track them.</p>
+
+  <p>The Claude Code plugin writes only inside your project directory. The command line scripts additionally write to two locations in your home directory when you install them: a copy of this project at <code>~/.local/share/plans</code>, and symlinks named <code>plans-init</code> and <code>plans-update</code> in <code>~/.local/bin</code>. Both paths are configurable, and both contain only this project's own files, never yours.</p>
 
   <h2>Network activity</h2>
 
@@ -124,12 +126,15 @@ a:hover { text-decoration: underline; }
   <p>The plugin ships a <code>SessionStart</code> hook. It exists to tell your assistant the project's conventions, for example that plan files belong in <code>plans/active/</code>. Because a hook runs automatically, its behaviour is worth stating exactly:</p>
 
   <ul>
-    <li>It reads none of your files, and receives no input.</li>
-    <li>It checks only whether a <code>plans/</code> directory exists in your project. If not, it outputs nothing at all.</li>
-    <li>When it does run, it emits a fixed block of text that is identical for every user. Nothing about your project is interpolated into it.</li>
+    <li>It reads the contents of none of your files.</li>
+    <li>To decide whether your project uses the convention, it reads the <code>CLAUDE_PROJECT_DIR</code> environment variable if it is set, and asks git for the repository root by running <code>git rev-parse --show-toplevel</code>. It then tests whether a <code>plans/</code> directory exists there. That is the full extent of what it inspects.</li>
+    <li>If no <code>plans/</code> directory is found, it outputs nothing at all and exits.</li>
+    <li>When it does run, it emits a fixed block of text that is byte for byte identical for every user. It is written as a quoted shell heredoc, so no value from your project, environment, or filesystem can be substituted into it.</li>
     <li>It makes no network requests and writes nothing to disk.</li>
     <li>It is removed when you uninstall the plugin.</li>
   </ul>
+
+  <p>The hook is a short POSIX shell script and is <a href="https://github.com/yrangana/Plans/blob/main/hooks/plans-context.sh">readable in full here</a>.</p>
 
   <h2>The dashboard</h2>
 
