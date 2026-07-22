@@ -67,28 +67,37 @@ Three steps: add the marketplace, install the plugin, bootstrap your project. `i
 
 ### Other assistants and no-plugin setups
 
-Works with Cursor, Antigravity, Windsurf, or any setup where you prefer plain scripts.
+Works with Cursor, Antigravity, Windsurf, and any of the roughly 70 assistants the community skills CLI supports.
 
-1. Install the CLI (clones to `~/.local/share/plans`, symlinks `plans-init` and `plans-update`):
-
-   ```bash
-   curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
-   ```
-
-   Prefer to read it before running it:
+1. Install the skill:
 
    ```bash
-   curl -sSLO https://raw.githubusercontent.com/yrangana/Plans/main/install.sh
-   less install.sh && bash install.sh
+   npx skills add yrangana/Plans
    ```
 
-2. Bootstrap your project:
+2. In your assistant, bootstrap the project:
 
-   ```bash
-   plans-init /path/to/your/project
+   ```text
+   /plans init
    ```
 
-3. Tell your assistant about it: append [`template/CLAUDE.md.snippet`](template/CLAUDE.md.snippet) to your `CLAUDE.md`, `AGENTS.md`, or `.cursorrules` (`plans-init` offers this automatically).
+   `init` creates `plans/`, asks whether to track it in git (default: keep it local), and offers to append the planning rules to your `CLAUDE.md`, `AGENTS.md`, or `.cursorrules` (explicit consent, never twice).
+
+3. Update the skill later with `npx skills update`.
+
+Prefer plain scripts, with no assistant session involved? The CLI path is still supported:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash
+plans-init /path/to/your/project
+```
+
+Read it before running it:
+
+```bash
+curl -sSLO https://raw.githubusercontent.com/yrangana/Plans/main/install.sh
+less install.sh && bash install.sh
+```
 
 ### Then, on either path
 
@@ -114,6 +123,12 @@ Updates come through `/plugin`. Refresh your project's system files (`roadmap.ht
 
 ```text
 /plans:plans update
+```
+
+### Update an npx-installed skill
+
+```bash
+npx skills update
 ```
 
 ### Update the plans CLI
@@ -178,15 +193,14 @@ plans/
 │   ├── reference.md         # Technical spec
 │   ├── blog-post.md         # Narrative explanation
 │   └── presentation.html    # Slideshow
-├── template/                # Drop-in starter for your project
-│   ├── plans/               # The directory you copy into your repo
-│   │   ├── README.md        # Onboarding doc
-│   │   ├── STATUS.md        # Daily check-in template
-│   │   ├── plans.json       # Machine-readable snapshot (empty to start)
-│   │   ├── roadmap.html     # Interactive dashboard
-│   │   ├── active/          # In-progress plans (with EXAMPLE_PLAN.md)
-│   │   └── shipped/         # Completed plans
-│   └── CLAUDE.md.snippet    # The section to add to your AI instruction file
+├── template/                # What users copy into their projects
+│   └── skills/
+│       └── plans/           # The /plans skill (self-sufficient package)
+│           ├── SKILL.md
+│           ├── references/  # Per-mode logic loaded on demand
+│           └── template/    # Bundled project template
+│               ├── CLAUDE.md.snippet   # under skills/plans/template
+│               └── plans/   # STATUS.md, plans.json, roadmap.html, active/, shipped/, superseded/
 ├── scripts/
 │   └── init.sh              # One-command setup
 ├── web/                     # GitHub Pages site (deployed automatically)
