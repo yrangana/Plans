@@ -489,7 +489,7 @@ Works on every delivery. Copies the bundled `template/plans/` (shipped inside th
 
 ### /plans update
 
-Plugin installs only. Diffs `plans/roadmap.html` and `plans/README.md` against the bundled template, prompts per file, writes `<file>.bak` before overwriting. Never touches user data (`STATUS.md`, `plans.json`, `active/`, `shipped/`, `superseded/`). Updates to exactly the installed plugin version, never from the network. Project-local copies print the `plans-update` instructions instead. `sync` suggests this mode when system files are stale, but never runs it.
+Works on every delivery. Diffs `plans/roadmap.html` and `plans/README.md` against the bundled template, prompts per file, writes `<file>.bak` before overwriting. Never touches user data (`STATUS.md`, `plans.json`, `active/`, `shipped/`, `superseded/`). Updates to exactly the installed skill version, never from the network. `sync` suggests this mode when system files are stale, but never runs it.
 
 ---
 
