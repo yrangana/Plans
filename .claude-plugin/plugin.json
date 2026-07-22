@@ -1,7 +1,7 @@
 {
   "name": "plans",
   "displayName": "Plans",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "A markdown convention for tracking what you are building. Plain files in your repo, one source of truth for what is active, shipped, and next.",
   "author": {
     "name": "Yasiru Rangana",
