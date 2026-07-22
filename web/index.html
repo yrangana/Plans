@@ -276,6 +276,8 @@ section { padding-block: 120px; }
 .install-notes span { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 14px; color: var(--ink-mute); line-height: 1.5; }
 .install-notes span::before { content: ""; display: inline-block; width: 2px; height: 12px; background: var(--accent); border-radius: 1px; flex-shrink: 0; }
 .install-notes code { font-family: var(--font-mono); font-size: 12px; color: var(--ink); background: var(--surface); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; }
+.install-fallback { margin: 14px 0 0; font-size: 13px; color: var(--ink-faint); }
+.install-fallback a { color: inherit; text-decoration: underline; }
 .install-hero .eyebrow { margin-block-end: 14px; }
 .install-hero h2 { font-size: clamp(34px, 4vw, 48px); font-weight: 600; letter-spacing: -0.022em; line-height: 1.06; margin: 0 0 10px; }
 .install-hero p { font-size: 19px; color: var(--ink-mute); letter-spacing: -0.018em; line-height: 1.5; margin: 0 0 32px; max-width: 54ch; }
@@ -745,25 +747,25 @@ section { padding-block: 120px; }
       </div>
       <div class="install-track" id="panel-cli" role="tabpanel" aria-labelledby="tab-cli" hidden>
         <div class="install-notes">
-          <span>One curl, then <code>plans-init</code></span>
-          <span><code>plans-init</code> offers to append a planning section to <code>CLAUDE.md</code>, <code>AGENTS.md</code>, or <code>.cursorrules</code></span>
+          <span>Install via <code>npx skills add</code>, then <code>/plans init</code></span>
+          <span><code>/plans init</code> offers to append a planning section to <code>CLAUDE.md</code>, <code>AGENTS.md</code>, or <code>.cursorrules</code></span>
           <span>Git-excluded by default, plans stay local</span>
         </div>
         <ol class="install-steps-v" data-track="cli">
           <li class="active" data-step="0">
             <div class="step-node">1</div>
-            <strong>Install the CLI</strong>
-            <p>Run <code>curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash</code>.</p>
+            <strong>Install the skill</strong>
+            <p>Install the skill: <code>npx skills add yrangana/Plans</code> (about 70 assistants).</p>
           </li>
           <li data-step="1">
             <div class="step-node">2</div>
             <strong>Bootstrap a project</strong>
-            <p>Run <code>plans-init ~/code/your-app</code>. Creates <code>plans/</code> and keeps it out of git by default.</p>
+            <p>In your assistant, run <code>/plans init</code>. It scaffolds <code>plans/</code>, handles git exclusion, and offers the rules snippet.</p>
           </li>
           <li data-step="2">
             <div class="step-node">3</div>
             <strong>Open the dashboard</strong>
-            <p>Run <code>npx serve .</code> in your project root, then open <code>localhost:3000/plans/roadmap.html</code>.</p>
+            <p>Open <code>plans/roadmap.html</code> from any static server. Update later with <code>npx skills update</code>.</p>
           </li>
           <li data-step="3">
             <div class="step-node">4</div>
@@ -771,6 +773,7 @@ section { padding-block: 120px; }
             <p>Replace the example plan in <code>plans/active/</code> with a real one, or run <code>/plans new</code> in your AI assistant.</p>
           </li>
         </ol>
+        <p class="install-fallback">Prefer plain scripts? <a href="https://github.com/yrangana/Plans#quick-start">The CLI path is still supported.</a></p>
       </div>
       <div class="terminal" id="install-terminal">
         <div class="window-bar">
@@ -979,7 +982,7 @@ roadmap.html</pre>
 
   var COMMANDS = {
     claude: '/plugin marketplace add yrangana/Plans',
-    cli: 'curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash'
+    cli: 'npx skills add yrangana/Plans'
   };
 
   var LINES = {
@@ -1007,28 +1010,17 @@ roadmap.html</pre>
       { text: '✓ Created plans/active/MY_FEATURE.md', cls: 'ok', step: 3 },
     ],
     cli: [
-      { text: '# 1. install the CLI', cls: 'comment', step: 0 },
-      { text: 'curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash', cls: 'prompt-line', step: 0 },
-      { text: 'Plans system installer', cls: 'out', step: 0 },
-      { text: 'Cloning plans into ~/.local/share/plans...', cls: 'out', step: 0 },
-      { text: '✓ Installed to ~/.local/share/plans', cls: 'ok', step: 0 },
-      { text: '✓ Symlinks: ~/.local/bin/plans-init, plans-update', cls: 'ok', step: 0 },
+      { text: '# 1. install the skill', cls: 'comment', step: 0 },
+      { text: 'npx skills add yrangana/Plans', cls: 'prompt-line', step: 0 },
+      { text: 'OK: installed skill: plans', cls: 'ok', step: 0 },
       { text: '', cls: '', step: 0 },
       { text: '# 2. bootstrap your project', cls: 'comment', step: 1 },
-      { text: 'plans-init ~/code/your-app', cls: 'prompt-line', step: 1 },
-      { text: '→ created plans/active/, plans/shipped/, plans/superseded/', cls: 'out', step: 1 },
-      { text: '→ added plans/ to .git/info/exclude', cls: 'out', step: 1 },
-      { text: '→ detected CLAUDE.md, append planning section? [Y/n] y', cls: 'out', step: 1 },
-      { text: '✓ All set. Open plans/STATUS.md.', cls: 'ok', step: 1 },
+      { text: '/plans init', cls: 'ai-line', step: 1 },
+      { text: 'OK: scaffolded plans/', cls: 'ok', step: 1 },
+      { text: 'OK: plans/ added to .git/info/exclude', cls: 'ok', step: 1 },
       { text: '', cls: '', step: 1 },
-      { text: '# 3. start the dashboard', cls: 'comment', step: 2 },
-      { text: 'npx serve .', cls: 'prompt-line', step: 2 },
-      { text: 'Serving! http://localhost:3000', cls: 'out', step: 2 },
-      { text: 'open http://localhost:3000/plans/roadmap.html', cls: 'prompt-line', step: 2 },
-      { text: '', cls: '', step: 2 },
-      { text: '# 4. write your first plan', cls: 'comment', step: 3 },
-      { text: '/plans new', cls: 'ai-line', step: 3 },
-      { text: '✓ Created plans/active/MY_FEATURE.md', cls: 'ok', step: 3 },
+      { text: '# 3. open the dashboard', cls: 'comment', step: 2 },
+      { text: 'plans/roadmap.html ready', cls: 'out', step: 2 },
     ]
   };
 
