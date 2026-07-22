@@ -1,6 +1,6 @@
 ---
 name: plans
-version: 0.6.1
+version: 0.6.2
 description: Manage the plans/ spec-driven planning system. Use `init` to bootstrap plans/ in a project, `sync` to audit drift between plan files and git, `new` to create a plan file, `update` to refresh system files. Invoked as /plans:plans (plugin) or /plans (project-local).
 ---
 

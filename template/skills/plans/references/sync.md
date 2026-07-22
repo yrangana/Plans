@@ -13,15 +13,12 @@ if plans/ does not exist in the project root:
   else:
     print:
       "No plans/ directory found in this project."
-      "Set it up with:"
+      "Set it up by following the install steps at:"
       ""
-      "  curl -sSL https://raw.githubusercontent.com/yrangana/Plans/main/install.sh | bash"
-      "  plans-init"
+      "  https://github.com/yrangana/Plans#quick-start"
       ""
-      "(plans-init installs its own copy of this skill. If you added this one with"
-      " npx skills, run npx skills remove plans first.)"
-      ""
-      "Or visit https://github.com/yrangana/Plans for full instructions."
+      "(That path runs plans-init, which installs its own copy of this skill. If"
+      " you added this one with npx skills, run npx skills remove plans first.)"
   stop.
 ```
 
