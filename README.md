@@ -241,12 +241,12 @@ The thing that makes this convention actually hold up over time: plans describe 
 
 It's a Claude Code slash command (with Antigravity and Cursor ports) with four modes:
 
-- **`/plans init`**: bootstraps `plans/` in a project from the bundled template (plugin installs; `plans-init` covers this on the script path).
+- **`/plans init`**: bootstraps `plans/` in a project from the bundled template. Works on every install path.
 - **`/plans sync`**: weekly audit. Reads every plan's frontmatter, runs `git log`, runs 13 drift rules (stale plans, missing ETAs, orphaned dependencies, frontmatter contradictions, project header gaps), and proposes fixes as a diff. You review and confirm in about 2 minutes. Regenerates `plans.json` and the auto-managed sections of `STATUS.md`.
 - **`/plans new`**: guided creation of a new plan file with correct frontmatter, status banner, and timeline.
-- **`/plans update`**: refreshes system files (`roadmap.html`, `plans/README.md`) from the installed skill version (plugin installs; `plans-update` covers this on the script path).
+- **`/plans update`**: refreshes system files (`roadmap.html`, `plans/README.md`) from the installed skill version. Works on every install path.
 
-`plans-init` installs the skill automatically, but `init` and `update` only run under a plugin install; on the script path, `plans-init` and `plans-update` cover those two jobs directly. See [docs/reference.md](docs/reference.md) for the full drift-rule list.
+All four modes run the same way whether the skill was installed via the plugin, `npx skills add yrangana/Plans`, or the `plans-init` script. The `plans-init` and `plans-update` scripts remain as a no-assistant fallback for the two setup jobs. See [docs/reference.md](docs/reference.md) for the full drift-rule list.
 
 ---
 
