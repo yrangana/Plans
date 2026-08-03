@@ -74,8 +74,10 @@ plans/active/*.md        (extract frontmatter + ## Status banner from each file)
 plans/shipped/*.md       (extract frontmatter only, for dependency validation)
 plans/superseded/*.md    (extract frontmatter only, for dependency validation)
 plans/plans.json         (current snapshot, compare against what you will regenerate)
-git log --oneline --since="{last STATUS.md date}"  (commits since last sync)
+git log --oneline --since="{validated STATUS.md date}"  (commits since last sync)
 ```
+
+**Treat the STATUS.md date as untrusted before it reaches the shell.** The last-updated date is read from a user-editable file and then placed inside the `git log --since="..."` argument. Use it only if it matches `YYYY-MM-DD` exactly (`^\d{4}-\d{2}-\d{2}$`). If it does not match, or line 2 carries no date, do not pass it to the shell: run `git log --oneline -n 50` instead and record the malformed or missing date as a drift finding in Step 2. Never interpolate the raw line-2 text into a command.
 
 For each active plan, parse:
 - All 7 frontmatter fields: `status`, `priority`, `owner`, `type`, `depends_on`, `blocks`, `last_updated`

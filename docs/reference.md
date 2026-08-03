@@ -436,7 +436,7 @@ The skill detects whether a bundled template is reachable, not merely which dire
 | `plans/shipped/*.md` frontmatter | Dependency validation |
 | `plans/superseded/*.md` frontmatter | Dependency validation |
 | `plans/STATUS.md` tables | Verify rows match plan files |
-| `git log --since="{last STATUS.md update}"` | Commits since last sync |
+| `git log --since="{validated STATUS.md date}"` | Commits since last sync; the date is used only if it matches `YYYY-MM-DD`, otherwise a bounded log is read |
 
 #### Drift detection rules
 
