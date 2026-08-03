@@ -12,6 +12,17 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.7.1
+
+Security hardening of two behaviours the skill already had. No change to what it does on the happy path, and no file-format, frontmatter, or path changes.
+
+- `sync` now treats the last-updated date read from `plans/STATUS.md` as untrusted before it enters `git log --since="..."`. The date is used only if it matches `YYYY-MM-DD` exactly; otherwise sync reads a bounded log and flags the malformed date as drift. Closes an indirect-injection path where a hand-edited or cloned `STATUS.md` could have shaped the git command.
+- `init` now states in the instructions themselves that the `.git/info/exclude` write is the user's choice, and describes exactly what it does: one line, local-only, never committed, reversible, nothing executed. The consent gate was already there; this makes it explicit on the page.
+
+Refresh the skill with `/plugin`, `npx skills update`, or `plans-update` when convenient.
+
+---
+
 ## v0.7.0
 
 Makes the skill package self-sufficient. The project template and the instruction-file snippet now ship inside the skill directory (`template/skills/plans/template/`), so every delivery can bootstrap a project: the Claude Code plugin, the scripts, and `npx skills add yrangana/Plans`, which installs the skill on roughly 70 assistants and previously could not create `plans/` at all.

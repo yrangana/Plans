@@ -30,7 +30,7 @@ plans/
 
 Copy every file as-is. Do not edit, fill in, or personalize any of them.
 
-**2. Git exclusion.** If the project is a git repository, ask exactly one question:
+**2. Git exclusion.** Keeping `plans/` out of git is the user's decision, made by answering the question below. The only change taken on their behalf is appending the single line `plans/` to `.git/info/exclude`, git's per-clone local ignore file: never committed, never shared with collaborators, reversible by deleting that one line. No global git config is modified and nothing is executed against the repository. If the project is a git repository, ask exactly one question:
 
 ```text
 "Track plans/ in git, or keep it local to this machine? (default: local)"
