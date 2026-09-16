@@ -53,7 +53,7 @@ Full scope and audience details in [docs/reference.md](docs/reference.md).
 
 ---
 
-## Quick Start
+## Installation
 
 ### Claude Code (plugin, recommended)
 
