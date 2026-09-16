@@ -1,6 +1,6 @@
 # Plans
 
-[![Deploy](https://github.com/yrangana/Plans/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/yrangana/Plans/actions/workflows/pages/pages-build-deployment) [![Tests](https://github.com/yrangana/Plans/actions/workflows/test-init.yml/badge.svg)](https://github.com/yrangana/Plans/actions/workflows/test-init.yml)
+[![Deploy](https://github.com/yrangana/Plans/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/yrangana/Plans/actions/workflows/pages/pages-build-deployment) [![Tests](https://github.com/yrangana/Plans/actions/workflows/test-init.yml/badge.svg)](https://github.com/yrangana/Plans/actions/workflows/test-init.yml) [![Listed on ClaudePluginHub](https://www.claudepluginhub.com/badge/yrangana-plans)](https://www.claudepluginhub.com/plugins/yrangana-plans?ref=badge)
 
 ![Plans demo](examples/demo.svg)
 
