@@ -37,6 +37,7 @@ plans/
 │       └── plans/               # The /plans skill (self-sufficient package)
 │           ├── SKILL.md
 │           ├── references/      # Per-mode logic loaded on demand
+│           ├── hooks/           # SessionStart and Stop hook scripts (add-only)
 │           └── template/        # Bundled project template
 │               ├── CLAUDE.md.snippet   # Section adopters paste into their CLAUDE.md (skills/plans/template)
 │               └── plans/              # The directory adopters drop into their repo
@@ -49,7 +50,11 @@ plans/
 │                   └── superseded/
 ├── scripts/
 │   ├── init.sh                  # Bootstraps plans/ and installs skill in a target project
-│   └── update.sh                # Updates system files (roadmap.html, README.md, skill)
+│   ├── update.sh                # Updates system files (roadmap.html, README.md, skill)
+│   └── test-hooks.sh            # Hook script test suite
+├── hooks/
+│   └── hooks.json               # Plugin hook manifest; only this file lives at the root, the
+│                                 # scripts it points at live in the skill tree above
 ├── .claude-plugin/              # Claude Code plugin manifest, delivers /plans as the primary path
 ├── web/                         # GitHub Pages site (deployed by .github/workflows)
 │   ├── index.html               # Landing page
@@ -161,6 +166,7 @@ Because the marketplace entry uses `"source": "./"`, the plugin ships the whole 
 - **Optional > required.** New features (skills, scripts, exports) should be additive and skippable.
 - **Backwards compatibility for adopters.** Don't rename existing fields or change existing file paths once published. New fields are fine.
 - **Skill files are add-only across releases.** Never rename or delete a file under `template/skills/plans/`. `scripts/update.sh` refreshes project-local skill copies with a copy-over that cannot remove files, so a renamed or deleted file leaves an orphan in every adopter project and a permanent "update available" diff. Add or edit only. Revisit if update_skill ever gains remove-then-copy semantics.
+- **Hook scripts live in the skill tree.** `template/skills/plans/hooks/` is inside the add-only boundary; `hooks/hooks.json` at the root is the plugin manifest that points at them. Adding a hook means adding a script there and an entry in `hooks.json`, never moving the scripts back out.
 - **Docs are first-class.** Every behavioural change updates `docs/reference.md` in the same commit.
 
 ---

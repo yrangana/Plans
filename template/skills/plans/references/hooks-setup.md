@@ -72,7 +72,9 @@ Rules for the write:
   object above.
 - If it exists, merge: keep every existing key, add `hooks` if absent, and
   within `hooks` append to the `SessionStart` and `Stop` arrays rather than
-  replacing them. Preserve the file's existing indentation.
+  replacing them. If `hooks` exists but has no `SessionStart` or `Stop` key
+  yet (for example a file with only `PreToolUse`), create that array first,
+  then append the entry to it. Preserve the file's existing indentation.
 - `Stop` takes no `matcher` field. Do not add one.
 - After writing, read the file back and confirm both command paths are
   present. If the write did not go through, say so plainly and print the

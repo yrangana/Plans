@@ -132,11 +132,12 @@ a:hover { text-decoration: underline; }
     <li>To decide whether your project uses the convention, it reads the <code>CLAUDE_PROJECT_DIR</code> environment variable if it is set, and asks git for the repository root by running <code>git rev-parse --show-toplevel</code>. It then tests whether a <code>plans/</code> directory exists there. That is the full extent of what it inspects.</li>
     <li>If no <code>plans/</code> directory is found, it outputs nothing at all and exits.</li>
     <li>When it does run, it emits a fixed block of text that is byte for byte identical for every user. It is written as a quoted shell heredoc, so no value from your project, environment, or filesystem can be substituted into it.</li>
-    <li>It makes no network requests and writes nothing to disk.</li>
+    <li>It makes no network requests.</li>
+    <li><strong>Session marker.</strong> The SessionStart hook writes one small file per session (the starting commit sha) to the session scratchpad, or your system temp directory when none is supplied. It is read only by the Stop guard on the same machine, and never leaves it.</li>
     <li>It is removed when you uninstall the plugin.</li>
   </ul>
 
-  <p>The hook is a short POSIX shell script and is <a href="https://github.com/yrangana/Plans/blob/main/hooks/plans-context.sh">readable in full here</a>.</p>
+  <p>The hook is a short POSIX shell script and is <a href="https://github.com/yrangana/Plans/blob/main/template/skills/plans/hooks/plans-context.sh">readable in full here</a>.</p>
 
   <h2>The dashboard</h2>
 

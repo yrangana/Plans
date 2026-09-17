@@ -65,7 +65,7 @@ if no candidate exists:
     "No AI instruction file found. The plans rules snippet is bundled at:"
     "  <this skill's directory>/template/CLAUDE.md.snippet"
     "Append its body to your instruction file when you create one."
-  continue to Step 4.
+  (nothing else to do in this step; proceed to Step 4, Hook registration)
 
 for each candidate file:
   if the file already contains the line "## Project Status & Plan Management":

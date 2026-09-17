@@ -5,7 +5,7 @@
 # Code's official hooks reference states that the string is wrapped in a
 # system reminder and inserted into the model's context at the point the
 # hook fires, capped at 10,000 characters. This payload is well under
-# that cap (about 760 characters).
+# that cap (under 900 characters).
 #
 # This hook must be fast and side-effect free apart from one write: when
 # the project has adopted the convention, it records a per-session marker
@@ -127,7 +127,7 @@ if mkdir -p "${_marker_dir}" 2>/dev/null \
 fi
 
 cat <<'JSON'
-{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"This project uses the plans/ convention for tracking work. Read plans/STATUS.md at the start of the session for current state. Write new plans only into plans/active/, never to an assistant scratch or memory directory, plan-mode artifacts, or the repo root. plans/plans.json is generated; never hand-edit it. Before ending a session that touched code covered by an active plan, update that plan's ## Status banner and last_updated in its frontmatter. Audit drift periodically with /plans:plans sync, reconciling plans against git log and regenerating plans.json and STATUS.md auto-sections. The convention itself is documented in plans/README.md; defer to it for anything not covered here. Skill modes are invoked as /plans:plans <mode> (init, sync, new, update)."}}
+{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"This project uses the plans/ convention for tracking work. Read plans/STATUS.md at the start of the session for current state. Write new plans only into plans/active/, never to an assistant scratch or memory directory, plan-mode artifacts, or the repo root. plans/plans.json is generated; never hand-edit it. Before ending a session that touched code covered by an active plan, update that plan's ## Status banner and last_updated in its frontmatter. Audit drift periodically with /plans:plans sync, reconciling plans against git log and regenerating plans.json and STATUS.md auto-sections. The convention itself is documented in plans/README.md; defer to it for anything not covered here. A Stop guard will ask once for a plan update if this session changes code while a plan is in flight and no plan file is touched. Skill modes are invoked as /plans:plans <mode> (init, sync, new, update)."}}
 JSON
 
 exit 0

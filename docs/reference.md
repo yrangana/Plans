@@ -485,11 +485,34 @@ Guided creation of a new plan file. Asks: name, type, priority, depends_on, bloc
 
 ### /plans init
 
-Works on every delivery. Copies the bundled `template/plans/` (shipped inside the skill directory) into the project root, asks one question (track `plans/` in git or keep it local, default local, written to `.git/info/exclude`), and on project-local deliveries offers to append the planning rules snippet to a detected instruction file, with explicit per-file consent and a marker guard against double appends. On the plugin delivery it never touches instruction files: the SessionStart hook supplies the rules. Never overwrites an existing `plans/`.
+Works on every delivery. Copies the bundled `template/plans/` (shipped inside the skill directory) into the project root, asks one question (track `plans/` in git or keep it local, default local, written to `.git/info/exclude`), and on project-local deliveries offers to append the planning rules snippet to a detected instruction file, with explicit per-file consent and a marker guard against double appends. On the plugin delivery it never touches instruction files: the SessionStart hook supplies the rules. On project-local Claude Code deliveries only, `init` also offers to register the Stop guard hooks in `.claude/settings.json`. Never overwrites an existing `plans/`.
 
 ### /plans update
 
-Works on every delivery. Diffs `plans/roadmap.html` and `plans/README.md` against the bundled template, prompts per file, writes `<file>.bak` before overwriting. Never touches user data (`STATUS.md`, `plans.json`, `active/`, `shipped/`, `superseded/`). Updates to exactly the installed skill version, never from the network. `sync` suggests this mode when system files are stale, but never runs it.
+Works on every delivery. Diffs `plans/roadmap.html` and `plans/README.md` against the bundled template, prompts per file, writes `<file>.bak` before overwriting. Never touches user data (`STATUS.md`, `plans.json`, `active/`, `shipped/`, `superseded/`). Updates to exactly the installed skill version, never from the network. `sync` suggests this mode when system files are stale, but never runs it. On project-local Claude Code deliveries, `update` also offers to register the Stop guard hooks, covering projects bootstrapped before v0.8.0.
+
+### Stop guard (Claude Code only)
+
+Two hooks keep `plans/` honest at the session boundary. They ship with the plugin, and `init` or `update` offers to register them for project-local Claude Code installs. Assistants without a Stop hook do not get them; those projects rely on `sync`.
+
+`SessionStart` writes a marker file whose mtime is the session start and whose content is the starting `HEAD`. It lives in the session scratchpad, or `TMPDIR` when none is supplied, is written once per session, and is created only in projects that contain `plans/`.
+
+`Stop` reads that marker and exits silently unless every one of these holds:
+
+| Condition | Checked with |
+| --- | --- |
+| Not already inside a guard-triggered turn | `stop_hook_active` is not `true` |
+| The project has adopted the convention | `plans/` exists at the resolved root |
+| The session boundary is known | the marker file exists |
+| Something is actually in flight | some `plans/active/*.md` has `in_flight: true` |
+| No plan was touched this session | nothing under `plans/` is newer than the marker |
+| Code did change this session | `git diff` against the marker sha, plus untracked files, minus `plans/` |
+
+When all hold, the guard returns a block decision naming the changed files and the in-flight plans. Two responses satisfy it: update the covering plan's `## Status` banner and `last_updated` (moving its row in `STATUS.md` if a phase changed), or state that no active plan covers the work. The second stop always passes.
+
+The guard blocks at most once per turn, never once per session: if the model's next response still leaves the same conditions true, the guard fires again.
+
+Plan changes are detected by mtime rather than git, because `plans/` is git-excluded by default. Code changes are detected by git, so a project that is not a git repository is never blocked.
 
 ---
 
@@ -504,6 +527,7 @@ Works on every delivery. Diffs `plans/roadmap.html` and `plans/README.md` agains
 | `plans/` directory | Identical | Identical | Identical |
 | `plans.json` | Identical | Identical | Identical |
 | `roadmap.html` | Identical | Identical | Identical |
+| Stop guard | Available, via the plugin or an `init`/`update` opt-in | Not available; use `sync` | Not available; use `sync` |
 
 `plans-init` detects which platform is in use and installs the skill to the correct location automatically. `plans-update` checks both locations.
 

@@ -375,6 +375,14 @@ check_empty "glob loop guard alone suffices when _json_bool is broken" "$OUT"
 rm -rf "$D" "$D2" "$D3" "$D4" "$D5" "$D6" "$D6B" "$D7" "$D8" "$D9" "$D10" "$D11" "$D12" "$D13" "$D14" "$TB14" "$D16" "$FAKEBIN16"
 rm -rf "$M" "$M3" "$M4" "$M5" "$M6" "$M6B" "$M7" "$M8" "$M9" "$M10" "$M11" "$M12" "$M13" "$M16"
 
+echo "=== version agreement ==="
+V_FILE=$(cat "$REPO_ROOT/VERSION" | tr -d '[:space:]')
+V_SKILL=$(sed -n 's/^version:[[:space:]]*//p' "$REPO_ROOT/template/skills/plans/SKILL.md" | head -n1 | tr -d '[:space:]')
+V_PLUGIN=$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$REPO_ROOT/.claude-plugin/plugin.json" | head -n1)
+check_eq "VERSION matches SKILL.md" "$V_FILE" "$V_SKILL"
+check_eq "VERSION matches plugin.json" "$V_FILE" "$V_PLUGIN"
+check_eq "version is 0.8.0" "0.8.0" "$V_FILE"
+
 echo "=== summary ==="
 echo "passed: $PASS  failed: $FAIL"
 [ "$FAIL" -eq 0 ]
