@@ -130,8 +130,29 @@ rm -rf "$T1" "$T2" "$T3" "$T4" "$T5" "$T6" "$MK1" "$MK2" "$MK3" "$TB4" "$MK5" "$
 
 echo "=== Stop guard ==="
 
+# Fixture mtime stamps for the guard's `find -newer marker` comparison.
+# PRE-DATE is stamped onto everything meant to look like it existed
+# before the session started; POST-DATE is stamped onto anything a test
+# deliberately touches after the marker to simulate an in-session edit.
+# Fixed calendar stamps, not "rely on real elapsed time" or `sleep 1`:
+# an earlier version instead relied on the natural creation order of
+# fixture writes versus the marker file, which depends on the real
+# clock and on sub-second mtime resolution actually being available.
+# The reviewer reproduced the flake directly by forcing the marker and
+# a post-marker file to share a whole-second mtime (simulating a
+# one-second-granularity filesystem): `find -newer` is strictly-greater,
+# so a tie reads as "not touched" and pass-expected tests failed. These
+# two fixed stamps hold for any real clock between 2000 and 2090, at
+# any mtime resolution, because they no longer depend on measuring
+# elapsed real time at all.
+PRE_DATE=200001010000
+POST_DATE=209001010000
+
 guard_fixture() {
-  # guard_fixture <dir> <in_flight>; git repo, plans/, one active plan
+  # guard_fixture <dir> <in_flight>; git repo, plans/, one active plan.
+  # Every plans/ artifact created here is stamped to PRE_DATE: it
+  # represents the project's state before the session started, and must
+  # read as older than the marker regardless of the real clock.
   mkdir -p "$1/plans/active" "$1/plans/shipped" "$1/plans/superseded" "$1/src"
   printf '# Status\n' > "$1/plans/STATUS.md"
   cat > "$1/plans/active/FEATURE.md" <<EOF
@@ -152,21 +173,16 @@ EOF
   git -C "$1" init -q
   git -C "$1" add src >/dev/null 2>&1
   git -C "$1" -c user.email=t@t -c user.name=t commit -qm init >/dev/null 2>&1
+  touch -t "$PRE_DATE" "$1/plans/STATUS.md" "$1/plans/active" \
+    "$1/plans/shipped" "$1/plans/superseded" "$1/plans/active/FEATURE.md"
 }
 
 guard_marker() {
   # guard_marker <markerdir> <session> <dir>; writes the marker with its
-  # natural creation mtime. The guard's "touched" check compares plans/
-  # file mtimes against this marker with `find -newer`, so the marker
-  # only needs to land strictly after guard_fixture's writes (already
-  # true: this always runs after guard_fixture) and strictly before any
-  # later in-test edit (also true: those run after this call returns).
-  # An earlier version force-set this to a fixed past calendar date,
-  # which works only while the real clock is still before that date;
-  # once "now" passed it, every freshly created fixture file looked
-  # newer than the marker and the touched check was always true,
-  # silently passing every block-expected case. Do not reintroduce an
-  # absolute backdate here.
+  # natural creation mtime. That mtime always lands after guard_fixture's
+  # PRE_DATE-stamped writes and before any test's POST_DATE-stamped
+  # touch, for any real clock between 2000 and 2090, so the marker
+  # itself needs no explicit stamp.
   mkdir -p "$1"
   git -C "$3" rev-parse HEAD > "$1/$2" 2>/dev/null || : > "$1/$2"
 }
@@ -207,7 +223,7 @@ check_empty "no in_flight plan passes" "$(run_guard "$D4" s "$M4")"
 D5="$(mktemp -d)"; M5="$(mktemp -d)"
 guard_fixture "$D5" true; guard_marker "$M5" s "$D5"
 printf 'changed\n' >> "$D5/src/app.js"
-touch "$D5/plans/active/FEATURE.md"
+touch -t "$POST_DATE" "$D5/plans/active/FEATURE.md"
 check_empty "touched plan passes" "$(run_guard "$D5" s "$M5")"
 
 # 6. plan moved to shipped/
@@ -215,6 +231,7 @@ D6="$(mktemp -d)"; M6="$(mktemp -d)"
 guard_fixture "$D6" true; guard_marker "$M6" s "$D6"
 printf 'changed\n' >> "$D6/src/app.js"
 mv "$D6/plans/active/FEATURE.md" "$D6/plans/shipped/FEATURE.md"
+touch -t "$POST_DATE" "$D6/plans/active" "$D6/plans/shipped"
 check_empty "plan moved to shipped passes" "$(run_guard "$D6" s "$M6")"
 
 # 7. uncommitted code change, no plan touched -> BLOCK
@@ -247,6 +264,7 @@ git -C "$D10" add plans >/dev/null 2>&1
 git -C "$D10" -c user.email=t@t -c user.name=t commit -qm plans >/dev/null 2>&1
 guard_marker "$M10" s "$D10"
 printf 'note\n' >> "$D10/plans/active/FEATURE.md"
+touch -t "$POST_DATE" "$D10/plans/active/FEATURE.md"
 check_empty "only plans/ changed passes" "$(run_guard "$D10" s "$M10")"
 
 # 11. not a git repo -> pass
@@ -258,6 +276,7 @@ cat > "$D11/plans/active/FEATURE.md" <<'EOF'
 in_flight: true
 ---
 EOF
+touch -t "$PRE_DATE" "$D11/plans/STATUS.md" "$D11/plans/active" "$D11/plans/active/FEATURE.md"
 mkdir -p "$M11"; : > "$M11/s"
 printf 'x\n' > "$D11/src/app.js"
 check_empty "non-git project passes" "$(run_guard "$D11" s "$M11")"
@@ -287,8 +306,40 @@ printf 'changed\n' >> "$D14/src/app.js"
 OUT=$(cd "$D14" && printf '{"session_id":"s14","cwd":"/x","hook_event_name":"Stop","stop_hook_active":false}' | TMPDIR="$TB14" sh "$GUARD")
 check_contains "TMPDIR fallback marker blocks" '"decision":"block"' "$OUT"
 
-rm -rf "$D" "$D2" "$D3" "$D4" "$D5" "$D6" "$D7" "$D8" "$D9" "$D10" "$D11" "$D12" "$D13" "$D14" "$TB14"
-rm -rf "$M" "$M3" "$M4" "$M5" "$M6" "$M7" "$M8" "$M9" "$M10" "$M11" "$M12" "$M13"
+# 16. the case-glob loop guard suffices on its own, independent of the
+# sed-based _json_bool check. Shadow `sed` on PATH with a surgical stub:
+# it passes every call through to the real sed unchanged EXCEPT calls
+# shaped exactly like _json_bool's true/false extraction, which it makes
+# produce no output. This isolates the same failure class that silently
+# broke the loop guard once already (_json_bool's alternation matching
+# nothing under BSD sed) without also breaking _json_str and every other
+# sed-dependent step the rest of the guard needs in order to run
+# normally; a stub that breaks all of sed indiscriminately would let the
+# guard pass for the wrong reason (failing open elsewhere, e.g. because
+# it can no longer parse scratchpad_dir/session_id at all) and the test
+# would not actually be exercising the case glob. `case` is a shell
+# builtin, so the glob check itself needs no external command at all.
+REAL_SED="$(command -v sed)"
+FAKEBIN16="$(mktemp -d)"
+cat > "$FAKEBIN16/sed" <<EOF
+#!/bin/sh
+for _a in "\$@"; do
+  if printf '%s' "\${_a}" | grep -qF '\\(true\\).' \\
+     || printf '%s' "\${_a}" | grep -qF '\\(false\\).'; then
+    exit 0
+  fi
+done
+exec "${REAL_SED}" "\$@"
+EOF
+chmod +x "$FAKEBIN16/sed"
+D16="$(mktemp -d)"; M16="$(mktemp -d)"
+guard_fixture "$D16" true; guard_marker "$M16" s "$D16"
+printf 'changed\n' >> "$D16/src/app.js"
+OUT=$(cd "$D16" && guard_stdin s "$M16" true | PATH="$FAKEBIN16:$PATH" sh "$GUARD")
+check_empty "glob loop guard alone suffices when _json_bool is broken" "$OUT"
+
+rm -rf "$D" "$D2" "$D3" "$D4" "$D5" "$D6" "$D7" "$D8" "$D9" "$D10" "$D11" "$D12" "$D13" "$D14" "$TB14" "$D16" "$FAKEBIN16"
+rm -rf "$M" "$M3" "$M4" "$M5" "$M6" "$M7" "$M8" "$M9" "$M10" "$M11" "$M12" "$M13" "$M16"
 
 echo "=== summary ==="
 echo "passed: $PASS  failed: $FAIL"

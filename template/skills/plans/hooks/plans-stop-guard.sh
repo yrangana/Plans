@@ -66,7 +66,22 @@ _json_bool() {
   printf '%s' "${_val}"
 }
 
-# 1. Loop guard. The second stop of a turn always passes.
+# 1. Loop guard. The second stop of a turn always passes. Two independent
+# checks, either sufficient on its own: a raw-stdin case glob with no sed
+# and no regex portability surface, and the existing _json_bool parse.
+# This is deliberate belt-and-suspenders, not redundancy for its own
+# sake: this exact single point of failure already broke once, silently.
+# _json_bool's earlier \(true\|false\) alternation is a GNU sed
+# extension that BSD sed does not support, so on a machine with BSD sed
+# it always returned empty, the loop guard never fired, and the guard
+# would have blocked every turn up to Claude Code's 9-block cap and then
+# gone silent forever past it. Neither check can be used to weaken the
+# guard below once-per-turn: both read only the current invocation's raw
+# stdin, not any persisted state, so there is no way to satisfy either
+# check without a genuine stop_hook_active:true on this call.
+case "${_stdin}" in
+  *'"stop_hook_active":true'*|*'"stop_hook_active": true'*) exit 0 ;;
+esac
 [ "$(_json_bool stop_hook_active)" = "true" ] && exit 0
 
 # 2. Resolve the project root the same way plans-context.sh does.
