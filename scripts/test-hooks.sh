@@ -226,13 +226,47 @@ printf 'changed\n' >> "$D5/src/app.js"
 touch -t "$POST_DATE" "$D5/plans/active/FEATURE.md"
 check_empty "touched plan passes" "$(run_guard "$D5" s "$M5")"
 
-# 6. plan moved to shipped/
+# 6. plan moved to shipped/ while a different plan is still in flight.
+# The fixture used to have exactly one plan: the one being moved. That
+# made the step-4 in-flight scan come back empty (the moved file was
+# gone from plans/active by the time the guard ran), so the guard
+# exited at step 4 and never reached step 5's touched-check at all --
+# mechanically identical to test 4 ("no in_flight plan passes"). The
+# shipped/ path in step 5's `find` was consequently never exercised: a
+# misspelled path there would have stayed green. Fixed by keeping
+# FEATURE.md in plans/active with in_flight:true for the whole test (so
+# step 4 stays non-empty and the guard actually reaches step 5), and
+# moving a second, separate plan (OTHER.md) into plans/shipped after
+# the marker.
 D6="$(mktemp -d)"; M6="$(mktemp -d)"
-guard_fixture "$D6" true; guard_marker "$M6" s "$D6"
+guard_fixture "$D6" true
+cat > "$D6/plans/active/OTHER.md" <<EOF
+---
+in_flight: false
+---
+EOF
+touch -t "$PRE_DATE" "$D6/plans/active/OTHER.md"
+guard_marker "$M6" s "$D6"
 printf 'changed\n' >> "$D6/src/app.js"
-mv "$D6/plans/active/FEATURE.md" "$D6/plans/shipped/FEATURE.md"
+mv "$D6/plans/active/OTHER.md" "$D6/plans/shipped/OTHER.md"
 touch -t "$POST_DATE" "$D6/plans/active" "$D6/plans/shipped"
-check_empty "plan moved to shipped passes" "$(run_guard "$D6" s "$M6")"
+check_empty "plan moved to shipped passes (in-flight plan unaffected)" "$(run_guard "$D6" s "$M6")"
+
+# 6b. same as 6, but moved into plans/superseded/ instead: that path is
+# in the same step-5 `find` and was equally untested before this fix.
+D6B="$(mktemp -d)"; M6B="$(mktemp -d)"
+guard_fixture "$D6B" true
+cat > "$D6B/plans/active/OTHER.md" <<EOF
+---
+in_flight: false
+---
+EOF
+touch -t "$PRE_DATE" "$D6B/plans/active/OTHER.md"
+guard_marker "$M6B" s "$D6B"
+printf 'changed\n' >> "$D6B/src/app.js"
+mv "$D6B/plans/active/OTHER.md" "$D6B/plans/superseded/OTHER.md"
+touch -t "$POST_DATE" "$D6B/plans/active" "$D6B/plans/superseded"
+check_empty "plan moved to superseded passes (in-flight plan unaffected)" "$(run_guard "$D6B" s "$M6B")"
 
 # 7. uncommitted code change, no plan touched -> BLOCK
 D7="$(mktemp -d)"; M7="$(mktemp -d)"
@@ -338,8 +372,8 @@ printf 'changed\n' >> "$D16/src/app.js"
 OUT=$(cd "$D16" && guard_stdin s "$M16" true | PATH="$FAKEBIN16:$PATH" sh "$GUARD")
 check_empty "glob loop guard alone suffices when _json_bool is broken" "$OUT"
 
-rm -rf "$D" "$D2" "$D3" "$D4" "$D5" "$D6" "$D7" "$D8" "$D9" "$D10" "$D11" "$D12" "$D13" "$D14" "$TB14" "$D16" "$FAKEBIN16"
-rm -rf "$M" "$M3" "$M4" "$M5" "$M6" "$M7" "$M8" "$M9" "$M10" "$M11" "$M12" "$M13" "$M16"
+rm -rf "$D" "$D2" "$D3" "$D4" "$D5" "$D6" "$D6B" "$D7" "$D8" "$D9" "$D10" "$D11" "$D12" "$D13" "$D14" "$TB14" "$D16" "$FAKEBIN16"
+rm -rf "$M" "$M3" "$M4" "$M5" "$M6" "$M6B" "$M7" "$M8" "$M9" "$M10" "$M11" "$M12" "$M13" "$M16"
 
 echo "=== summary ==="
 echo "passed: $PASS  failed: $FAIL"
