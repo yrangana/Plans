@@ -33,7 +33,9 @@ where `{invocation}` is the spelling from the delivery rule in SKILL.md.
 
 **3. Apply.** For each confirmed file: copy the existing project file to `plans/<file>.bak` (skip the backup if the project file is missing), then copy the template file over it. Report each write.
 
-**4. Finish.** If nothing changed: print "System files match the installed plugin version." Otherwise remind: "If you had customized roadmap.html (for example colors), restore from the .bak file."
+**4. Hook registration (project-local Claude Code deliveries only).** Existing projects bootstrapped before v0.8.0 have no hooks registered. If the conditions in `references/hooks-setup.md` hold, load it and follow it. Skip silently on the plugin delivery and on assistants without a Stop hook.
+
+**5. Finish.** If nothing changed: print "System files match the installed plugin version." Otherwise remind: "If you had customized roadmap.html (for example colors), restore from the .bak file."
 
 ## Behaviour contract
 
@@ -41,3 +43,4 @@ where `{invocation}` is the spelling from the delivery rule in SKILL.md.
 - Never writes without per-file confirmation.
 - Always writes a `.bak` before overwriting an existing file.
 - Updates to exactly the installed skill's version, never from the network.
+- May offer, once and with explicit consent, to register the plans hooks in `.claude/settings.json` on project-local Claude Code deliveries. Never writes there without a yes.
