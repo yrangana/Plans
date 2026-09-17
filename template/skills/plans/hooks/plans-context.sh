@@ -74,6 +74,13 @@ else
   _stdin=$(cat 2>/dev/null) || _stdin=""
 fi
 
+# _json_str is duplicated verbatim between this file and
+# plans-stop-guard.sh rather than factored into a shared file. Hook
+# scripts run standalone under sh, invoked from two different roots
+# (SessionStart vs Stop), and sourcing a shared file would add a
+# path-resolution failure mode to scripts whose entire contract is to
+# fail open. Keep the two copies identical; if one changes, change the
+# other the same way.
 _json_str() {
   # Extract a flat string field from _stdin. No jq dependency.
   printf '%s' "${_stdin}" \

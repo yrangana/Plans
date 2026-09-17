@@ -128,6 +128,168 @@ if [ "$MARKER_NAME" = "." ]; then fail "dot-root fallback session name is not th
 
 rm -rf "$T1" "$T2" "$T3" "$T4" "$T5" "$T6" "$MK1" "$MK2" "$MK3" "$TB4" "$MK5" "$MK6"
 
+echo "=== Stop guard ==="
+
+guard_fixture() {
+  # guard_fixture <dir> <in_flight>; git repo, plans/, one active plan
+  mkdir -p "$1/plans/active" "$1/plans/shipped" "$1/plans/superseded" "$1/src"
+  printf '# Status\n' > "$1/plans/STATUS.md"
+  cat > "$1/plans/active/FEATURE.md" <<EOF
+---
+status: active
+priority: high
+owner: yash
+type: feature
+depends_on: []
+blocks: []
+in_flight: $2
+last_updated: 2026-09-01
+---
+
+## Status
+EOF
+  printf 'x\n' > "$1/src/app.js"
+  git -C "$1" init -q
+  git -C "$1" add src >/dev/null 2>&1
+  git -C "$1" -c user.email=t@t -c user.name=t commit -qm init >/dev/null 2>&1
+}
+
+guard_marker() {
+  # guard_marker <markerdir> <session> <dir>; writes the marker with its
+  # natural creation mtime. The guard's "touched" check compares plans/
+  # file mtimes against this marker with `find -newer`, so the marker
+  # only needs to land strictly after guard_fixture's writes (already
+  # true: this always runs after guard_fixture) and strictly before any
+  # later in-test edit (also true: those run after this call returns).
+  # An earlier version force-set this to a fixed past calendar date,
+  # which works only while the real clock is still before that date;
+  # once "now" passed it, every freshly created fixture file looked
+  # newer than the marker and the touched check was always true,
+  # silently passing every block-expected case. Do not reintroduce an
+  # absolute backdate here.
+  mkdir -p "$1"
+  git -C "$3" rev-parse HEAD > "$1/$2" 2>/dev/null || : > "$1/$2"
+}
+
+guard_stdin() {
+  # guard_stdin <session_id> <scratchpad_dir> <stop_hook_active>
+  printf '{"session_id":"%s","scratchpad_dir":"%s","cwd":"/x","hook_event_name":"Stop","stop_hook_active":%s}' "$1" "$2" "$3"
+}
+
+run_guard() {
+  # run_guard <dir> <session> <markerdir> [stop_hook_active]
+  (cd "$1" && guard_stdin "$2" "$3" "${4:-false}" | sh "$GUARD")
+}
+
+# 1. loop guard
+D="$(mktemp -d)"; M="$(mktemp -d)"
+guard_fixture "$D" true; guard_marker "$M" s "$D"
+printf 'changed\n' >> "$D/src/app.js"
+check_empty "stop_hook_active true passes" "$(run_guard "$D" s "$M" true)"
+
+# 2. no plans/ directory
+D2="$(mktemp -d)"; git -C "$D2" init -q
+check_empty "no plans/ passes" "$(run_guard "$D2" s "$M")"
+
+# 3. no marker
+D3="$(mktemp -d)"; M3="$(mktemp -d)"
+guard_fixture "$D3" true
+printf 'changed\n' >> "$D3/src/app.js"
+check_empty "missing marker passes" "$(run_guard "$D3" s "$M3")"
+
+# 4. no in-flight plan
+D4="$(mktemp -d)"; M4="$(mktemp -d)"
+guard_fixture "$D4" false; guard_marker "$M4" s "$D4"
+printf 'changed\n' >> "$D4/src/app.js"
+check_empty "no in_flight plan passes" "$(run_guard "$D4" s "$M4")"
+
+# 5. plan file touched this session
+D5="$(mktemp -d)"; M5="$(mktemp -d)"
+guard_fixture "$D5" true; guard_marker "$M5" s "$D5"
+printf 'changed\n' >> "$D5/src/app.js"
+touch "$D5/plans/active/FEATURE.md"
+check_empty "touched plan passes" "$(run_guard "$D5" s "$M5")"
+
+# 6. plan moved to shipped/
+D6="$(mktemp -d)"; M6="$(mktemp -d)"
+guard_fixture "$D6" true; guard_marker "$M6" s "$D6"
+printf 'changed\n' >> "$D6/src/app.js"
+mv "$D6/plans/active/FEATURE.md" "$D6/plans/shipped/FEATURE.md"
+check_empty "plan moved to shipped passes" "$(run_guard "$D6" s "$M6")"
+
+# 7. uncommitted code change, no plan touched -> BLOCK
+D7="$(mktemp -d)"; M7="$(mktemp -d)"
+guard_fixture "$D7" true; guard_marker "$M7" s "$D7"
+printf 'changed\n' >> "$D7/src/app.js"
+OUT=$(run_guard "$D7" s "$M7")
+check_contains "uncommitted change blocks" '"decision":"block"' "$OUT"
+check_contains "block names the in-flight plan" "FEATURE.md" "$OUT"
+check_contains "block names the changed file" "src/app.js" "$OUT"
+
+# 8. committed code change, no plan touched -> BLOCK
+D8="$(mktemp -d)"; M8="$(mktemp -d)"
+guard_fixture "$D8" true; guard_marker "$M8" s "$D8"
+printf 'changed\n' >> "$D8/src/app.js"
+git -C "$D8" add src >/dev/null 2>&1
+git -C "$D8" -c user.email=t@t -c user.name=t commit -qm work >/dev/null 2>&1
+check_contains "committed change blocks" '"decision":"block"' "$(run_guard "$D8" s "$M8")"
+
+# 9. new untracked file -> BLOCK
+D9="$(mktemp -d)"; M9="$(mktemp -d)"
+guard_fixture "$D9" true; guard_marker "$M9" s "$D9"
+printf 'new\n' > "$D9/src/new.js"
+check_contains "untracked file blocks" '"decision":"block"' "$(run_guard "$D9" s "$M9")"
+
+# 10. only plans/ changed in git (tracked-plans adopter) -> pass
+D10="$(mktemp -d)"; M10="$(mktemp -d)"
+guard_fixture "$D10" true
+git -C "$D10" add plans >/dev/null 2>&1
+git -C "$D10" -c user.email=t@t -c user.name=t commit -qm plans >/dev/null 2>&1
+guard_marker "$M10" s "$D10"
+printf 'note\n' >> "$D10/plans/active/FEATURE.md"
+check_empty "only plans/ changed passes" "$(run_guard "$D10" s "$M10")"
+
+# 11. not a git repo -> pass
+D11="$(mktemp -d)"; M11="$(mktemp -d)"
+mkdir -p "$D11/plans/active" "$D11/src"
+printf '# Status\n' > "$D11/plans/STATUS.md"
+cat > "$D11/plans/active/FEATURE.md" <<'EOF'
+---
+in_flight: true
+---
+EOF
+mkdir -p "$M11"; : > "$M11/s"
+printf 'x\n' > "$D11/src/app.js"
+check_empty "non-git project passes" "$(run_guard "$D11" s "$M11")"
+
+# 12. marker sha unknown to git -> falls back to status, still blocks
+D12="$(mktemp -d)"; M12="$(mktemp -d)"
+guard_fixture "$D12" true
+mkdir -p "$M12"; printf '%s' "0000000000000000000000000000000000000000" > "$M12/s"
+printf 'changed\n' >> "$D12/src/app.js"
+check_contains "unknown marker sha still blocks" '"decision":"block"' "$(run_guard "$D12" s "$M12")"
+
+# 13. no changes at all -> pass
+D13="$(mktemp -d)"; M13="$(mktemp -d)"
+guard_fixture "$D13" true; guard_marker "$M13" s "$D13"
+check_empty "no changes passes" "$(run_guard "$D13" s "$M13")"
+
+# 14. every invocation exits 0
+run_guard "$D7" s "$M7" >/dev/null; check_eq "guard always exits 0" "0" "$?"
+
+# 15. scratchpad_dir absent: the guard must find the marker under TMPDIR.
+# This is the production path (Task 1 finding), not an edge case.
+D14="$(mktemp -d)"; TB14="$(mktemp -d)"
+guard_fixture "$D14" true
+mkdir -p "$TB14/plans-hook"
+git -C "$D14" rev-parse HEAD > "$TB14/plans-hook/s14"
+printf 'changed\n' >> "$D14/src/app.js"
+OUT=$(cd "$D14" && printf '{"session_id":"s14","cwd":"/x","hook_event_name":"Stop","stop_hook_active":false}' | TMPDIR="$TB14" sh "$GUARD")
+check_contains "TMPDIR fallback marker blocks" '"decision":"block"' "$OUT"
+
+rm -rf "$D" "$D2" "$D3" "$D4" "$D5" "$D6" "$D7" "$D8" "$D9" "$D10" "$D11" "$D12" "$D13" "$D14" "$TB14"
+rm -rf "$M" "$M3" "$M4" "$M5" "$M6" "$M7" "$M8" "$M9" "$M10" "$M11" "$M12" "$M13"
+
 echo "=== summary ==="
 echo "passed: $PASS  failed: $FAIL"
 [ "$FAIL" -eq 0 ]
