@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/plans-context.sh"
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}\"/template/skills/plans/hooks/plans-context.sh"
           }
         ]
       }
