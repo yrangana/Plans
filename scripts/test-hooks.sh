@@ -52,9 +52,18 @@ ss_stdin() {
   printf '{"session_id":"%s","scratchpad_dir":"%s","cwd":"/x","hook_event_name":"SessionStart","source":"startup"}' "$1" "$2"
 }
 
+# Pin CLAUDE_PROJECT_DIR unset for every hook invocation below. Otherwise a
+# value inherited from the environment this suite happens to run in (for
+# example, running it from inside a project that has itself adopted the
+# convention) would resolve _root to that outer project instead of the
+# fixture, turning several of these checks into false passes.
+run_hook() {
+  env -u CLAUDE_PROJECT_DIR sh "$CONTEXT"
+}
+
 T1="$(mktemp -d)"; MK1="$(mktemp -d)"
 ss_fixture "$T1"
-OUT=$(cd "$T1" && ss_stdin sess1 "$MK1" | sh "$CONTEXT")
+OUT=$(cd "$T1" && ss_stdin sess1 "$MK1" | run_hook)
 check_contains "SessionStart still emits ambient rules" "plans/ convention" "$OUT"
 if [ -f "$MK1/sess1" ]; then pass "marker created"; else fail "marker created" "$MK1/sess1 not found"; fi
 check_eq "marker holds HEAD" "$(git -C "$T1" rev-parse HEAD)" "$(cat "$MK1/sess1" 2>/dev/null)"
@@ -62,20 +71,20 @@ check_eq "marker holds HEAD" "$(git -C "$T1" rev-parse HEAD)" "$(cat "$MK1/sess1
 # second fire must not rewrite it
 touch -t 202601010000 "$MK1/sess1"
 BEFORE=$(ls -l "$MK1/sess1")
-(cd "$T1" && ss_stdin sess1 "$MK1" | sh "$CONTEXT") >/dev/null
+(cd "$T1" && ss_stdin sess1 "$MK1" | run_hook) >/dev/null
 check_eq "marker not rewritten on second fire" "$BEFORE" "$(ls -l "$MK1/sess1")"
 
 # no plans/ means no marker and no output
 T2="$(mktemp -d)"; MK2="$(mktemp -d)"
 git -C "$T2" init -q
-OUT=$(cd "$T2" && ss_stdin sess2 "$MK2" | sh "$CONTEXT")
+OUT=$(cd "$T2" && ss_stdin sess2 "$MK2" | run_hook)
 check_empty "no plans/ means no output" "$OUT"
 if [ -f "$MK2/sess2" ]; then fail "no plans/ means no marker" "marker was created"; else pass "no plans/ means no marker"; fi
 
 # non-git project still gets a marker, with empty content
 T3="$(mktemp -d)"; MK3="$(mktemp -d)"
 mkdir -p "$T3/plans/active"; printf '# Status\n' > "$T3/plans/STATUS.md"
-(cd "$T3" && ss_stdin sess3 "$MK3" | sh "$CONTEXT") >/dev/null
+(cd "$T3" && ss_stdin sess3 "$MK3" | run_hook) >/dev/null
 if [ -f "$MK3/sess3" ]; then pass "non-git project gets a marker"; else fail "non-git project gets a marker" "not found"; fi
 check_empty "non-git marker is empty" "$(cat "$MK3/sess3" 2>/dev/null)"
 
@@ -84,12 +93,40 @@ check_empty "non-git marker is empty" "$(cat "$MK3/sess3" 2>/dev/null)"
 # be covered directly.
 T4="$(mktemp -d)"; TB4="$(mktemp -d)"
 ss_fixture "$T4"
-OUT=$(cd "$T4" && printf '{"session_id":"sess4","cwd":"/x","hook_event_name":"SessionStart","source":"startup"}' | TMPDIR="$TB4" sh "$CONTEXT")
+OUT=$(cd "$T4" && printf '{"session_id":"sess4","cwd":"/x","hook_event_name":"SessionStart","source":"startup"}' | TMPDIR="$TB4" run_hook)
 check_contains "no scratchpad_dir still emits rules" "plans/ convention" "$OUT"
 if [ -f "$TB4/plans-hook/sess4" ]; then pass "marker falls back to TMPDIR"; else fail "marker falls back to TMPDIR" "$TB4/plans-hook/sess4 not found"; fi
 check_eq "fallback marker holds HEAD" "$(git -C "$T4" rev-parse HEAD)" "$(cat "$TB4/plans-hook/sess4" 2>/dev/null)"
 
-rm -rf "$T1" "$T2" "$T3" "$T4" "$MK1" "$MK2" "$MK3" "$TB4"
+# dangling symlink at the marker path must not be followed. [ ! -e ] alone
+# reads a dangling link (the link exists, its target does not) as "absent",
+# bypasses the write-once guard, and lets the write follow the link and
+# create or truncate whatever it points at. The target must not exist yet
+# for this to be the dangling case under test; if it already existed,
+# [ ! -e ] alone would already (correctly) skip the write and the test
+# would pass without exercising the fix.
+T5="$(mktemp -d)"; MK5="$(mktemp -d)"
+ss_fixture "$T5"
+ln -s "$MK5/canary" "$MK5/sess5"
+if [ -e "$MK5/canary" ]; then fail "canary absent before hook runs" "setup invariant violated"; else pass "canary absent before hook runs"; fi
+OUT=$(cd "$T5" && ss_stdin sess5 "$MK5" | run_hook)
+check_contains "symlink case still emits ambient rules" "plans/ convention" "$OUT"
+if [ -e "$MK5/canary" ]; then fail "dangling symlink target is not created" "$MK5/canary was created"; else pass "dangling symlink target is not created"; fi
+if [ -L "$MK5/sess5" ]; then pass "dangling symlink at marker path is left alone"; else fail "dangling symlink at marker path is left alone" "symlink was replaced"; fi
+
+# _root resolving through the "." candidate (no CLAUDE_PROJECT_DIR, no git
+# repo, plans/ found via the cwd) combined with an absent session_id must
+# still produce a marker instead of silently collapsing the fallback name
+# to ".".
+T6="$(mktemp -d)"; MK6="$(mktemp -d)"
+mkdir -p "$T6/plans/active"; printf '# Status\n' > "$T6/plans/STATUS.md"
+(cd "$T6" && printf '{"scratchpad_dir":"%s","cwd":"/x","hook_event_name":"SessionStart","source":"startup"}' "$MK6" | run_hook) >/dev/null
+MARKER_NAME=$(ls -A "$MK6" 2>/dev/null)
+COUNT=$(printf '%s\n' "$MARKER_NAME" | grep -c .)
+check_eq "dot-root fallback still produces exactly one marker" "1" "$COUNT"
+if [ "$MARKER_NAME" = "." ]; then fail "dot-root fallback session name is not the literal dot" "marker named ."; else pass "dot-root fallback session name is not the literal dot"; fi
+
+rm -rf "$T1" "$T2" "$T3" "$T4" "$T5" "$T6" "$MK1" "$MK2" "$MK3" "$TB4" "$MK5" "$MK6"
 
 echo "=== summary ==="
 echo "passed: $PASS  failed: $FAIL"

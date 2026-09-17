@@ -60,7 +60,19 @@ fi
 
 # Record the session marker. Best effort: any failure here is swallowed so
 # the ambient rules are still emitted.
-_stdin=$(cat 2>/dev/null) || _stdin=""
+#
+# Guard the stdin read: Claude Code pipes JSON and closes the pipe, so a
+# plain `cat` is safe there, but this script can also run by hand, under a
+# different harness, or under a future build that does not close stdin. A
+# blocking read here would hang the whole session with no way out, which
+# is the one failure mode this hook cannot have. `[ -t 0 ]` (stdin is a
+# terminal) skips the read entirely; a non-terminal stdin that is simply
+# empty still returns immediately at EOF.
+if [ -t 0 ]; then
+  _stdin=""
+else
+  _stdin=$(cat 2>/dev/null) || _stdin=""
+fi
 
 _json_str() {
   # Extract a flat string field from _stdin. No jq dependency.
@@ -77,16 +89,34 @@ fi
 _session=$(_json_str session_id)
 if [ -z "${_session}" ]; then
   # Fall back to a per-project name so the guard still works when the
-  # session id is absent.
-  _session=$(printf '%s' "${_root}" | sed 's|/|_|g; s|^_||')
+  # session id is absent. Resolve _root to an absolute path first: the
+  # third candidate above can leave _root as the literal "." and the
+  # transform below would otherwise collapse it to just ".", which never
+  # satisfies the [ ! -e ] check and silently disables the write.
+  _abs_root=$(cd "${_root}" 2>/dev/null && pwd) || _abs_root="${_root}"
+  _session=$(printf '%s' "${_abs_root}" | sed 's|/|_|g; s|^_||')
 fi
 
-if mkdir -p "${_marker_dir}" 2>/dev/null && [ ! -e "${_marker_dir}/${_session}" ]; then
+_marker_path="${_marker_dir}/${_session}"
+
+# [ ! -e ] alone follows symlinks, so a dangling symlink pre-placed at
+# _marker_path would test false (the link exists but its target does not),
+# bypass the write-once guard, and let the printf below follow the link
+# and truncate whatever it points at. [ ! -L ] closes that: a dangling
+# symlink fails this check too, so the write is skipped. A symlink that
+# resolves to an existing file is already covered by [ ! -e ] (it reads
+# as "existing", so nothing is written).
+if mkdir -p "${_marker_dir}" 2>/dev/null \
+  && [ ! -e "${_marker_path}" ] \
+  && [ ! -L "${_marker_path}" ]; then
   # SessionStart also fires on resume, clear, and compact. Writing only when
   # absent keeps the marker pinned to the true session start, so a compact
   # does not erase the earlier part of the session from the guard's view.
   _head=$(git -C "${_root}" rev-parse HEAD 2>/dev/null) || _head=""
-  printf '%s' "${_head}" > "${_marker_dir}/${_session}" 2>/dev/null || true
+  # Redirect stderr before the file redirect: redirections apply left to
+  # right, so putting 2>/dev/null first ensures a "cannot create" failure
+  # from opening _marker_path never reaches the real stderr either.
+  printf '%s' "${_head}" 2>/dev/null > "${_marker_path}" || true
 fi
 
 cat <<'JSON'
