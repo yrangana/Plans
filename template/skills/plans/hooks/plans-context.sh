@@ -7,9 +7,13 @@
 # hook fires, capped at 10,000 characters. This payload is well under
 # that cap (about 760 characters).
 #
-# This hook must be fast and side-effect free. It runs at the start of
-# every session and on resume, clear, and compact (see hooks.json), so
-# it never prompts, never writes, and always exits 0.
+# This hook must be fast and side-effect free apart from one write: when
+# the project has adopted the convention, it records a per-session marker
+# file (mtime = session start, content = starting HEAD) that the Stop
+# guard reads to scope "what changed this session". The marker lives in
+# the session scratchpad when one is supplied, otherwise in TMPDIR. It is
+# written once per session and never read by anything else. The hook
+# never prompts, never touches the project tree, and always exits 0.
 set -u
 
 # Only inject the plans/ rules when this project has adopted the
@@ -52,6 +56,37 @@ fi
 
 if [ -z "${_root}" ]; then
   exit 0
+fi
+
+# Record the session marker. Best effort: any failure here is swallowed so
+# the ambient rules are still emitted.
+_stdin=$(cat 2>/dev/null) || _stdin=""
+
+_json_str() {
+  # Extract a flat string field from _stdin. No jq dependency.
+  printf '%s' "${_stdin}" \
+    | sed -n "s/.*\"$1\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p" \
+    | head -n 1
+}
+
+_marker_dir=$(_json_str scratchpad_dir)
+if [ -z "${_marker_dir}" ]; then
+  _marker_dir="${TMPDIR:-/tmp}/plans-hook"
+fi
+
+_session=$(_json_str session_id)
+if [ -z "${_session}" ]; then
+  # Fall back to a per-project name so the guard still works when the
+  # session id is absent.
+  _session=$(printf '%s' "${_root}" | sed 's|/|_|g; s|^_||')
+fi
+
+if mkdir -p "${_marker_dir}" 2>/dev/null && [ ! -e "${_marker_dir}/${_session}" ]; then
+  # SessionStart also fires on resume, clear, and compact. Writing only when
+  # absent keeps the marker pinned to the true session start, so a compact
+  # does not erase the earlier part of the session from the guard's view.
+  _head=$(git -C "${_root}" rev-parse HEAD 2>/dev/null) || _head=""
+  printf '%s' "${_head}" > "${_marker_dir}/${_session}" 2>/dev/null || true
 fi
 
 cat <<'JSON'
