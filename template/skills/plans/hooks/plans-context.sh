@@ -37,6 +37,13 @@ set -u
 # If none of the three yields a directory containing plans/, emit
 # nothing. An unrelated directory that happens to contain a plans/
 # folder only matches via step 3, same as before this fix.
+#
+# This three-candidate resolution is duplicated in plans-stop-guard.sh
+# and must stay identical there. The Stop guard resolves the same root
+# to find the same marker file this hook writes; if the two ever
+# disagree on where that root is, the guard reads a marker that was
+# never written and silently stops enforcing, with no error either
+# side.
 _root=""
 
 if [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -d "${CLAUDE_PROJECT_DIR}/plans" ]; then
@@ -100,6 +107,12 @@ if [ -z "${_session}" ]; then
   # third candidate above can leave _root as the literal "." and the
   # transform below would otherwise collapse it to just ".", which never
   # satisfies the [ ! -e ] check and silently disables the write.
+  #
+  # This fallback naming (the abs-path resolution and the sed transform
+  # below it) must stay identical to plans-stop-guard.sh's copy: the
+  # Stop guard derives the same marker name the same way when it also
+  # has no session_id, and a drift between the two makes the guard look
+  # for a marker this hook never named that way.
   _abs_root=$(cd "${_root}" 2>/dev/null && pwd) || _abs_root="${_root}"
   _session=$(printf '%s' "${_abs_root}" | sed 's|/|_|g; s|^_||')
 fi
