@@ -176,6 +176,14 @@ Get the skill via the Claude Code plugin (`/plugin marketplace add yrangana/Plan
 
 ---
 
+## The session guard
+
+If your assistant is Claude Code, a Stop hook watches the end of each session. When the session changed code, a plan is marked `in_flight: true`, and no file under `plans/` was touched, it asks once per turn for the plan update before the session ends. Update the covering plan's `## Status` banner and `last_updated`, or say that no plan covers the work: either answer satisfies it, and it never asks twice in the same turn.
+
+To turn it off: on a project-local install, remove the two plans entries from `.claude/settings.json`. On the Claude Code plugin install, those entries do not exist locally: the hooks ship inside the plugin itself, so disable or uninstall the `plans` plugin via `/plugin` instead.
+
+---
+
 ## Quick Rules
 
 - **One capture point:** ideas go to `STATUS.md` backlog, nowhere else

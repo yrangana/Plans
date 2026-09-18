@@ -12,6 +12,21 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.8.0
+
+Makes the front door harder to leave lying. A Stop hook asks for the plan update at the end of a session that changed code, instead of trusting anyone to remember. No file-format, frontmatter, or path changes.
+
+- New Stop hook, `plans-stop-guard.sh`. When a session changed git-visible code, an `in_flight: true` plan exists, and nothing under `plans/` was touched, it blocks the stop once with a reason naming the changed files and the in-flight plans. The model then updates the covering plan or states that none covers the work. The second stop always passes, so the cost is at most one extra turn.
+- The SessionStart hook now records a per-session marker (mtime is the session start, content is the starting `HEAD`) in the session scratchpad, or in `TMPDIR` when none is supplied. It is written once per session, only in projects that have adopted `plans/`, and nothing else reads it.
+- Both hook scripts moved into the skill tree at `template/skills/plans/hooks/`, so script and `npx skills add` deliveries carry them too. Hook commands run through `sh` because neither `cp -r` nor npx guarantees the executable bit survives.
+- `init` and `update` offer, on project-local Claude Code deliveries only, to register both hooks in the project's `.claude/settings.json`. Explicit consent, never twice, and skipped when the plugin is also installed. `update` is the retrofit path for projects bootstrapped before v0.8.0.
+- The guard is Claude Code only. Antigravity, Cursor, Windsurf, and the other assistants reached through `npx skills add` have no Stop hook; manual `sync` remains their path.
+- Everything fails open. A missing marker, a missing git, an unreadable file, or a bug in the guard exits 0 silently. No configuration, no flag, no network.
+
+Refresh the skill with `/plugin`, `npx skills update`, or `plans-update` when convenient. Existing projects: run `update` to register the hooks.
+
+---
+
 ## v0.7.1
 
 Security hardening of two behaviours the skill already had. No change to what it does on the happy path, and no file-format, frontmatter, or path changes.

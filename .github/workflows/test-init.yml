@@ -37,6 +37,17 @@ jobs:
           test -f .claude/skills/plans/SKILL.md
           echo "OK: /plans skill installed"
 
+          echo "--- verifying hook scripts shipped with the skill ---"
+          test -f .claude/skills/plans/hooks/plans-context.sh
+          test -f .claude/skills/plans/hooks/plans-stop-guard.sh
+          echo "OK: hook scripts installed"
+
+          echo "--- verifying hooks run under sh without the exec bit ---"
+          chmod -x .claude/skills/plans/hooks/*.sh
+          echo '{}' | sh .claude/skills/plans/hooks/plans-context.sh > /dev/null
+          echo '{}' | sh .claude/skills/plans/hooks/plans-stop-guard.sh > /dev/null
+          echo "OK: hooks run under sh"
+
           echo "--- verifying git exclude entry ---"
           grep -q "^plans/$" .git/info/exclude
           echo "OK: plans/ excluded from git"
@@ -59,3 +70,6 @@ jobs:
             exit 1
           fi
           echo "OK: init.sh aborts when plans/ already exists"
+
+      - name: Run hook unit tests
+        run: bash scripts/test-hooks.sh

@@ -485,11 +485,36 @@ Guided creation of a new plan file. Asks: name, type, priority, depends_on, bloc
 
 ### /plans init
 
-Works on every delivery. Copies the bundled `template/plans/` (shipped inside the skill directory) into the project root, asks one question (track `plans/` in git or keep it local, default local, written to `.git/info/exclude`), and on project-local deliveries offers to append the planning rules snippet to a detected instruction file, with explicit per-file consent and a marker guard against double appends. On the plugin delivery it never touches instruction files: the SessionStart hook supplies the rules. Never overwrites an existing `plans/`.
+Works on every delivery. Copies the bundled `template/plans/` (shipped inside the skill directory) into the project root, asks one question (track `plans/` in git or keep it local, default local, written to `.git/info/exclude`), and on project-local deliveries offers to append the planning rules snippet to a detected instruction file, with explicit per-file consent and a marker guard against double appends. On the plugin delivery it never touches instruction files: the SessionStart hook supplies the rules. On project-local Claude Code deliveries only, `init` also offers to register the Stop guard hooks in `.claude/settings.json`. Never overwrites an existing `plans/`.
 
 ### /plans update
 
-Works on every delivery. Diffs `plans/roadmap.html` and `plans/README.md` against the bundled template, prompts per file, writes `<file>.bak` before overwriting. Never touches user data (`STATUS.md`, `plans.json`, `active/`, `shipped/`, `superseded/`). Updates to exactly the installed skill version, never from the network. `sync` suggests this mode when system files are stale, but never runs it.
+Works on every delivery. Diffs `plans/roadmap.html` and `plans/README.md` against the bundled template, prompts per file, writes `<file>.bak` before overwriting. Never touches user data (`STATUS.md`, `plans.json`, `active/`, `shipped/`, `superseded/`). Updates to exactly the installed skill version, never from the network. `sync` suggests this mode when system files are stale, but never runs it. On project-local Claude Code deliveries, `update` also offers to register the Stop guard hooks, covering projects bootstrapped before v0.8.0.
+
+### Stop guard (Claude Code only)
+
+Two hooks keep `plans/` honest at the session boundary. They ship with the plugin, and the `/plans:plans init` and `/plans:plans update` skill modes offer to register them for project-local Claude Code installs, with the exact block documented in `references/hooks-setup.md`. The bash scripts `scripts/init.sh` and `scripts/update.sh` are a separate path: they copy the hook files into `.claude/skills/plans/hooks/` along with the rest of the template, but never register or prompt for them. An adopter who bootstrapped with those scripts has dormant hook files and must add the block from `references/hooks-setup.md` to `.claude/settings.json` themselves. Assistants without a Stop hook do not get them; those projects rely on `sync`.
+
+`SessionStart` writes a marker file whose mtime is the session start and whose content is the starting `HEAD`. It lives in the session scratchpad, or `TMPDIR` when none is supplied, is written once per session, and is created only in projects that contain `plans/`.
+
+`Stop` reads that marker and exits silently unless every one of these holds:
+
+| Condition | Checked with |
+| --- | --- |
+| Not already inside a guard-triggered turn | `stop_hook_active` is not `true` |
+| The project has adopted the convention | `plans/` exists at the resolved root |
+| The session boundary is known | the marker file exists |
+| Something is actually in flight | some `plans/active/*.md` has `in_flight: true` |
+| No plan was touched this session | nothing under `plans/` is newer than the marker |
+| Code did change this session | `git diff` against the marker sha, plus untracked files, minus `plans/` |
+
+When all hold, the guard returns a block decision naming the changed files and the in-flight plans. Two responses satisfy it: update the covering plan's `## Status` banner and `last_updated` (moving its row in `STATUS.md` if a phase changed), or state that no active plan covers the work. The second stop always passes.
+
+The guard blocks at most once per turn, never once per session: if the model's next response still leaves the same conditions true, the guard fires again.
+
+Plan changes are detected by mtime rather than git, because `plans/` is git-excluded by default. Code changes are detected by git, so a project that is not a git repository is never blocked.
+
+To remove the guard: on a project-local install, delete the two hook entries from `.claude/settings.json`. On the plugin install, there are no local entries to remove; the hooks come bundled with the plugin itself, so disable or uninstall `plans` via `/plugin` instead.
 
 ---
 
@@ -504,6 +529,7 @@ Works on every delivery. Diffs `plans/roadmap.html` and `plans/README.md` agains
 | `plans/` directory | Identical | Identical | Identical |
 | `plans.json` | Identical | Identical | Identical |
 | `roadmap.html` | Identical | Identical | Identical |
+| Stop guard | Available, via the plugin or an `init`/`update` opt-in | Not available; use `sync` | Not available; use `sync` |
 
 `plans-init` detects which platform is in use and installs the skill to the correct location automatically. `plans-update` checks both locations.
 
@@ -602,7 +628,7 @@ Three steps: add the marketplace, install, bootstrap. `init` copies the bundled 
 
 Note on first use: the skill reads its reference files from the plugin cache, so Claude Code asks for permission to read that directory the first time a mode runs. Approve it once per project.
 
-The plugin also ships a `SessionStart` hook (`hooks/plans-context.sh`, registered in `hooks/hooks.json`) that injects the same non-deferrable operational rules the script path gets from `template/skills/plans/template/CLAUDE.md.snippet`: read `plans/STATUS.md` at session start, write plans only into `plans/active/`, never hand-edit `plans/plans.json`, update a plan's `## Status` banner and `last_updated` before ending a session that touched its code, and audit drift periodically with `/plans:plans sync`. The hook fires on all four `SessionStart` matchers (`startup`, `resume`, `clear`, `compact`), so the rules survive `/clear`, manual and automatic compaction, and `--resume`/`--continue`, not just a fresh session start. It emits this context only when it can resolve the project root to a directory containing `plans/`, trying `$CLAUDE_PROJECT_DIR`, then the git repository root (`git rev-parse --show-toplevel`), then the current directory in that order, so the check gives the right answer regardless of the directory the session started from; in any other project it prints nothing, so unrelated sessions are unaffected. This is a plugin-only mechanism: it relies on `hookSpecificOutput.additionalContext`, which is a documented, supported field in Claude Code's official hooks reference. The string is wrapped in a system reminder and inserted into the model's context at the point the hook fires, capped at 10,000 characters; the current payload is about 760 characters. Script-path users do not get this hook; they get the equivalent rules because `scripts/init.sh` appends `template/skills/plans/template/CLAUDE.md.snippet` directly to their CLAUDE.md; npx-installed copies get them because `/plans init` offers the same append.
+The plugin also ships a `SessionStart` hook (`template/skills/plans/hooks/plans-context.sh`, registered in `hooks/hooks.json`) that injects the same non-deferrable operational rules the script path gets from `template/skills/plans/template/CLAUDE.md.snippet`: read `plans/STATUS.md` at session start, write plans only into `plans/active/`, never hand-edit `plans/plans.json`, update a plan's `## Status` banner and `last_updated` before ending a session that touched its code, and audit drift periodically with `/plans:plans sync`. The hook fires on all four `SessionStart` matchers (`startup`, `resume`, `clear`, `compact`), so the rules survive `/clear`, manual and automatic compaction, and `--resume`/`--continue`, not just a fresh session start. It emits this context only when it can resolve the project root to a directory containing `plans/`, trying `$CLAUDE_PROJECT_DIR`, then the git repository root (`git rev-parse --show-toplevel`), then the current directory in that order, so the check gives the right answer regardless of the directory the session started from; in any other project it prints nothing, so unrelated sessions are unaffected. It relies on `hookSpecificOutput.additionalContext`, a documented, supported field in Claude Code's official hooks reference. This is not exclusive to the plugin delivery: a project-local Claude Code install can register the same hook via `init` or `update` (see the Stop guard section above), and gets identical behaviour from it. The string is wrapped in a system reminder and inserted into the model's context at the point the hook fires, capped at 10,000 characters; the current payload is 892 characters. Script-path users who have not registered the hook get the equivalent rules a different way: `scripts/init.sh` appends `template/skills/plans/template/CLAUDE.md.snippet` directly to their CLAUDE.md; npx-installed copies get them because `/plans init` offers the same append.
 
 A user who has both installed (ran `scripts/init.sh` in the past and later installed the plugin) gets the rules twice: once from the snippet in their CLAUDE.md, once from the hook's `additionalContext` on each session start. The two are duplicated but consistent, so this is harmless. A user who wants only one copy can either skip the snippet on the script path (`plans-init --no-snippet`) or remove the "Project Status & Plan Management" section from their CLAUDE.md.
 

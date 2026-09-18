@@ -65,6 +65,8 @@ Full scope and audience details in [docs/reference.md](docs/reference.md).
 
 Three steps: add the marketplace, install the plugin, bootstrap your project. `init` creates `plans/`, asks whether to track it in git (default: keep it local), and points you at `/plans:plans new` for your first plan. Updates come through `/plugin`; refresh project system files any time with `/plans:plans update`. The plugin also supplies the project's operational rules (where to write plans, when to update status) automatically via a session hook, no CLAUDE.md edit needed.
 
+The plugin also installs a session guard: if a session changes code while a plan is in flight and no plan file is updated, it asks once per turn for the update before the session ends.
+
 ### Other assistants and no-plugin setups
 
 Works with Cursor, Antigravity, Windsurf, and any of the roughly 70 assistants the community skills CLI supports.

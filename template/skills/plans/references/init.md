@@ -65,7 +65,7 @@ if no candidate exists:
     "No AI instruction file found. The plans rules snippet is bundled at:"
     "  <this skill's directory>/template/CLAUDE.md.snippet"
     "Append its body to your instruction file when you create one."
-  continue to Step 4.
+  (nothing else to do in this step; proceed to Step 4, Hook registration)
 
 for each candidate file:
   if the file already contains the line "## Project Status & Plan Management":
@@ -86,7 +86,9 @@ for each candidate file:
 
 Decline is the default. Never append without an explicit yes, and never append twice (the marker check guarantees this).
 
-**4. Finish.**
+**4. Hook registration (project-local Claude Code deliveries only).** On the plugin delivery, skip this step entirely: the plugin's own `hooks.json` already registers both hooks. Otherwise load `references/hooks-setup.md` and follow it.
+
+**5. Finish.**
 
 If Local was chosen in Step 2 and the exclusion was NOT confirmed: do not print an unqualified success line. Lead with the unresolved warning, then the same next steps:
 
@@ -123,6 +125,7 @@ where `{invocation}` is the spelling from the delivery rule in SKILL.md.
 
 - Never overwrites an existing `plans/`.
 - Instruction files: on the plugin delivery, never touched. On project-local deliveries, appended only with explicit per-file consent, and never twice (marker guard).
+- Hooks: on the plugin delivery, never registered here. On project-local Claude Code deliveries, added to `.claude/settings.json` only with explicit consent, and never twice (path check).
 - Asks at most one git question, only in a git repository.
 - Copies the template verbatim; templates start empty by design.
 - Makes no network requests.
