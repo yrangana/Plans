@@ -123,20 +123,19 @@ a:hover { text-decoration: underline; }
 
   <p><strong>Command line scripts.</strong> The installer clones this project's public GitHub repository, and <code>plans-update</code> runs <code>git pull</code> against it. Those git operations are the only network activity on this path, and they are subject to <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>.</p>
 
-  <h2>The session hook</h2>
+  <h2>The session hooks</h2>
 
-  <p>The plugin ships a <code>SessionStart</code> hook. It exists to tell your assistant the project's conventions, for example that plan files belong in <code>plans/active/</code>. Because a hook runs automatically, its behaviour is worth stating exactly:</p>
+  <p>The plugin ships two hooks: a <code>SessionStart</code> hook and a <code>Stop</code> guard. Because a hook runs automatically, their behaviour is worth stating exactly:</p>
 
   <ul>
-    <li>It reads the contents of none of your files.</li>
-    <li>To decide whether your project uses the convention, it reads the <code>CLAUDE_PROJECT_DIR</code> environment variable if it is set, and asks git for the repository root by running <code>git rev-parse --show-toplevel</code>. It then tests whether a <code>plans/</code> directory exists there. That is the full extent of what it inspects.</li>
-    <li>If no <code>plans/</code> directory is found, it outputs nothing at all and exits.</li>
-    <li>When it does run, it emits a fixed block of text that is byte for byte identical for every user. It is written as a quoted shell heredoc, so no value from your project, environment, or filesystem can be substituted into it.</li>
-    <li>It makes no network requests and writes nothing to disk.</li>
-    <li>It is removed when you uninstall the plugin.</li>
+    <li><strong>SessionStart.</strong> It exists to tell your assistant the project's conventions, for example that plan files belong in <code>plans/active/</code>. It reads the contents of none of your files. To decide whether your project uses the convention, it reads the <code>CLAUDE_PROJECT_DIR</code> environment variable if it is set, and asks git for the repository root by running <code>git rev-parse --show-toplevel</code>. It then tests whether a <code>plans/</code> directory exists there. That is the full extent of what it inspects. If no <code>plans/</code> directory is found, it outputs nothing at all and exits. When it does run, it emits a fixed block of text that is byte for byte identical for every user. It is written as a quoted shell heredoc, so no value from your project, environment, or filesystem can be substituted into it.</li>
+    <li><strong>Session marker.</strong> The SessionStart hook also writes one small file per session (the starting commit sha) to the session scratchpad, or your system temp directory when none is supplied. It is read only by the Stop guard on the same machine, and never leaves it.</li>
+    <li><strong>Stop guard.</strong> At the end of a session, it checks whether that session changed code while a plan is marked in flight and no file under <code>plans/</code> was touched. To make that check it reads your plan files, specifically whether any file under <code>plans/active/</code> has an <code>in_flight:</code> frontmatter line set to true, and it asks git for the paths that changed, by running <code>git diff --name-only</code>, <code>git status --porcelain</code>, and <code>git ls-files --others</code>. Unlike the SessionStart hook, its output is not fixed: when it blocks the session from ending, the reason text it returns names the changed file paths and the in-flight plan filenames it found, so those values do reach your assistant's context for that turn.</li>
+    <li>Neither hook makes network requests.</li>
+    <li>Both are removed when you uninstall the plugin.</li>
   </ul>
 
-  <p>The hook is a short POSIX shell script and is <a href="https://github.com/yrangana/Plans/blob/main/hooks/plans-context.sh">readable in full here</a>.</p>
+  <p>Both hooks are short POSIX shell scripts, readable in full: <a href="https://github.com/yrangana/Plans/blob/main/template/skills/plans/hooks/plans-context.sh">SessionStart</a> and <a href="https://github.com/yrangana/Plans/blob/main/template/skills/plans/hooks/plans-stop-guard.sh">Stop guard</a>.</p>
 
   <h2>The dashboard</h2>
 
