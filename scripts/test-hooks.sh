@@ -381,7 +381,7 @@ V_SKILL=$(sed -n 's/^version:[[:space:]]*//p' "$REPO_ROOT/template/skills/plans/
 V_PLUGIN=$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$REPO_ROOT/.claude-plugin/plugin.json" | head -n1)
 check_eq "VERSION matches SKILL.md" "$V_FILE" "$V_SKILL"
 check_eq "VERSION matches plugin.json" "$V_FILE" "$V_PLUGIN"
-check_eq "version is 0.8.0" "0.8.0" "$V_FILE"
+check_eq "version is 0.8.1" "0.8.1" "$V_FILE"
 
 echo "=== summary ==="
 echo "passed: $PASS  failed: $FAIL"
