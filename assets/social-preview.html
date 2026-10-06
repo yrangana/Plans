@@ -1,0 +1,65 @@
+<!doctype html>
+<!-- Source for the 1280x640 social preview card. Render at 1280x640 and save as web/og-image.png. -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --ink: #1d1d1f;
+    --ink-mute: #6e6e73;
+    --accent: #0071e3;
+    --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+    --font-mono: 'SF Mono', 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  }
+  html, body { margin: 0; padding: 0; }
+  body {
+    width: 1280px; height: 640px; overflow: hidden; position: relative;
+    background: var(--bg); color: var(--ink); font-family: var(--font-display);
+  }
+  .left { position: absolute; left: 72px; top: 0; bottom: 0; width: 540px;
+    display: flex; flex-direction: column; justify-content: center; }
+  .brand { display: flex; align-items: center; gap: 22px; }
+  .brand img { width: 88px; height: 88px; }
+  .brand h1 { margin: 0; font-size: 92px; font-weight: 700; letter-spacing: -0.035em; line-height: 1; }
+  .pitch { margin: 40px 0 0; font-size: 40px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
+  .sub { margin: 18px 0 0; font-size: 22px; color: var(--ink-mute); line-height: 1.4; }
+  .meta { margin-top: 44px; display: flex; flex-direction: column; gap: 10px;
+    font-family: var(--font-mono); font-size: 18px; color: var(--ink-mute); }
+  .meta .dot { color: var(--accent); }
+  .shot {
+    position: absolute; left: 640px; top: 118px; width: 576px; height: 404px;
+    border-radius: 14px; overflow: hidden; background: #fff;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  .shot .bar { height: 30px; background: #2b2b2e; display: flex; align-items: center; gap: 7px; padding-left: 14px; }
+  .shot .bar i { width: 11px; height: 11px; border-radius: 50%; background: #5a5a5f; display: block; }
+  .shot .img {
+    height: 374px;
+    background: url('../examples/screenshot-dashboard.png') no-repeat;
+    /* scale the main column (x 252-1185 of the screenshot) to fit, ending under the timeline box */
+    background-size: 731px auto;
+    background-position: -151px -30px;
+  }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="brand">
+      <img src="icon.svg" alt="">
+      <h1>Plans</h1>
+    </div>
+    <p class="pitch">Track what you're building in plain markdown.</p>
+    <p class="sub">One file per feature, a STATUS.md front door, and a roadmap dashboard your AI assistant reads natively.</p>
+    <div class="meta">
+      <span><span class="dot">&#9679;</span> Claude Code plugin &middot; Anthropic Directory</span>
+      <span><span class="dot">&#9679;</span> github.com/yrangana/Plans</span>
+    </div>
+  </div>
+  <div class="shot">
+    <div class="bar"><i></i><i></i><i></i></div>
+    <div class="img"></div>
+  </div>
+</body>
+</html>

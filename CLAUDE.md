@@ -56,13 +56,15 @@ plans/
 │   └── hooks.json               # Plugin hook manifest; only this file lives at the root, the
 │                                 # scripts it points at live in the skill tree above
 ├── .claude-plugin/              # Claude Code plugin manifest, delivers /plans as the primary path
-├── assets/                      # Directory listing icon (icon.svg is the source, icon.png is what plugin.json points at)
+├── assets/                      # Directory listing icon (icon.svg source, icon.png in plugin.json) and
+│                                 # social-preview.html, the source for web/og-image.png
 ├── web/                         # GitHub Pages site (deployed by .github/workflows)
 │   ├── index.html               # Landing page
 │   ├── roadmap.html             # Live roadmap demo (inline data)
 │   ├── status.html              # Live STATUS.md demo
 │   ├── presentation.html        # Slides
-│   └── docs.html                # Browsable docs
+│   ├── docs.html                # Browsable docs
+│   └── og-image.png             # 1280x640 social preview card (og:image and GitHub social preview)
 └── examples/                    # Static assets for the README
     ├── demo.svg                 # Animated terminal demo
     ├── screenshot-dashboard.png

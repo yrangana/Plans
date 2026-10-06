@@ -284,6 +284,8 @@ Highest-leverage contributions: skill ports to other AI assistants (Cline, Winds
 
 See [CONTRIBUTING.md](https://github.com/yrangana/Plans/blob/main/CONTRIBUTING.md) for specific asks, what to expect, and where the maintainer will push back. For substantive changes to the convention itself (frontmatter spec, lifecycle), open an issue first to discuss.
 
+If Plans saves you time, a [star on GitHub](https://github.com/yrangana/Plans) helps other people find it.
+
 ## License
 
 [MIT](https://github.com/yrangana/Plans/blob/main/LICENSE). Fork, adapt, share.
