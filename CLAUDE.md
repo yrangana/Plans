@@ -56,6 +56,7 @@ plans/
 │   └── hooks.json               # Plugin hook manifest; only this file lives at the root, the
 │                                 # scripts it points at live in the skill tree above
 ├── .claude-plugin/              # Claude Code plugin manifest, delivers /plans as the primary path
+├── assets/                      # Directory listing icon (icon.svg is the source, icon.png is what plugin.json points at)
 ├── web/                         # GitHub Pages site (deployed by .github/workflows)
 │   ├── index.html               # Landing page
 │   ├── roadmap.html             # Live roadmap demo (inline data)

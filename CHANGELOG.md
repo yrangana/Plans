@@ -12,6 +12,20 @@ Versions are tagged on GitHub once meaningful changes accumulate. Until v1.0, th
 
 ---
 
+## v0.8.1
+
+Plans is now listed in the Anthropic Directory. This release adds the listing metadata and documents the new install route. No skill, hook, template, or file-format changes.
+
+- `.claude-plugin/plugin.json`: new Directory listing fields. `icon` points at the new `assets/icon.png` (source `assets/icon.svg`), and `documentationUrl`, `supportUrl`, and `privacyPolicyUrl` link the docs page, GitHub issues, and the privacy page. Claude Code ignores all four at load time.
+- `.claude-plugin/plugin.json`: drops `"hooks": "./hooks/hooks.json"`. Claude Code loads `hooks/hooks.json` from its default location on its own and already deduplicated the explicit reference, but the Directory listing counted each hook twice (Hooks · 4). Runtime behaviour is unchanged.
+- Install docs (`README.md`, `docs/reference.md`, `web/index.html`, `web/presentation.html`) add the one-click route: Claude app, Settings > Plugins > Discover, search "Plans". The terminal marketplace commands stay as the second route. Use one, not both: each install registers its own copy of the hooks.
+- Update docs name the Directory's Update button alongside `/plugin`.
+- `README.md`, `CONTRIBUTING.md`, and `docs/reference.md` use absolute GitHub URLs for images and repo links, so they render outside GitHub (the Directory's file viewer, ClaudePluginHub, skills.sh). Template files keep their relative links, since those resolve inside adopter repos.
+
+Nothing to do in existing projects. Refresh the plugin when convenient.
+
+---
+
 ## v0.8.0
 
 Makes the front door harder to leave lying. A Stop hook asks for the plan update at the end of a session that changed code, instead of trusting anyone to remember. No file-format, frontmatter, or path changes.

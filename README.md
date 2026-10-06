@@ -2,11 +2,11 @@
 
 [![Deploy](https://github.com/yrangana/Plans/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/yrangana/Plans/actions/workflows/pages/pages-build-deployment) [![Tests](https://github.com/yrangana/Plans/actions/workflows/test-init.yml/badge.svg)](https://github.com/yrangana/Plans/actions/workflows/test-init.yml) [![Listed on ClaudePluginHub](https://www.claudepluginhub.com/badge/yrangana-plans)](https://www.claudepluginhub.com/plugins/yrangana-plans?ref=badge)
 
-![Plans demo](examples/demo.svg)
+![Plans demo](https://raw.githubusercontent.com/yrangana/Plans/main/examples/demo.svg)
 
 > A markdown convention for tracking what you're building. Plain files in your repo, one source of truth for what's active, shipped, and next. AI assistants read it natively as a bonus.
 
-[Home](https://yrangana.github.io/Plans/) · [Roadmap demo](https://yrangana.github.io/Plans/roadmap.html) · [Status demo](https://yrangana.github.io/Plans/status.html) · [Slides](https://yrangana.github.io/Plans/presentation.html) · [Docs](https://yrangana.github.io/Plans/docs.html) · [Blog post](docs/blog-post.md) · [Reference spec](docs/reference.md)
+[Home](https://yrangana.github.io/Plans/) · [Roadmap demo](https://yrangana.github.io/Plans/roadmap.html) · [Status demo](https://yrangana.github.io/Plans/status.html) · [Slides](https://yrangana.github.io/Plans/presentation.html) · [Docs](https://yrangana.github.io/Plans/docs.html) · [Blog post](https://github.com/yrangana/Plans/blob/main/docs/blog-post.md) · [Reference spec](https://github.com/yrangana/Plans/blob/main/docs/reference.md)
 
 ---
 
@@ -32,11 +32,11 @@ I built this for myself and use it daily across my own projects. It's MIT, small
 
 **Interactive roadmap dashboard** ([live demo](https://yrangana.github.io/Plans/roadmap.html)):
 
-![Roadmap dashboard](examples/screenshot-dashboard.png)
+![Roadmap dashboard](https://raw.githubusercontent.com/yrangana/Plans/main/examples/screenshot-dashboard.png)
 
 **STATUS.md rendered** ([live demo](https://yrangana.github.io/Plans/status.html)):
 
-![Status page](examples/screenshot-status.png)
+![Status page](https://raw.githubusercontent.com/yrangana/Plans/main/examples/screenshot-status.png)
 
 ## Where it fits
 
@@ -49,7 +49,7 @@ Best fit:
 
 Less useful when: you already have a working Jira/Linear/Notion setup that fits your team, you're on a single-feature project, or you need a full audit trail for compliance.
 
-Full scope and audience details in [docs/reference.md](docs/reference.md).
+Full scope and audience details in [docs/reference.md](https://github.com/yrangana/Plans/blob/main/docs/reference.md).
 
 ---
 
@@ -57,13 +57,24 @@ Full scope and audience details in [docs/reference.md](docs/reference.md).
 
 ### Claude Code (plugin, recommended)
 
+Plans is listed in the Anthropic Directory. Install it one of two ways, not both (two installs register the hooks twice):
+
+**From the Claude app (one click):** open Settings > Plugins > Discover, search "Plans", and click **Add**. The plugin syncs into Claude Code on any machine signed in to the same account.
+
+**From the terminal:**
+
 ```text
 /plugin marketplace add yrangana/Plans
 /plugin install plans@yrangana-plans
+```
+
+Then bootstrap your project in Claude Code:
+
+```text
 /plans:plans init
 ```
 
-Three steps: add the marketplace, install the plugin, bootstrap your project. `init` creates `plans/`, asks whether to track it in git (default: keep it local), and points you at `/plans:plans new` for your first plan. Updates come through `/plugin`; refresh project system files any time with `/plans:plans update`. The plugin also supplies the project's operational rules (where to write plans, when to update status) automatically via a session hook, no CLAUDE.md edit needed.
+`init` creates `plans/`, asks whether to track it in git (default: keep it local), and points you at `/plans:plans new` for your first plan. Refresh project system files any time with `/plans:plans update`. The plugin also supplies the project's operational rules (where to write plans, when to update status) automatically via a session hook, no CLAUDE.md edit needed.
 
 The plugin also installs a session guard: if a session changes code while a plan is in flight and no plan file is updated, it asks once per turn for the update before the session ends.
 
@@ -117,11 +128,11 @@ Edit your first plan: open `plans/active/EXAMPLE_PLAN.md`, replace it with your 
 
 ## Updating
 
-How you update depends on how you installed. Plugin installs update through `/plugin` and `/plans:plans update`; the plans CLI updates itself and your project's system files separately.
+How you update depends on how you installed. Plugin installs update the plugin first, then run `/plans:plans update`; the plans CLI updates itself and your project's system files separately.
 
 ### Update via the plugin
 
-Updates come through `/plugin`. Refresh your project's system files (`roadmap.html`, `plans/README.md`) any time with:
+Update the plugin where you installed it: the **Update** button on the Plans page in the Claude app (Settings > Plugins) for a Directory install, or `/plugin` for a terminal install. Then refresh your project's system files (`roadmap.html`, `plans/README.md`) any time with:
 
 ```text
 /plans:plans update
@@ -167,7 +178,7 @@ rm -rf ~/.local/share/plans
 
 Any `plans/` directories in your projects are unaffected (they are local-only and git-excluded).
 
-See [CHANGELOG.md](CHANGELOG.md) for what's changed between versions.
+See [CHANGELOG.md](https://github.com/yrangana/Plans/blob/main/CHANGELOG.md) for what's changed between versions.
 
 ---
 
@@ -182,8 +193,8 @@ Five ways into the system, depending on what you want:
 | [**Status demo**](https://yrangana.github.io/Plans/status.html) | Seeing what STATUS.md looks like rendered | Interactive web page |
 | [**Slides**](https://yrangana.github.io/Plans/presentation.html) | A 5-minute overview of the whole system | Reveal.js deck |
 | [**Docs**](https://yrangana.github.io/Plans/docs.html) | Browsable docs rendered from the repo | Web page |
-| [**Blog post**](docs/blog-post.md) | The story and motivation behind it | Long-form prose |
-| [**Reference spec**](docs/reference.md) | Implementation details, every field, every rule | Technical reference |
+| [**Blog post**](https://github.com/yrangana/Plans/blob/main/docs/blog-post.md) | The story and motivation behind it | Long-form prose |
+| [**Reference spec**](https://github.com/yrangana/Plans/blob/main/docs/reference.md) | Implementation details, every field, every rule | Technical reference |
 
 ---
 
@@ -248,7 +259,7 @@ It's a Claude Code slash command (with Antigravity and Cursor ports) with four m
 - **`/plans new`**: guided creation of a new plan file with correct frontmatter, status banner, and timeline.
 - **`/plans update`**: refreshes system files (`roadmap.html`, `plans/README.md`) from the installed skill version. Works on every install path.
 
-All four modes run the same way whether the skill was installed via the plugin, `npx skills add yrangana/Plans`, or the `plans-init` script. The `plans-init` and `plans-update` scripts remain as a no-assistant fallback for the two setup jobs. See [docs/reference.md](docs/reference.md) for the full drift-rule list.
+All four modes run the same way whether the skill was installed via the plugin, `npx skills add yrangana/Plans`, or the `plans-init` script. The `plans-init` and `plans-update` scripts remain as a no-assistant fallback for the two setup jobs. See [docs/reference.md](https://github.com/yrangana/Plans/blob/main/docs/reference.md) for the full drift-rule list.
 
 ---
 
@@ -271,8 +282,8 @@ This is a small, opinionated convention. Issues and PRs welcome.
 
 Highest-leverage contributions: skill ports to other AI assistants (Cline, Windsurf, aider), `roadmap.html` improvements (Mermaid export, print stylesheet), bug fixes, doc clarifications.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for specific asks, what to expect, and where the maintainer will push back. For substantive changes to the convention itself (frontmatter spec, lifecycle), open an issue first to discuss.
+See [CONTRIBUTING.md](https://github.com/yrangana/Plans/blob/main/CONTRIBUTING.md) for specific asks, what to expect, and where the maintainer will push back. For substantive changes to the convention itself (frontmatter spec, lifecycle), open an issue first to discuss.
 
 ## License
 
-[MIT](LICENSE). Fork, adapt, share.
+[MIT](https://github.com/yrangana/Plans/blob/main/LICENSE). Fork, adapt, share.

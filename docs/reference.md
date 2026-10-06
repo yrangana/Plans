@@ -537,11 +537,12 @@ To remove the guard: on a project-local install, delete the two hook entries fro
 
 ## Delivery paths
 
-Three ways to install, one skill:
+Three ways to install, one skill. The plugin has two install routes that deliver the same package:
 
 | Path | Install | Invocation | Ambient rules | Updates |
 | --- | --- | --- | --- | --- |
-| Claude Code plugin | `/plugin marketplace add yrangana/Plans` | `/plans:plans <mode>` | SessionStart hook | `/plugin` |
+| Claude Code plugin (Anthropic Directory) | Claude app: Settings > Plugins > Discover, search "Plans", Add | `/plans:plans <mode>` | SessionStart hook | Update button on the plugin page |
+| Claude Code plugin (GitHub marketplace) | `/plugin marketplace add yrangana/Plans` | `/plans:plans <mode>` | SessionStart hook | `/plugin` |
 | Community skills CLI | `npx skills add yrangana/Plans` | `/plans <mode>` | `init` offers the snippet | `npx skills update` |
 | Scripts | `install.sh`, then `plans-init` | `/plans <mode>` | `plans-init` offers the snippet | `plans-update` |
 
@@ -626,6 +627,8 @@ The plugin is the primary way to adopt Plans on Claude Code:
 
 Three steps: add the marketplace, install, bootstrap. `init` copies the bundled template into your project and asks whether to track `plans/` in git (default: keep it local). No CLI, no clone, no instruction-file edits.
 
+The same plugin is also listed in the Anthropic Directory. In the Claude app, open Settings > Plugins > Discover, search "Plans", and click Add; the plugin then syncs into Claude Code for that account (it appears in `claude plugin list` as `plans@synced`), and `/plans:plans init` bootstraps the project as above. The Directory syncs from the GitHub repo, so both routes ship the same version. Use one route, not both: each install registers its own copy of the hooks, so a user with both gets the session context injected twice and the Stop guard run twice.
+
 Note on first use: the skill reads its reference files from the plugin cache, so Claude Code asks for permission to read that directory the first time a mode runs. Approve it once per project.
 
 The plugin also ships a `SessionStart` hook (`template/skills/plans/hooks/plans-context.sh`, registered in `hooks/hooks.json`) that injects the same non-deferrable operational rules the script path gets from `template/skills/plans/template/CLAUDE.md.snippet`: read `plans/STATUS.md` at session start, write plans only into `plans/active/`, never hand-edit `plans/plans.json`, update a plan's `## Status` banner and `last_updated` before ending a session that touched its code, and audit drift periodically with `/plans:plans sync`. The hook fires on all four `SessionStart` matchers (`startup`, `resume`, `clear`, `compact`), so the rules survive `/clear`, manual and automatic compaction, and `--resume`/`--continue`, not just a fresh session start. It emits this context only when it can resolve the project root to a directory containing `plans/`, trying `$CLAUDE_PROJECT_DIR`, then the git repository root (`git rev-parse --show-toplevel`), then the current directory in that order, so the check gives the right answer regardless of the directory the session started from; in any other project it prints nothing, so unrelated sessions are unaffected. It relies on `hookSpecificOutput.additionalContext`, a documented, supported field in Claude Code's official hooks reference. This is not exclusive to the plugin delivery: a project-local Claude Code install can register the same hook via `init` or `update` (see the Stop guard section above), and gets identical behaviour from it. The string is wrapped in a system reminder and inserted into the model's context at the point the hook fires, capped at 10,000 characters; the current payload is 892 characters. Script-path users who have not registered the hook get the equivalent rules a different way: `scripts/init.sh` appends `template/skills/plans/template/CLAUDE.md.snippet` directly to their CLAUDE.md; npx-installed copies get them because `/plans init` offers the same append.
@@ -634,14 +637,14 @@ A user who has both installed (ran `scripts/init.sh` in the past and later insta
 
 Update ownership differs by path:
 
-- Plugin skill: lives in Claude Code's plugin cache, updated via `/plugin`. Project system files are refreshed by `/plans:plans update`, which sources the installed version.
+- Plugin skill: lives in Claude Code's plugin cache, updated via `/plugin` (GitHub marketplace install) or the Update button on the plugin page in the Claude app (Anthropic Directory install). Project system files are refreshed by `/plans:plans update`, which sources the installed version.
 - Project-local skill (installed by `plans-init`): lives at `.claude/skills/plans/` or `.agents/skills/plans/`, updated by `plans-update` along with system files.
 
 Tested on a clean install: `/plans` resolves to the project-local copy at `.claude/skills/plans/SKILL.md`, and `/plans:plans` resolves to the bundled plugin copy. The two are separate commands, not competitors for one name, so having both installed is harmless. It does mean two copies to keep in sync, and `plans-update` only manages the project-local one.
 
 ### Versioning
 
-The plans repo loosely follows [semantic versioning](https://semver.org/). See [CHANGELOG.md](../CHANGELOG.md) for what's changed between versions.
+The plans repo loosely follows [semantic versioning](https://semver.org/). See [CHANGELOG.md](https://github.com/yrangana/Plans/blob/main/CHANGELOG.md) for what's changed between versions.
 
 - **Major:** breaking changes to the plan file format, frontmatter spec, or directory layout (adopters must migrate).
 - **Minor:** new features in `roadmap.html`, scripts, or docs (adopters can update or skip).

@@ -2,7 +2,7 @@
 
 Thanks for the interest. Plans is a small, opinionated convention: changes that keep it small and add real value are welcome; changes that grow the surface area for hypothetical use cases get pushed back on.
 
-Read [CLAUDE.md](CLAUDE.md) first if you want the maintenance philosophy in detail. The short version: this is a convention, not a framework.
+Read [CLAUDE.md](https://github.com/yrangana/Plans/blob/main/CLAUDE.md) first if you want the maintenance philosophy in detail. The short version: this is a convention, not a framework.
 
 ---
 
@@ -14,13 +14,13 @@ The convention itself is platform-neutral. The `/plans` skill ships for Claude C
 
 Concrete asks:
 
-- **Cline skill port.** The skill body lives in [template/skills/plans/SKILL.md](template/skills/plans/SKILL.md). Cline uses a similar slash-command pattern; the port is mostly moving one file and adjusting the trigger. Roughly 30 lines of work.
+- **Cline skill port.** The skill body lives in [template/skills/plans/SKILL.md](https://github.com/yrangana/Plans/blob/main/template/skills/plans/SKILL.md). Cline uses a similar slash-command pattern; the port is mostly moving one file and adjusting the trigger. Roughly 30 lines of work.
 - **Windsurf workflow port.** Windsurf uses workflows (`.windsurf/workflows/`) rather than slash commands. Map the `/plans sync` and `/plans new` modes to two workflow files.
 - **aider integration.** Aider doesn't have a skill format per se, but a documented prompt template that an aider user can paste into their session would close the gap.
 
 ### Roadmap dashboard improvements
 
-[template/skills/plans/template/plans/roadmap.html](template/skills/plans/template/plans/roadmap.html) is the dashboard adopters get. It reads `plans.json` and renders a Gantt + dependency graph + filterable cards. It's one self-contained HTML file with no build step, that's a hard constraint, don't add bundlers or npm.
+[template/skills/plans/template/plans/roadmap.html](https://github.com/yrangana/Plans/blob/main/template/skills/plans/template/plans/roadmap.html) is the dashboard adopters get. It reads `plans.json` and renders a Gantt + dependency graph + filterable cards. It's one self-contained HTML file with no build step, that's a hard constraint, don't add bundlers or npm.
 
 Open ideas:
 
@@ -37,7 +37,7 @@ Open ideas:
 
 ## Where we'll push back
 
-Per the maintenance philosophy in [CLAUDE.md](CLAUDE.md):
+Per the maintenance philosophy in [CLAUDE.md](https://github.com/yrangana/Plans/blob/main/CLAUDE.md):
 
 - **New frontmatter fields.** The 7-field schema is fixed for a reason. New fields fragment what adopters write and break the cross-project shape the dashboard depends on. Open an issue to discuss before opening a PR.
 - **Config flags.** If you want different behaviour, fork. Plans avoids config because every flag is a maintenance burden and a surface for "but in my setup…" bug reports.
@@ -61,7 +61,7 @@ This saves you writing a PR that won't merge, and saves the maintainer from a ha
 
 ## Local development
 
-Repo layout and test recipes are in [CLAUDE.md](CLAUDE.md). The short version:
+Repo layout and test recipes are in [CLAUDE.md](https://github.com/yrangana/Plans/blob/main/CLAUDE.md). The short version:
 
 ```bash
 # Test the init script
@@ -92,4 +92,4 @@ Bugs in `roadmap.html` are easier to reproduce if you can share the offending `p
 
 ## License
 
-By contributing, you agree your contribution is licensed under the project's [MIT License](LICENSE).
+By contributing, you agree your contribution is licensed under the project's [MIT License](https://github.com/yrangana/Plans/blob/main/LICENSE).
