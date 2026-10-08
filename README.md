@@ -8,6 +8,8 @@
 
 [Home](https://yrangana.github.io/Plans/) · [Roadmap demo](https://yrangana.github.io/Plans/roadmap.html) · [Status demo](https://yrangana.github.io/Plans/status.html) · [Slides](https://yrangana.github.io/Plans/presentation.html) · [Docs](https://yrangana.github.io/Plans/docs.html) · [Blog post](https://github.com/yrangana/Plans/blob/main/docs/blog-post.md) · [Reference spec](https://github.com/yrangana/Plans/blob/main/docs/reference.md)
 
+Created by [Yasiru Rangana](https://yasirurangana.com), AI Architect and AI Engineer, Sydney.
+
 ---
 
 ## What this is
@@ -288,4 +290,4 @@ If Plans saves you time, a [star on GitHub](https://github.com/yrangana/Plans) h
 
 ## License
 
-[MIT](https://github.com/yrangana/Plans/blob/main/LICENSE). Fork, adapt, share.
+[MIT](https://github.com/yrangana/Plans/blob/main/LICENSE). Fork, adapt, share. Created by [Yasiru Rangana](https://yasirurangana.com).
